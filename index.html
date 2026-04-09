@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <!-- PWA / iPhone home screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FX記録">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#3B82F6">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <title>FX トレード記録</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* Safe area for iPhone notch / home indicator */
+    body {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .header-safe { padding-top: env(safe-area-inset-top); }
+    .nav-safe    { padding-bottom: env(safe-area-inset-bottom); }
+
+    /* Tab panels */
+    .tab-panel          { display: none; }
+    .tab-panel.active   { display: block; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+
+    /* Line-clamp */
+    .line-clamp-1 {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+    }
+
+    /* Smooth modal backdrop */
+    .modal-bg { background: rgba(0,0,0,0.5); }
+
+    /* Number input arrows hidden */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans select-none">
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="header-safe fixed top-0 left-0 right-0 bg-white shadow-sm z-40">
+    <div class="flex items-center justify-between px-4 h-14">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm">
+          <span class="text-white text-xs font-black tracking-tight">FX</span>
+        </div>
+        <h1 class="text-base font-bold text-slate-800">トレード記録</h1>
+      </div>
+      <span id="today-date" class="text-xs text-slate-400"></span>
+    </div>
+  </header>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="pt-14 pb-20 min-h-screen">
+
+    <!-- ========== TAB: 新規登録 ========== -->
+    <div id="panel-register" class="tab-panel active p-4 space-y-4">
+      <h2 class="text-base font-bold text-slate-600">新規トレード登録</h2>
+
+      <form id="trade-form" class="space-y-4" autocomplete="off">
+
+        <!-- 日時 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">エントリー日時</label>
+            <input type="datetime-local" id="f-datetime-entry"
+              class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">エグジット日時 <span class="text-slate-300 font-normal normal-case tracking-normal">（任意）</span></label>
+            <input type="datetime-local" id="f-datetime-exit"
+              class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+          </div>
+        </div>
+
+        <!-- 手法 / 通貨ペア / 時間足 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+
+          <!-- 手法 -->
+          <div>
+            <div class="flex items-baseline gap-2 mb-2">
+              <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">手法</label>
+              <span class="text-xs text-slate-400">①乖離埋め　②３波狙い　③その他</span>
+            </div>
+            <select id="f-method"
+              class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+              <option value="">選択してください</option>
+              <option value="1">① 乖離埋め</option>
+              <option value="2">② ３波狙い</option>
+              <option value="3">③ その他</option>
+            </select>
+          </div>
+
+          <!-- メイン通貨 / サブ通貨 -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">メイン通貨</label>
+              <select id="f-pair-main"
+                class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                <option value="US500">US500</option>
+                <option value="US100">US100</option>
+                <option value="US30">US30</option>
+                <option value="JP225">JP225</option>
+                <option value="BTC/USD">BTC/USD</option>
+                <option value="ETH/USD">ETH/USD</option>
+                <option value="GOLD">GOLD</option>
+                <option value="SILVER">SILVER</option>
+                <option value="WTI">WTI</option>
+                <option value="USD/JPY">USD/JPY</option>
+                <option value="EUR/JPY">EUR/JPY</option>
+                <option value="GBP/JPY">GBP/JPY</option>
+                <option value="EUR/USD">EUR/USD</option>
+                <option value="GBP/USD">GBP/USD</option>
+                <option value="AUD/JPY">AUD/JPY</option>
+                <option value="AUD/USD">AUD/USD</option>
+                <option value="NZD/JPY">NZD/JPY</option>
+                <option value="NZD/USD">NZD/USD</option>
+                <option value="CAD/JPY">CAD/JPY</option>
+                <option value="USD/CAD">USD/CAD</option>
+                <option value="CHF/JPY">CHF/JPY</option>
+                <option value="USD/CHF">USD/CHF</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">サブ通貨 <span class="text-slate-300 font-normal normal-case">（任意）</span></label>
+              <select id="f-pair-sub"
+                class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                <option value="">なし</option>
+                <option value="EUR/GBP">EUR/GBP</option>
+                <option value="AUD/NZD">AUD/NZD</option>
+                <option value="EUR/AUD">EUR/AUD</option>
+                <option value="GBP/AUD">GBP/AUD</option>
+                <option value="EUR/NZD">EUR/NZD</option>
+                <option value="GBP/NZD">GBP/NZD</option>
+                <option value="EUR/CHF">EUR/CHF</option>
+                <option value="GBP/CHF">GBP/CHF</option>
+                <option value="EUR/CAD">EUR/CAD</option>
+                <option value="GBP/CAD">GBP/CAD</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 時間足 -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">時間足</label>
+            <select id="f-timeframe"
+              class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+              <option value="M1">M1（1分）</option>
+              <option value="M5">M5（5分）</option>
+              <option value="M15">M15（15分）</option>
+              <option value="M30">M30（30分）</option>
+              <option value="H1" selected>H1（1時間）</option>
+              <option value="H4">H4（4時間）</option>
+              <option value="D1">D1（日足）</option>
+              <option value="W1">W1（週足）</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 損益 / 結果 / ステータス -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm space-y-4">
+
+          <!-- 損益 -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">損益（円）</label>
+            <div class="flex gap-2">
+              <div class="relative flex-1">
+                <input type="number" id="f-pnl" placeholder="0" step="1"
+                  class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <button type="button" onclick="setPnlPositive()"
+                class="px-3 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-bold hover:bg-emerald-100 active:scale-95 transition-all">+</button>
+              <button type="button" onclick="setPnlNegative()"
+                class="px-3 py-2 bg-red-50 text-red-700 border border-red-200 rounded-xl text-sm font-bold hover:bg-red-100 active:scale-95 transition-all">-</button>
+            </div>
+          </div>
+
+          <!-- 結果 -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">結果</label>
+            <div class="grid grid-cols-3 gap-2">
+              <button type="button" data-group="result" data-value="reg" onclick="selectToggle('result','reg')"
+                class="toggle-btn py-2.5 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                REG
+              </button>
+              <button type="button" data-group="result" data-value="big" onclick="selectToggle('result','big')"
+                class="toggle-btn py-2.5 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                BIG
+              </button>
+              <button type="button" data-group="result" data-value="max" onclick="selectToggle('result','max')"
+                class="toggle-btn py-2.5 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                MAX
+              </button>
+              <button type="button" data-group="result" data-value="small" onclick="selectToggle('result','small')"
+                class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                微益
+              </button>
+              <button type="button" data-group="result" data-value="breakeven" onclick="selectToggle('result','breakeven')"
+                class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                建値決済
+              </button>
+              <button type="button" data-group="result" data-value="stoploss" onclick="selectToggle('result','stoploss')"
+                class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                損切
+              </button>
+            </div>
+            <input type="hidden" id="f-result" value="">
+          </div>
+
+          <!-- ステータス -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">ステータス</label>
+            <div class="grid grid-cols-3 gap-2">
+              <button type="button" data-group="status" data-value="entry" onclick="selectToggle('status','entry')"
+                class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                エントリー
+              </button>
+              <button type="button" data-group="status" data-value="through" onclick="selectToggle('status','through')"
+                class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                スルー
+              </button>
+              <button type="button" data-group="status" data-value="miss" onclick="selectToggle('status','miss')"
+                class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                ミス
+              </button>
+            </div>
+            <input type="hidden" id="f-status" value="">
+          </div>
+        </div>
+
+        <!-- 理由 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">理由・メモ</label>
+          <textarea id="f-reason" rows="3"
+            placeholder="エントリー/スルー/ミスの理由、チャートの状況などを記録..."
+            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none select-text"></textarea>
+        </div>
+
+        <button type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-4 rounded-2xl text-base transition-colors shadow-md active:scale-[0.98]">
+          保存する
+        </button>
+      </form>
+    </div>
+
+    <!-- ========== TAB: 履歴 ========== -->
+    <div id="panel-history" class="tab-panel p-4">
+
+      <div class="flex items-center gap-2 mb-4">
+        <h2 class="text-base font-bold text-slate-600">取引履歴</h2>
+        <span id="history-count" class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full"></span>
+      </div>
+
+      <!-- Filters -->
+      <div class="bg-white rounded-2xl p-3 shadow-sm mb-4">
+        <div class="grid grid-cols-2 gap-2 mb-2">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">手法</label>
+            <select id="filter-method"
+              class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+              <option value="">すべて</option>
+              <option value="1">① 乖離埋め</option>
+              <option value="2">② ３波狙い</option>
+              <option value="3">③ その他</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">メイン通貨</label>
+            <select id="filter-pair"
+              class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+              <option value="">すべて</option>
+              <option value="US500">US500</option>
+              <option value="US100">US100</option>
+              <option value="US30">US30</option>
+              <option value="JP225">JP225</option>
+              <option value="BTC/USD">BTC/USD</option>
+              <option value="GOLD">GOLD</option>
+              <option value="USD/JPY">USD/JPY</option>
+              <option value="EUR/JPY">EUR/JPY</option>
+              <option value="GBP/JPY">GBP/JPY</option>
+              <option value="EUR/USD">EUR/USD</option>
+              <option value="GBP/USD">GBP/USD</option>
+              <option value="AUD/JPY">AUD/JPY</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 mb-2">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">ステータス</label>
+            <select id="filter-status"
+              class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+              <option value="">すべて</option>
+              <option value="entry">エントリー</option>
+              <option value="through">スルー</option>
+              <option value="miss">ミス</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">結果</label>
+            <select id="filter-result"
+              class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+              <option value="">すべて</option>
+              <option value="reg">REG</option>
+              <option value="big">BIG</option>
+              <option value="max">MAX</option>
+              <option value="small">微益</option>
+              <option value="breakeven">建値決済</option>
+              <option value="stoploss">損切</option>
+            </select>
+          </div>
+        </div>
+        <button onclick="resetFilters()"
+          class="w-full text-xs text-slate-400 py-2 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
+          フィルターをリセット
+        </button>
+      </div>
+
+      <!-- Trade list -->
+      <div id="trade-list" class="space-y-3"></div>
+      <div id="empty-history" class="hidden text-center py-16">
+        <div class="text-5xl mb-3">📋</div>
+        <p class="text-slate-400 text-sm">取引履歴がありません</p>
+      </div>
+    </div>
+
+    <!-- ========== TAB: 統計 ========== -->
+    <div id="panel-stats" class="tab-panel p-4">
+      <h2 class="text-base font-bold text-slate-600 mb-4">統計・分析</h2>
+
+      <!-- Period selector -->
+      <div class="bg-white rounded-2xl p-1.5 shadow-sm mb-4">
+        <div class="grid grid-cols-4 gap-1">
+          <button onclick="setStatsPeriod('week')" data-period="week"
+            class="period-btn py-2 rounded-xl text-sm font-medium text-slate-500 transition-all">週</button>
+          <button onclick="setStatsPeriod('month')" data-period="month"
+            class="period-btn py-2 rounded-xl text-sm font-medium bg-blue-600 text-white transition-all">月</button>
+          <button onclick="setStatsPeriod('3month')" data-period="3month"
+            class="period-btn py-2 rounded-xl text-sm font-medium text-slate-500 transition-all">3ヶ月</button>
+          <button onclick="setStatsPeriod('all')" data-period="all"
+            class="period-btn py-2 rounded-xl text-sm font-medium text-slate-500 transition-all">全期間</button>
+        </div>
+      </div>
+
+      <!-- Quick stats row -->
+      <div class="grid grid-cols-3 gap-3 mb-4">
+        <div class="bg-white rounded-2xl p-3 shadow-sm text-center">
+          <div class="text-xs text-slate-400 mb-1">勝率</div>
+          <div id="stat-winrate" class="text-xl font-bold text-blue-600">—</div>
+        </div>
+        <div class="bg-white rounded-2xl p-3 shadow-sm text-center">
+          <div class="text-xs text-slate-400 mb-1">合計損益</div>
+          <div id="stat-total" class="text-xl font-bold text-slate-700">—</div>
+        </div>
+        <div class="bg-white rounded-2xl p-3 shadow-sm text-center">
+          <div class="text-xs text-slate-400 mb-1">取引数</div>
+          <div id="stat-count" class="text-xl font-bold text-slate-700">—</div>
+        </div>
+      </div>
+
+      <!-- Profit trend -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">収益推移（累計）</h3>
+        <div style="position:relative;height:180px">
+          <canvas id="chart-profit"></canvas>
+        </div>
+      </div>
+
+      <!-- Winrate doughnut -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">勝敗分布</h3>
+        <div class="flex items-center gap-6">
+          <div style="position:relative;width:130px;height:130px;flex-shrink:0">
+            <canvas id="chart-winrate"></canvas>
+          </div>
+          <div id="winrate-legend" class="flex-1 space-y-2 text-sm"></div>
+        </div>
+      </div>
+
+      <!-- Calendar -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-bold text-slate-600">トレードカレンダー</h3>
+          <div class="flex items-center gap-1">
+            <button onclick="prevMonth()"
+              class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors">
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <span id="cal-title" class="text-sm font-medium text-slate-700 w-20 text-center"></span>
+            <button onclick="nextMonth()"
+              class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors">
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <!-- Calendar legend -->
+        <div class="flex gap-4 mb-3 text-xs text-slate-400">
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>利益</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>損失</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 inline-block"></span>スルー/ミス</span>
+        </div>
+        <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center"></div>
+      </div>
+
+      <!-- Method breakdown -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">手法別成績（エントリーのみ）</h3>
+        <div id="method-breakdown"></div>
+      </div>
+
+      <!-- Pair breakdown -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">通貨ペア別成績</h3>
+        <div id="pair-breakdown"></div>
+      </div>
+    </div>
+
+    <!-- ========== TAB: まとめ ========== -->
+    <div id="panel-summary" class="tab-panel p-4">
+      <h2 class="text-base font-bold text-slate-600 mb-4">まとめ・管理</h2>
+
+      <!-- Summary cards -->
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div class="bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-2xl p-4 shadow-sm">
+          <div class="text-xs opacity-75 mb-1">総トレード数</div>
+          <div id="sum-total-trades" class="text-3xl font-black">0</div>
+          <div class="text-xs opacity-60 mt-0.5">件</div>
+        </div>
+        <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white rounded-2xl p-4 shadow-sm">
+          <div class="text-xs opacity-75 mb-1">合計損益</div>
+          <div id="sum-total-pnl" class="text-3xl font-black">0</div>
+          <div class="text-xs opacity-60 mt-0.5">円 / pips</div>
+        </div>
+        <div class="bg-gradient-to-br from-violet-500 to-violet-700 text-white rounded-2xl p-4 shadow-sm">
+          <div class="text-xs opacity-75 mb-1">勝率</div>
+          <div id="sum-winrate" class="text-3xl font-black">0%</div>
+          <div class="text-xs opacity-60 mt-0.5">エントリーのみ</div>
+        </div>
+        <div class="bg-gradient-to-br from-amber-500 to-amber-700 text-white rounded-2xl p-4 shadow-sm">
+          <div class="text-xs opacity-75 mb-1">平均損益</div>
+          <div id="sum-avg-pnl" class="text-3xl font-black">0</div>
+          <div class="text-xs opacity-60 mt-0.5">円 / pips</div>
+        </div>
+      </div>
+
+      <!-- Detailed stats -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">詳細統計</h3>
+        <div class="space-y-2.5">
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-500">エントリー回数</span>
+            <span id="sum-entry-count" class="font-semibold text-blue-600">0</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-500">スルー回数</span>
+            <span id="sum-through-count" class="font-semibold text-yellow-600">0</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-500">ミス回数</span>
+            <span id="sum-miss-count" class="font-semibold text-orange-600">0</span>
+          </div>
+          <hr class="border-slate-100">
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-500">最大利益（1回）</span>
+            <span id="sum-max-win" class="font-semibold text-emerald-600">0</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-500">最大損失（1回）</span>
+            <span id="sum-max-loss" class="font-semibold text-red-600">0</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-500">プロフィットファクター</span>
+            <span id="sum-pf" class="font-semibold">—</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-500">連勝記録</span>
+            <span id="sum-streak-win" class="font-semibold text-emerald-600">0</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-500">連敗記録</span>
+            <span id="sum-streak-loss" class="font-semibold text-red-600">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data management -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">データ管理</h3>
+        <div class="space-y-2">
+
+          <button onclick="exportData()"
+            class="w-full flex items-center gap-3 p-3.5 bg-blue-50 text-blue-700 border border-blue-100 rounded-xl hover:bg-blue-100 active:scale-[0.98] transition-all text-sm font-semibold">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            JSONでエクスポート（書き出し）
+          </button>
+
+          <label class="w-full flex items-center gap-3 p-3.5 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-xl hover:bg-emerald-100 active:scale-[0.98] transition-all text-sm font-semibold cursor-pointer">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"/>
+            </svg>
+            JSONをインポート（取り込み）
+            <input type="file" id="import-file" accept=".json" onchange="importData(event)" class="hidden">
+          </label>
+
+          <button onclick="confirmDeleteAll()"
+            class="w-full flex items-center gap-3 p-3.5 bg-red-50 text-red-700 border border-red-100 rounded-xl hover:bg-red-100 active:scale-[0.98] transition-all text-sm font-semibold">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+            全データを削除
+          </button>
+        </div>
+      </div>
+
+      <!-- App info -->
+      <div class="text-center text-xs text-slate-300 pb-2">
+        FX トレード記録 — データはこの端末に保存されます
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===================== BOTTOM NAV ===================== -->
+  <nav class="nav-safe fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-40">
+    <div class="grid grid-cols-4 h-16">
+
+      <button onclick="switchTab('register')" data-tab="register"
+        class="tab-nav flex flex-col items-center justify-center gap-0.5 transition-colors text-blue-600">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        <span class="text-xs font-semibold">新規登録</span>
+      </button>
+
+      <button onclick="switchTab('history')" data-tab="history"
+        class="tab-nav flex flex-col items-center justify-center gap-0.5 transition-colors text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        <span class="text-xs">履歴</span>
+      </button>
+
+      <button onclick="switchTab('stats')" data-tab="stats"
+        class="tab-nav flex flex-col items-center justify-center gap-0.5 transition-colors text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        <span class="text-xs">統計</span>
+      </button>
+
+      <button onclick="switchTab('summary')" data-tab="summary"
+        class="tab-nav flex flex-col items-center justify-center gap-0.5 transition-colors text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h7"/>
+        </svg>
+        <span class="text-xs">まとめ</span>
+      </button>
+
+    </div>
+  </nav>
+
+  <!-- ===================== EDIT MODAL ===================== -->
+  <div id="edit-modal" class="hidden fixed inset-0 modal-bg z-50 flex items-end sm:items-center justify-center">
+    <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[92vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white rounded-t-3xl flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <h3 class="text-base font-bold">取引を編集</h3>
+        <button onclick="closeEditModal()"
+          class="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-slate-100 transition-colors">
+          <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div id="edit-form-wrap" class="p-5"></div>
+    </div>
+  </div>
+
+  <!-- ===================== CONFIRM MODAL ===================== -->
+  <div id="confirm-modal" class="hidden fixed inset-0 modal-bg z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xs p-6">
+      <h3 class="text-base font-bold mb-2">確認</h3>
+      <p id="confirm-msg" class="text-sm text-slate-500 mb-5 whitespace-pre-line"></p>
+      <div class="flex gap-2">
+        <button onclick="closeConfirm()"
+          class="flex-1 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50">
+          キャンセル
+        </button>
+        <button id="confirm-ok-btn"
+          class="flex-1 py-2.5 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700">
+          削除する
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== TOAST ===================== -->
+  <div id="toast"
+    class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-slate-800 text-white text-sm px-4 py-2.5 rounded-full shadow-lg whitespace-nowrap">
+  </div>
+
+
+  <!-- ===================== JAVASCRIPT ===================== -->
+  <script>
+  'use strict';
+
+  // ============================================================
+  // STORAGE
+  // ============================================================
+  const STORAGE_KEY = 'fx_trades_v1';
+
+  function dbLoad() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    catch { return []; }
+  }
+  function dbSave(trades) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(trades));
+  }
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  // ============================================================
+  // STATE
+  // ============================================================
+  let currentTab   = 'register';
+  let statsPeriod  = 'month';
+  let calYear      = new Date().getFullYear();
+  let calMonth     = new Date().getMonth();
+  let editingId    = null;
+  let chartProfit  = null;
+  let chartWinrate = null;
+  let confirmCb    = null;
+  let toastTimer   = null;
+
+  // ============================================================
+  // INIT
+  // ============================================================
+  document.addEventListener('DOMContentLoaded', () => {
+    // Header date
+    const now = new Date();
+    document.getElementById('today-date').textContent =
+      now.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Default datetime
+    setDefaultDatetime();
+
+    // Form submit
+    document.getElementById('trade-form').addEventListener('submit', handleRegister);
+
+    // Filter listeners
+    ['filter-method','filter-status','filter-result','filter-pair'].forEach(id => {
+      document.getElementById(id).addEventListener('input', renderHistory);
+      document.getElementById(id).addEventListener('change', renderHistory);
+    });
+
+    // Confirm OK button
+    document.getElementById('confirm-ok-btn').addEventListener('click', () => {
+      if (confirmCb) confirmCb();
+      closeConfirm();
+    });
+
+    // Close edit modal on backdrop click
+    document.getElementById('edit-modal').addEventListener('click', e => {
+      if (e.target === document.getElementById('edit-modal')) closeEditModal();
+    });
+
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+
+    // Initial renders
+    renderHistory();
+    renderSummary();
+  });
+
+  function setDefaultDatetime() {
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    const val = local.toISOString().slice(0, 16);
+    document.getElementById('f-datetime-entry').value = val;
+    // exit is left blank by default
+  }
+
+  // ============================================================
+  // TAB SWITCHING
+  // ============================================================
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+
+    document.querySelectorAll('.tab-nav').forEach(btn => {
+      const active = btn.dataset.tab === tab;
+      btn.classList.toggle('text-blue-600', active);
+      btn.classList.toggle('text-slate-400', !active);
+      const span = btn.querySelector('span');
+      if (span) span.classList.toggle('font-semibold', active);
+    });
+
+    currentTab = tab;
+    if (tab === 'history') renderHistory();
+    if (tab === 'stats')   { renderStats(); renderCalendar(); }
+    if (tab === 'summary') renderSummary();
+  }
+
+  // ============================================================
+  // TOGGLE BUTTONS (result / status)
+  // ============================================================
+  const TOGGLE_STYLES = {
+    result: {
+      reg:       'border-emerald-500 bg-emerald-50 text-emerald-700',
+      big:       'border-blue-500 bg-blue-50 text-blue-700',
+      max:       'border-violet-500 bg-violet-50 text-violet-700',
+      small:     'border-teal-500 bg-teal-50 text-teal-700',
+      breakeven: 'border-slate-400 bg-slate-100 text-slate-600',
+      stoploss:  'border-red-500 bg-red-50 text-red-700',
+    },
+    status: {
+      entry:   'border-blue-500 bg-blue-50 text-blue-700',
+      through: 'border-yellow-500 bg-yellow-50 text-yellow-700',
+      miss:    'border-orange-500 bg-orange-50 text-orange-700',
+    },
+  };
+  const INACTIVE_STYLE = 'border-slate-200 text-slate-500';
+
+  function selectToggle(group, value, prefix = '') {
+    const hiddenId = (prefix ? prefix + '-' : 'f-') + group;
+    document.getElementById(hiddenId).value = value;
+    const btns = document.querySelectorAll(`[data-group="${group}"]${prefix ? '[data-prefix="' + prefix + '"]' : ':not([data-prefix])'}`);
+    btns.forEach(btn => {
+      const active = btn.dataset.value === value;
+      btn.className = btn.className
+        .replace(/border-\S+|bg-\S+|text-\S+/g, '').trim();
+      // result buttons are text-xs (6 items), status buttons are text-sm (3 items)
+      const isResult = group === 'result';
+      const base = `toggle-btn py-2.5 rounded-xl ${isResult ? 'text-xs' : 'text-sm'} font-semibold border-2 transition-all active:scale-95`;
+      btn.className = base + ' ' + (active ? TOGGLE_STYLES[group][value] : INACTIVE_STYLE);
+    });
+  }
+
+  // ============================================================
+  // PNL SIGN HELPERS
+  // ============================================================
+  function setPnlPositive() {
+    const el = document.getElementById('f-pnl');
+    const v = parseFloat(el.value) || 0;
+    if (v < 0) el.value = Math.abs(v);
+  }
+  function setPnlNegative() {
+    const el = document.getElementById('f-pnl');
+    const v = parseFloat(el.value) || 0;
+    if (v >= 0) el.value = -(Math.abs(v));
+  }
+
+  // ============================================================
+  // REGISTER
+  // ============================================================
+  function handleRegister(e) {
+    e.preventDefault();
+    const method        = document.getElementById('f-method').value;
+    const result        = document.getElementById('f-result').value;
+    const status        = document.getElementById('f-status').value;
+    const datetimeEntry = document.getElementById('f-datetime-entry').value;
+    const datetimeExit  = document.getElementById('f-datetime-exit').value;
+
+    if (!method)  { showToast('⚠ 手法を選択してください'); return; }
+    if (!result)  { showToast('⚠ 結果を選択してください'); return; }
+    if (!status)  { showToast('⚠ ステータスを選択してください'); return; }
+
+    const trade = {
+      id:            uid(),
+      datetime:      datetimeEntry || new Date().toISOString(),
+      datetimeEntry: datetimeEntry || new Date().toISOString(),
+      datetimeExit:  datetimeExit || '',
+      method,
+      pairMain:  document.getElementById('f-pair-main').value,
+      pairSub:   document.getElementById('f-pair-sub').value,
+      pair:      document.getElementById('f-pair-main').value, // backward compat
+      timeframe: document.getElementById('f-timeframe').value,
+      pnl:       parseFloat(document.getElementById('f-pnl').value) || 0,
+      result,
+      status,
+      reason:    document.getElementById('f-reason').value.trim(),
+      createdAt: new Date().toISOString(),
+    };
+
+    const trades = dbLoad();
+    trades.unshift(trade);
+    dbSave(trades);
+    resetRegisterForm();
+    showToast('✓ 保存しました！');
+  }
+
+  function resetRegisterForm() {
+    document.getElementById('trade-form').reset();
+    setDefaultDatetime();
+    document.getElementById('f-result').value = '';
+    document.getElementById('f-status').value = '';
+    document.querySelectorAll('[data-group]:not([data-prefix])').forEach(btn => {
+      const base = 'toggle-btn py-3 rounded-xl text-sm font-semibold border-2 transition-all active:scale-95';
+      btn.className = base + ' ' + INACTIVE_STYLE;
+    });
+  }
+
+  // ============================================================
+  // HISTORY
+  // ============================================================
+  function getFilteredTrades() {
+    const method = document.getElementById('filter-method').value;
+    const status = document.getElementById('filter-status').value;
+    const result = document.getElementById('filter-result').value;
+    const pair   = document.getElementById('filter-pair').value;
+    return dbLoad().filter(t =>
+      (!method || t.method === method) &&
+      (!status || t.status === status) &&
+      (!result || t.result === result) &&
+      (!pair   || (t.pairMain || t.pair) === pair)
+    );
+  }
+
+  function renderHistory() {
+    const trades = getFilteredTrades();
+    const list  = document.getElementById('trade-list');
+    const empty = document.getElementById('empty-history');
+    const cnt   = document.getElementById('history-count');
+    cnt.textContent = trades.length + '件';
+    if (trades.length === 0) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+    empty.classList.add('hidden');
+    list.innerHTML = trades.map(t => tradeCard(t)).join('');
+  }
+
+  function tradeCard(t) {
+    const pnlStr  = (t.pnl >= 0 ? '+' : '') + t.pnl.toLocaleString() + '円';
+    const mainPair = t.pairMain || t.pair || '';
+    const subPair  = t.pairSub  || '';
+    const exitStr  = t.datetimeExit ? ' → ' + fmtTime(t.datetimeExit) : '';
+    return `
+    <div class="bg-white rounded-2xl p-4 shadow-sm">
+      <div class="flex items-start justify-between mb-2">
+        <div class="flex flex-wrap gap-1.5">
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${resultBadge(t.result)}">${resultLabel(t.result)}</span>
+          <span class="text-xs px-2 py-0.5 rounded-full ${statusBadge(t.status)}">${statusLabel(t.status)}</span>
+          <span class="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">${esc(mainPair)}</span>
+          ${subPair ? `<span class="text-xs text-slate-400 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full">${esc(subPair)}</span>` : ''}
+          <span class="text-xs text-slate-400">${esc(t.timeframe)}</span>
+        </div>
+        <span class="text-sm font-bold ml-2 whitespace-nowrap ${t.pnl >= 0 ? 'text-emerald-600' : 'text-red-500'}">${pnlStr}</span>
+      </div>
+      <div class="flex items-end justify-between">
+        <div class="min-w-0">
+          <div class="text-sm font-semibold text-slate-700 truncate">${methodLabel(t.method)}</div>
+          ${t.reason ? `<div class="text-xs text-slate-400 mt-0.5 line-clamp-1">${esc(t.reason)}</div>` : ''}
+          <div class="text-xs text-slate-300 mt-0.5">${fmtDate(t.datetimeEntry || t.datetime)}${exitStr}</div>
+        </div>
+        <div class="flex gap-1 ml-2 flex-shrink-0">
+          <button onclick="openEdit('${t.id}')"
+            class="w-8 h-8 flex items-center justify-center rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+          </button>
+          <button onclick="deleteTrade('${t.id}')"
+            class="w-8 h-8 flex items-center justify-center rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function resetFilters() {
+    ['filter-method','filter-status','filter-result','filter-pair'].forEach(id => {
+      const el = document.getElementById(id);
+      el.value = '';
+    });
+    renderHistory();
+  }
+
+  function deleteTrade(id) {
+    showConfirm('このトレードを削除しますか？', () => {
+      dbSave(dbLoad().filter(t => t.id !== id));
+      renderHistory();
+      showToast('削除しました');
+    });
+  }
+
+  // ============================================================
+  // EDIT MODAL
+  // ============================================================
+  function openEdit(id) {
+    const t = dbLoad().find(t => t.id === id);
+    if (!t) return;
+    editingId = id;
+
+    const mainPairs = ['US500','US100','US30','JP225','BTC/USD','ETH/USD','GOLD','SILVER','WTI','USD/JPY','EUR/JPY','GBP/JPY','EUR/USD','GBP/USD','AUD/JPY','AUD/USD','NZD/JPY','NZD/USD','CAD/JPY','USD/CAD','CHF/JPY','USD/CHF'];
+    const subPairs  = ['','EUR/GBP','AUD/NZD','EUR/AUD','GBP/AUD','EUR/NZD','GBP/NZD','EUR/CHF','GBP/CHF','EUR/CAD','GBP/CAD'];
+    const curMain   = t.pairMain || t.pair || '';
+    const curSub    = t.pairSub  || '';
+    const pairMainOptions = mainPairs.map(p => `<option value="${p}" ${curMain === p ? 'selected' : ''}>${p}</option>`).join('');
+    const pairSubOptions  = subPairs.map(p => `<option value="${p}" ${curSub === p ? 'selected' : ''}>${p || 'なし'}</option>`).join('');
+    const tfOptions = ['M1','M5','M15','M30','H1','H4','D1','W1']
+      .map(tf => `<option value="${tf}" ${t.timeframe === tf ? 'selected' : ''}>${tf}</option>`).join('');
+
+    const resultBtns = ['reg','big','max','small','breakeven','stoploss'].map(r =>
+      `<button type="button" data-group="result" data-prefix="e" data-value="${r}"
+        onclick="selectToggle('result','${r}','e')"
+        class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 transition-all
+          ${t.result === r ? TOGGLE_STYLES.result[r] : INACTIVE_STYLE}">
+        ${resultLabel(r)}
+      </button>`
+    ).join('');
+
+    const statusBtns = ['entry','through','miss'].map(s =>
+      `<button type="button" data-group="status" data-prefix="e" data-value="${s}"
+        onclick="selectToggle('status','${s}','e')"
+        class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 transition-all
+          ${t.status === s ? TOGGLE_STYLES.status[s] : INACTIVE_STYLE}">
+        ${statusLabel(s)}
+      </button>`
+    ).join('');
+
+    document.getElementById('edit-form-wrap').innerHTML = `
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">エントリー日時</label>
+            <input type="datetime-local" id="e-datetime-entry" value="${(t.datetimeEntry || t.datetime || '').slice(0,16)}"
+              class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">エグジット日時</label>
+            <input type="datetime-local" id="e-datetime-exit" value="${(t.datetimeExit || '').slice(0,16)}"
+              class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+        <div>
+          <div class="flex items-baseline gap-2 mb-2">
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">手法</label>
+            <span class="text-xs text-slate-400">①乖離埋め　②３波狙い　③その他</span>
+          </div>
+          <select id="e-method" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+            <option value="">選択してください</option>
+            <option value="1" ${t.method === '1' ? 'selected' : ''}>① 乖離埋め</option>
+            <option value="2" ${t.method === '2' ? 'selected' : ''}>② ３波狙い</option>
+            <option value="3" ${t.method === '3' ? 'selected' : ''}>③ その他</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">メイン通貨</label>
+            <select id="e-pair-main" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+              ${pairMainOptions}
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">サブ通貨</label>
+            <select id="e-pair-sub" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+              ${pairSubOptions}
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">時間足</label>
+          <select id="e-timeframe" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+            ${tfOptions}
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">損益（円）</label>
+          <input type="number" id="e-pnl" value="${t.pnl}" step="1"
+            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 select-text">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">結果</label>
+          <div class="grid grid-cols-3 gap-2">${resultBtns}</div>
+          <input type="hidden" id="e-result" value="${t.result}">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">ステータス</label>
+          <div class="grid grid-cols-3 gap-2">${statusBtns}</div>
+          <input type="hidden" id="e-status" value="${t.status}">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">理由・メモ</label>
+          <textarea id="e-reason" rows="3"
+            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none select-text">${esc(t.reason || '')}</textarea>
+        </div>
+        <button type="button" onclick="saveEdit()"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-2xl transition-colors">
+          更新する
+        </button>
+      </div>`;
+
+    document.getElementById('edit-modal').classList.remove('hidden');
+  }
+
+  function saveEdit() {
+    const trades = dbLoad();
+    const idx = trades.findIndex(t => t.id === editingId);
+    if (idx === -1) return;
+    const entryDt = document.getElementById('e-datetime-entry').value;
+    const exitDt  = document.getElementById('e-datetime-exit').value;
+    trades[idx] = {
+      ...trades[idx],
+      datetime:      entryDt || trades[idx].datetime,
+      datetimeEntry: entryDt,
+      datetimeExit:  exitDt,
+      method:    document.getElementById('e-method').value,
+      pairMain:  document.getElementById('e-pair-main').value,
+      pairSub:   document.getElementById('e-pair-sub').value,
+      pair:      document.getElementById('e-pair-main').value,
+      timeframe: document.getElementById('e-timeframe').value,
+      pnl:       parseFloat(document.getElementById('e-pnl').value) || 0,
+      result:    document.getElementById('e-result').value,
+      status:    document.getElementById('e-status').value,
+      reason:    document.getElementById('e-reason').value.trim(),
+      updatedAt: new Date().toISOString(),
+    };
+    dbSave(trades);
+    closeEditModal();
+    renderHistory();
+    showToast('✓ 更新しました！');
+  }
+
+  function closeEditModal() {
+    document.getElementById('edit-modal').classList.add('hidden');
+    editingId = null;
+  }
+
+  // ============================================================
+  // STATISTICS
+  // ============================================================
+  function setStatsPeriod(p) {
+    statsPeriod = p;
+    document.querySelectorAll('.period-btn').forEach(btn => {
+      const active = btn.dataset.period === p;
+      btn.classList.toggle('bg-blue-600', active);
+      btn.classList.toggle('text-white', active);
+      btn.classList.toggle('text-slate-500', !active);
+    });
+    renderStats();
+  }
+
+  function tradesForPeriod(period) {
+    const all = dbLoad();
+    const now = new Date();
+    let cutoff = null;
+    if (period === 'week')   cutoff = new Date(now.getTime() - 7 * 86400000);
+    if (period === 'month')  cutoff = new Date(now.getFullYear(), now.getMonth(), 1);
+    if (period === '3month') cutoff = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+    return cutoff ? all.filter(t => new Date(t.datetime) >= cutoff) : all;
+  }
+
+  function renderStats() {
+    const trades  = tradesForPeriod(statsPeriod);
+    const entries = trades.filter(t => t.status === 'entry');
+    const wins    = entries.filter(t => t.result === 'win').length;
+    const losses  = entries.filter(t => t.result === 'loss').length;
+    const draws   = entries.filter(t => t.result === 'draw').length;
+    const total   = entries.length;
+    const winrate = total > 0 ? Math.round(wins / total * 100) : null;
+    const totalPnl = entries.reduce((s, t) => s + t.pnl, 0);
+
+    document.getElementById('stat-winrate').textContent = winrate !== null ? winrate + '%' : '—';
+    const statTotalEl = document.getElementById('stat-total');
+    statTotalEl.textContent = total > 0 ? (totalPnl >= 0 ? '+' : '') + totalPnl.toLocaleString() : '—';
+    statTotalEl.className = 'text-xl font-bold ' + (totalPnl >= 0 ? 'text-emerald-600' : 'text-red-500');
+    document.getElementById('stat-count').textContent = trades.length;
+
+    renderProfitChart(entries);
+    renderWinrateChart(wins, losses, draws, total);
+    renderBreakdown('method-breakdown', entries, 'method');
+    renderBreakdown('pair-breakdown', entries, 'pair');
+  }
+
+  function renderProfitChart(entries) {
+    const sorted = [...entries].sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+    let cum = 0;
+    const labels = [], data = [];
+    sorted.forEach((t, i) => { cum += t.pnl; labels.push('#' + (i + 1)); data.push(cum); });
+
+    const ctx = document.getElementById('chart-profit').getContext('2d');
+    if (chartProfit) chartProfit.destroy();
+
+    const isPositive = data.length === 0 || data[data.length - 1] >= 0;
+    chartProfit = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data,
+          borderColor: isPositive ? '#10B981' : '#EF4444',
+          backgroundColor: isPositive ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.35,
+          pointRadius: data.length > 40 ? 0 : 3,
+          pointHoverRadius: 5,
+        }],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { display: true, ticks: { maxTicksLimit: 8, font: { size: 10 }, color: '#94A3B8' }, grid: { display: false } },
+          y: { display: true, ticks: { font: { size: 10 }, color: '#94A3B8' }, grid: { color: 'rgba(0,0,0,0.04)' } },
+        },
+      },
+    });
+  }
+
+  function renderWinrateChart(wins, losses, draws, total) {
+    const ctx = document.getElementById('chart-winrate').getContext('2d');
+    if (chartWinrate) chartWinrate.destroy();
+
+    chartWinrate = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['勝', '負', '分'],
+        datasets: [{
+          data: total > 0 ? [wins, losses, draws] : [1],
+          backgroundColor: total > 0 ? ['#10B981', '#EF4444', '#94A3B8'] : ['#E2E8F0'],
+          borderWidth: 0,
+        }],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { enabled: total > 0 } },
+        cutout: '68%',
+      },
+    });
+
+    const legend = document.getElementById('winrate-legend');
+    if (total > 0) {
+      legend.innerHTML = [
+        { label: '勝', count: wins,   color: 'bg-emerald-500', pct: Math.round(wins   / total * 100) },
+        { label: '負', count: losses, color: 'bg-red-500',     pct: Math.round(losses / total * 100) },
+        { label: '分', count: draws,  color: 'bg-slate-400',   pct: Math.round(draws  / total * 100) },
+      ].map(it => `
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full ${it.color}"></div>
+            <span class="text-slate-600">${it.label}</span>
+          </div>
+          <span class="font-semibold">${it.count}回
+            <span class="text-slate-400 font-normal">(${it.pct}%)</span>
+          </span>
+        </div>`).join('');
+    } else {
+      legend.innerHTML = '<p class="text-slate-400 text-sm">データがありません</p>';
+    }
+  }
+
+  function renderBreakdown(containerId, entries, key) {
+    const el = document.getElementById(containerId);
+    if (entries.length === 0) { el.innerHTML = '<p class="text-slate-400 text-sm">データがありません</p>'; return; }
+
+    const map = {};
+    entries.forEach(t => {
+      const k = t[key] || '不明';
+      if (!map[k]) map[k] = { wins: 0, total: 0, pnl: 0 };
+      map[k].total++;
+      if (t.result === 'win') map[k].wins++;
+      map[k].pnl += t.pnl;
+    });
+
+    el.innerHTML = Object.entries(map)
+      .sort((a, b) => b[1].total - a[1].total)
+      .map(([name, s]) => {
+        const wr = Math.round(s.wins / s.total * 100);
+        const barW = wr;
+        return `
+        <div class="py-2 border-b border-slate-50 last:border-0">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-sm font-medium text-slate-700">${esc(name)}</span>
+            <span class="text-sm font-bold ${s.pnl >= 0 ? 'text-emerald-600' : 'text-red-500'}">
+              ${s.pnl >= 0 ? '+' : ''}${s.pnl.toLocaleString()}
+            </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="flex-1 bg-slate-100 rounded-full h-1.5">
+              <div class="bg-blue-500 h-1.5 rounded-full" style="width:${barW}%"></div>
+            </div>
+            <span class="text-xs text-slate-400">${s.total}回・勝率${wr}%</span>
+          </div>
+        </div>`;
+      }).join('');
+  }
+
+  // ============================================================
+  // CALENDAR
+  // ============================================================
+  function renderCalendar() {
+    document.getElementById('cal-title').textContent = calYear + '/' + String(calMonth + 1).padStart(2, '0');
+    const trades = dbLoad();
+    const dayMap = {};
+    trades.forEach(t => {
+      const d = new Date(t.datetime);
+      if (d.getFullYear() === calYear && d.getMonth() === calMonth) {
+        const day = d.getDate();
+        if (!dayMap[day]) dayMap[day] = { pnl: 0, hasEntry: false, hasTrade: false };
+        dayMap[day].hasTrade = true;
+        if (t.status === 'entry') { dayMap[day].hasEntry = true; dayMap[day].pnl += t.pnl; }
+      }
+    });
+
+    const firstWeekday = new Date(calYear, calMonth, 1).getDay();
+    const daysInMonth  = new Date(calYear, calMonth + 1, 0).getDate();
+    const today = new Date();
+    const isCurrentMonth = today.getFullYear() === calYear && today.getMonth() === calMonth;
+
+    const DOW = ['日','月','火','水','木','金','土'];
+    let html = DOW.map((d, i) =>
+      `<div class="text-xs font-semibold py-1 ${i === 0 ? 'text-red-400' : i === 6 ? 'text-blue-400' : 'text-slate-400'}">${d}</div>`
+    ).join('');
+
+    for (let i = 0; i < firstWeekday; i++) html += '<div></div>';
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const isToday = isCurrentMonth && today.getDate() === day;
+      const data = dayMap[day];
+      const wd = new Date(calYear, calMonth, day).getDay();
+      const color = wd === 0 ? 'text-red-500' : wd === 6 ? 'text-blue-500' : 'text-slate-700';
+
+      let dot = '';
+      if (data) {
+        if (data.hasEntry) {
+          dot = `<span class="w-1.5 h-1.5 rounded-full ${data.pnl > 0 ? 'bg-emerald-400' : data.pnl < 0 ? 'bg-red-400' : 'bg-slate-300'} mx-auto"></span>`;
+        } else {
+          dot = `<span class="w-1.5 h-1.5 rounded-full bg-slate-200 mx-auto"></span>`;
+        }
+      }
+
+      html += `
+        <div class="flex flex-col items-center gap-0.5 py-1 rounded-xl ${isToday ? 'bg-blue-600' : ''}">
+          <span class="text-xs ${isToday ? 'text-white font-bold' : color}">${day}</span>
+          ${dot || '<span class="w-1.5 h-1.5"></span>'}
+        </div>`;
+    }
+
+    document.getElementById('calendar-grid').innerHTML = html;
+  }
+
+  function prevMonth() {
+    if (calMonth === 0) { calMonth = 11; calYear--; } else calMonth--;
+    renderCalendar();
+  }
+  function nextMonth() {
+    if (calMonth === 11) { calMonth = 0; calYear++; } else calMonth++;
+    renderCalendar();
+  }
+
+  // ============================================================
+  // SUMMARY
+  // ============================================================
+  function renderSummary() {
+    const trades  = dbLoad();
+    const entries = trades.filter(t => t.status === 'entry');
+    const wins    = entries.filter(t => t.result === 'win');
+    const losses  = entries.filter(t => t.result === 'loss');
+    const totalPnl = entries.reduce((s, t) => s + t.pnl, 0);
+    const avgPnl   = entries.length > 0 ? totalPnl / entries.length : 0;
+    const winrate  = entries.length > 0 ? Math.round(wins.length / entries.length * 100) : 0;
+
+    const grossProfit = wins.reduce((s, t) => s + t.pnl, 0);
+    const grossLoss   = Math.abs(losses.reduce((s, t) => s + t.pnl, 0));
+    const pf = grossLoss > 0 ? (grossProfit / grossLoss).toFixed(2) : grossProfit > 0 ? '∞' : '—';
+
+    const maxWin  = entries.length > 0 ? Math.max(...entries.map(t => t.pnl)) : 0;
+    const maxLoss = entries.length > 0 ? Math.min(...entries.map(t => t.pnl)) : 0;
+
+    // Streak calculation
+    const sorted = [...entries].sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+    let maxStreakW = 0, maxStreakL = 0, curW = 0, curL = 0;
+    sorted.forEach(t => {
+      if (t.result === 'win')  { curW++; curL = 0; maxStreakW = Math.max(maxStreakW, curW); }
+      else if (t.result === 'loss') { curL++; curW = 0; maxStreakL = Math.max(maxStreakL, curL); }
+      else { curW = 0; curL = 0; }
+    });
+
+    document.getElementById('sum-total-trades').textContent = trades.length;
+    document.getElementById('sum-total-pnl').textContent    = (totalPnl >= 0 ? '+' : '') + totalPnl.toLocaleString();
+    document.getElementById('sum-winrate').textContent      = winrate + '%';
+    document.getElementById('sum-avg-pnl').textContent      = (avgPnl >= 0 ? '+' : '') + avgPnl.toFixed(1);
+
+    document.getElementById('sum-entry-count').textContent   = trades.filter(t => t.status === 'entry').length + '回';
+    document.getElementById('sum-through-count').textContent = trades.filter(t => t.status === 'through').length + '回';
+    document.getElementById('sum-miss-count').textContent    = trades.filter(t => t.status === 'miss').length + '回';
+    document.getElementById('sum-max-win').textContent       = '+' + maxWin.toLocaleString();
+    document.getElementById('sum-max-loss').textContent      = maxLoss.toLocaleString();
+    document.getElementById('sum-pf').textContent            = pf;
+    document.getElementById('sum-streak-win').textContent    = maxStreakW + '連勝';
+    document.getElementById('sum-streak-loss').textContent   = maxStreakL + '連敗';
+  }
+
+  // ============================================================
+  // IMPORT / EXPORT
+  // ============================================================
+  function exportData() {
+    const trades = dbLoad();
+    const json   = JSON.stringify({ version: 2, exportDate: new Date().toISOString(), trades }, null, 2);
+    const blob   = new Blob([json], { type: 'application/json' });
+    const url    = URL.createObjectURL(blob);
+    const a      = document.createElement('a');
+    a.href       = url;
+    a.download   = 'fx_trades_' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('✓ エクスポートしました');
+  }
+
+  function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const parsed = JSON.parse(e.target.result);
+        const imported = Array.isArray(parsed) ? parsed : (parsed.trades || []);
+        if (!Array.isArray(imported) || imported.length === 0) {
+          showToast('⚠ 有効なデータが見つかりません');
+          return;
+        }
+        showConfirm(
+          imported.length + '件のデータをインポートしますか？\n（重複しないものが追加されます）',
+          () => {
+            const existing = dbLoad();
+            const existIds = new Set(existing.map(t => t.id));
+            const newOnes  = imported.filter(t => t.id && !existIds.has(t.id));
+            const merged   = [...existing, ...newOnes]
+              .sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+            dbSave(merged);
+            renderHistory();
+            renderSummary();
+            showToast('✓ ' + newOnes.length + '件インポートしました');
+          }
+        );
+      } catch {
+        showToast('⚠ JSONの読み込みに失敗しました');
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  }
+
+  function confirmDeleteAll() {
+    showConfirm('全データを削除しますか？\nこの操作は取り消せません。', () => {
+      localStorage.removeItem(STORAGE_KEY);
+      renderHistory();
+      renderSummary();
+      showToast('全データを削除しました');
+    });
+  }
+
+  // ============================================================
+  // UI HELPERS
+  // ============================================================
+  function showToast(msg, ms = 2800) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.remove('hidden');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.add('hidden'), ms);
+  }
+
+  function showConfirm(msg, cb) {
+    document.getElementById('confirm-msg').textContent = msg;
+    document.getElementById('confirm-modal').classList.remove('hidden');
+    confirmCb = cb;
+  }
+  function closeConfirm() {
+    document.getElementById('confirm-modal').classList.add('hidden');
+    confirmCb = null;
+  }
+
+  // ============================================================
+  // LABEL / BADGE HELPERS
+  // ============================================================
+  function methodLabel(m) {
+    return { '1': '① 乖離埋め', '2': '② ３波狙い', '3': '③ その他' }[m] || (m || '');
+  }
+  function resultLabel(r) {
+    return { reg: 'REG', big: 'BIG', max: 'MAX', small: '微益', breakeven: '建値決済', stoploss: '損切' }[r] || r;
+  }
+  function statusLabel(s) { return { entry: 'エントリー', through: 'スルー', miss: 'ミス' }[s] || s; }
+
+  function resultBadge(r) {
+    return {
+      reg:       'bg-emerald-100 text-emerald-700',
+      big:       'bg-blue-100 text-blue-700',
+      max:       'bg-violet-100 text-violet-700',
+      small:     'bg-teal-100 text-teal-700',
+      breakeven: 'bg-slate-100 text-slate-600',
+      stoploss:  'bg-red-100 text-red-700',
+    }[r] || 'bg-slate-100 text-slate-600';
+  }
+
+  function fmtTime(str) {
+    if (!str) return '';
+    try { return new Date(str).toLocaleString('ja-JP', { hour: '2-digit', minute: '2-digit' }); }
+    catch { return str; }
+  }
+  function statusBadge(s) {
+    return { entry: 'bg-blue-100 text-blue-700', through: 'bg-yellow-100 text-yellow-700', miss: 'bg-orange-100 text-orange-700' }[s] || 'bg-slate-100 text-slate-600';
+  }
+
+  function fmtDate(str) {
+    if (!str) return '';
+    try {
+      return new Date(str).toLocaleString('ja-JP', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    } catch { return str; }
+  }
+
+  function esc(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  </script>
+</body>
+</html>
