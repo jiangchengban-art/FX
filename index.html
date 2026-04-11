@@ -35,7 +35,7 @@
 
     /* Scrollbar */
     ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #2d3748; border-radius: 4px; }
 
     /* Line-clamp */
     .line-clamp-1 {
@@ -46,17 +46,155 @@
     }
 
     /* Smooth modal backdrop */
-    .modal-bg { background: rgba(0,0,0,0.5); }
+    .modal-bg { background: rgba(0,0,0,0.75); }
 
     /* Number input arrows hidden */
     input[type=number]::-webkit-inner-spin-button,
     input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    /* ======================================
+       DARK MODE
+    ====================================== */
+    :root {
+      --bg-base:    #080810;
+      --bg-card:    #12121e;
+      --bg-input:   #1a1a2a;
+      --bg-hover:   #1e1e30;
+      --bg-subtle:  #0e0e1a;
+      --border:     #2a2a3e;
+      --border-sub: #1e1e30;
+      --txt-main:   #e2e8f0;
+      --txt-sub:    #94a3b8;
+      --txt-muted:  #4a5568;
+      --txt-faint:  #2d3748;
+    }
+
+    body { background: var(--bg-base) !important; color: var(--txt-main) !important; }
+
+    /* Backgrounds */
+    .bg-white            { background-color: var(--bg-card)   !important; }
+    .bg-slate-50         { background-color: var(--bg-subtle) !important; }
+    .bg-slate-100        { background-color: var(--bg-input)  !important; }
+    .hover\:bg-slate-50:hover  { background-color: var(--bg-hover) !important; }
+    .hover\:bg-slate-100:hover { background-color: var(--bg-input) !important; }
+
+    /* Text */
+    .text-slate-800 { color: var(--txt-main)  !important; }
+    .text-slate-700 { color: #c7d2dc          !important; }
+    .text-slate-600 { color: var(--txt-sub)   !important; }
+    .text-slate-500 { color: #64748b          !important; }
+    .text-slate-400 { color: #475569          !important; }
+    .text-slate-300 { color: var(--txt-muted) !important; }
+
+    /* Borders */
+    .border-slate-200 { border-color: var(--border)     !important; }
+    .border-slate-100 { border-color: var(--border-sub) !important; }
+    .border-slate-50  { border-color: var(--border-sub) !important; }
+    .divide-slate-100 > * + * { border-color: var(--border-sub) !important; }
+
+    /* Shadows */
+    .shadow-sm { box-shadow: 0 1px 6px rgba(0,0,0,0.6) !important; }
+    .shadow-2xl { box-shadow: 0 20px 60px rgba(0,0,0,0.9) !important; }
+    .shadow-md  { box-shadow: 0 4px 12px rgba(0,0,0,0.7) !important; }
+
+    /* Inputs / Textarea / Select */
+    input:not([type=file]),
+    textarea,
+    select {
+      background-color: var(--bg-input) !important;
+      color: var(--txt-main)            !important;
+      border-color: var(--border)       !important;
+    }
+    input::placeholder,
+    textarea::placeholder { color: var(--txt-muted) !important; }
+    input:focus, textarea:focus, select:focus {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.2) !important;
+    }
+    /* Select dropdown arrow color fix */
+    select option { background: var(--bg-input); color: var(--txt-main); }
+
+    /* Header / Nav */
+    header { background-color: #0d0d18 !important; border-bottom: 1px solid var(--border-sub); }
+    nav    { background-color: #0d0d18 !important; border-top:    1px solid var(--border-sub); }
+
+    /* Period buttons inactive */
+    .period-btn:not(.bg-blue-600) { color: var(--txt-sub) !important; }
+
+    /* Filter accordion hover */
+    .hover\:bg-slate-50:hover { background-color: var(--bg-hover) !important; }
+
+    /* Inactive toggle/filter chips */
+    .border-slate-200.bg-white.text-slate-500,
+    .filter-chip:not([class*="bg-blue"]):not([class*="bg-emerald"]):not([class*="bg-violet"]):not([class*="bg-amber"]):not([class*="bg-red"]) {
+      background-color: var(--bg-input) !important;
+      border-color: var(--border) !important;
+      color: var(--txt-sub) !important;
+    }
+
+    /* Toggle buttons (result/status) in inactive state */
+    .toggle-btn.border-slate-200 {
+      background-color: var(--bg-input) !important;
+      border-color: var(--border) !important;
+      color: var(--txt-sub) !important;
+    }
+
+    /* Inactive sim level / rr buttons */
+    .sim-rr-btn.border-slate-200,
+    .sim-level-btn.border-slate-200 {
+      background-color: var(--bg-input) !important;
+      border-color: var(--border) !important;
+      color: var(--txt-sub) !important;
+    }
+
+    /* Summary gradient cards — keep them, just darken */
+    .from-blue-500.to-blue-700   { background-image: linear-gradient(135deg, #1d4ed8, #1e3a8a) !important; }
+    .from-emerald-500.to-emerald-700 { background-image: linear-gradient(135deg, #059669, #064e3b) !important; }
+    .from-violet-500.to-violet-700   { background-image: linear-gradient(135deg, #7c3aed, #4c1d95) !important; }
+    .from-amber-500.to-amber-700     { background-image: linear-gradient(135deg, #d97706, #78350f) !important; }
+
+    /* Blue export button */
+    .bg-blue-50 { background-color: #1e2a3e !important; }
+    .border-blue-100 { border-color: #1e3a5f !important; }
+    .text-blue-700 { color: #60a5fa !important; }
+    .hover\:bg-blue-100:hover { background-color: #1e3a5f !important; }
+
+    /* Sim summary card */
+    .from-violet-50 { background: #1a1230 !important; }
+    .to-blue-50     { background: #0f1a2e !important; }
+    .border-violet-100 { border-color: #2d1f5e !important; }
+    .text-violet-700 { color: #a78bfa !important; }
+    .bg-gradient-to-r.from-violet-50.to-blue-50 {
+      background: linear-gradient(90deg, #1a1230, #0f1a2e) !important;
+    }
+
+    /* Calendar */
+    .bg-blue-50.text-blue-700 { background-color: #1e3a5f !important; color: #60a5fa !important; }
+    .bg-slate-50:not(body)    { background-color: var(--bg-subtle) !important; }
+
+    /* White text on dark — keep as-is */
+    .text-white { color: #fff !important; }
+
+    /* Modals */
+    #edit-modal .bg-white,
+    #confirm-modal .bg-white { background-color: #14142a !important; }
+    #edit-modal .border-b { border-color: var(--border-sub) !important; }
+    #edit-modal .border-slate-100 { border-color: var(--border-sub) !important; }
+
+    /* Toast */
+    #toast { background-color: #1e1e2e !important; border: 1px solid var(--border); }
+
+    /* Img thumbnails */
+    .border-slate-100 img { border-color: var(--border-sub) !important; }
+
+    /* Stat breakdown rows */
+    .border-slate-100 { border-color: var(--border-sub) !important; }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans select-none">
+<body class="font-sans select-none" style="background:#080810;color:#e2e8f0">
 
   <!-- ===================== HEADER ===================== -->
-  <header class="header-safe fixed top-0 left-0 right-0 bg-white shadow-sm z-40">
+  <header class="header-safe fixed top-0 left-0 right-0 z-40" style="background:#0d0d18;border-bottom:1px solid #1e1e30;box-shadow:0 1px 8px rgba(0,0,0,0.6)">
     <div class="flex items-center justify-between px-4 h-14">
       <div class="flex items-center gap-2">
         <div class="w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm">
@@ -244,6 +382,26 @@
             </div>
             <input type="hidden" id="f-status" value="">
           </div>
+
+          <!-- 見送り理由 (through/miss のときのみ表示) -->
+          <div id="f-skip-block" class="hidden">
+            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#a78bfa">見送り理由</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" data-group="skipreason" data-prefix="f" data-value="m15"
+                onclick="selectToggle('skipreason','m15','f')"
+                class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">M15見送り</button>
+              <button type="button" data-group="skipreason" data-prefix="f" data-value="sub"
+                onclick="selectToggle('skipreason','sub','f')"
+                class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">サブ通貨見送り</button>
+              <button type="button" data-group="skipreason" data-prefix="f" data-value="low_setup"
+                onclick="selectToggle('skipreason','low_setup','f')"
+                class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">優位性低い</button>
+              <button type="button" data-group="skipreason" data-prefix="f" data-value="other"
+                onclick="selectToggle('skipreason','other','f')"
+                class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">その他</button>
+            </div>
+            <input type="hidden" id="f-skipreason" value="">
+          </div>
         </div>
 
         <!-- 理由 -->
@@ -252,6 +410,73 @@
           <textarea id="f-reason" rows="3"
             placeholder="エントリー/スルー/ミスの理由、チャートの状況などを記録..."
             class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none select-text"></textarea>
+        </div>
+
+        <!-- タグ -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">タグ <span class="text-slate-300 font-normal normal-case tracking-normal">（複数可）</span></label>
+          <div id="f-tag-chips" class="flex gap-1.5 flex-wrap mb-2"></div>
+          <div class="flex gap-2">
+            <input type="text" id="f-tag-input" placeholder="例: お手本 / 反省 / トレンド転換"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();addTag('f')}"
+              class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="button" onclick="addTag('f')"
+              class="px-3 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold">追加</button>
+          </div>
+          <div id="f-tag-suggest" class="flex gap-1.5 flex-wrap mt-2"></div>
+        </div>
+
+        <!-- チャート画像 -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm">
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">チャート画像</label>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div id="f-slot-m15" class="img-slot" data-prefix="f" data-slot="m15">
+              <div class="text-xs font-semibold mb-1" style="color:#94a3b8">15分足</div>
+              <div id="f-img-m15-preview"></div>
+              <label id="f-img-m15-label" class="flex items-center gap-1 cursor-pointer text-blue-400 text-xs font-semibold mt-1">
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center text-base" style="background:#1e3a5f;border:1.5px dashed #3b82f6">+</span>
+                追加
+                <input type="file" id="f-img-m15-input" accept="image/*" class="hidden" onchange="handleImgAdd('f','m15',event)">
+              </label>
+            </div>
+            <div id="f-slot-h1" class="img-slot" data-prefix="f" data-slot="h1">
+              <div class="text-xs font-semibold mb-1" style="color:#94a3b8">1時間足</div>
+              <div id="f-img-h1-preview"></div>
+              <label id="f-img-h1-label" class="flex items-center gap-1 cursor-pointer text-blue-400 text-xs font-semibold mt-1">
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center text-base" style="background:#1e3a5f;border:1.5px dashed #3b82f6">+</span>
+                追加
+                <input type="file" id="f-img-h1-input" accept="image/*" class="hidden" onchange="handleImgAdd('f','h1',event)">
+              </label>
+            </div>
+            <div id="f-slot-h4" class="img-slot" data-prefix="f" data-slot="h4">
+              <div class="text-xs font-semibold mb-1" style="color:#94a3b8">4時間足</div>
+              <div id="f-img-h4-preview"></div>
+              <label id="f-img-h4-label" class="flex items-center gap-1 cursor-pointer text-blue-400 text-xs font-semibold mt-1">
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center text-base" style="background:#1e3a5f;border:1.5px dashed #3b82f6">+</span>
+                追加
+                <input type="file" id="f-img-h4-input" accept="image/*" class="hidden" onchange="handleImgAdd('f','h4',event)">
+              </label>
+            </div>
+            <div id="f-slot-d1" class="img-slot" data-prefix="f" data-slot="d1">
+              <div class="text-xs font-semibold mb-1" style="color:#94a3b8">日足</div>
+              <div id="f-img-d1-preview"></div>
+              <label id="f-img-d1-label" class="flex items-center gap-1 cursor-pointer text-blue-400 text-xs font-semibold mt-1">
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center text-base" style="background:#1e3a5f;border:1.5px dashed #3b82f6">+</span>
+                追加
+                <input type="file" id="f-img-d1-input" accept="image/*" class="hidden" onchange="handleImgAdd('f','d1',event)">
+              </label>
+            </div>
+          </div>
+          <!-- その他 (枚数無制限) -->
+          <div>
+            <div class="text-xs font-semibold mb-1" style="color:#94a3b8">その他</div>
+            <div id="f-img-others-preview" class="flex gap-2 flex-wrap mb-1"></div>
+            <label class="flex items-center gap-1 cursor-pointer text-blue-400 text-xs font-semibold">
+              <span class="w-7 h-7 rounded-lg flex items-center justify-center text-base" style="background:#1e3a5f;border:1.5px dashed #3b82f6">+</span>
+              追加（何枚でも可）
+              <input type="file" id="f-img-others-input" accept="image/*" multiple class="hidden" onchange="handleImgAdd('f','others',event)">
+            </label>
+          </div>
         </div>
 
         <button type="submit"
@@ -269,68 +494,213 @@
         <span id="history-count" class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full"></span>
       </div>
 
-      <!-- Filters -->
-      <div class="bg-white rounded-2xl p-3 shadow-sm mb-4">
-        <div class="grid grid-cols-2 gap-2 mb-2">
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">手法</label>
-            <select id="filter-method"
-              class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-              <option value="">すべて</option>
-              <option value="1">① 乖離埋め</option>
-              <option value="2">② ３波狙い</option>
-              <option value="3">③ その他</option>
-            </select>
+      <!-- Filters (accordion) -->
+      <div class="bg-white rounded-2xl shadow-sm mb-4 overflow-hidden">
+
+        <!-- Filter top bar -->
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
+            </svg>
+            <span class="text-sm font-semibold text-slate-600">絞込みフィルター</span>
+            <span id="filter-badge" class="hidden text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full font-bold"></span>
           </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">メイン通貨</label>
-            <select id="filter-pair"
-              class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-              <option value="">すべて</option>
-              <option value="US500">US500</option>
-              <option value="US100">US100</option>
-              <option value="US30">US30</option>
-              <option value="JP225">JP225</option>
-              <option value="BTC/USD">BTC/USD</option>
-              <option value="GOLD">GOLD</option>
-              <option value="USD/JPY">USD/JPY</option>
-              <option value="EUR/JPY">EUR/JPY</option>
-              <option value="GBP/JPY">GBP/JPY</option>
-              <option value="EUR/USD">EUR/USD</option>
-              <option value="GBP/USD">GBP/USD</option>
-              <option value="AUD/JPY">AUD/JPY</option>
-            </select>
+          <button onclick="resetFilters()" class="text-xs text-slate-400 hover:text-red-500 transition-colors">クリア</button>
+        </div>
+
+        <!-- 手法 -->
+        <div class="border-b border-slate-50">
+          <button onclick="toggleFilterSection('method')" class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-500">手法</span>
+              <span id="fcount-method" class="hidden text-xs bg-blue-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
+            </div>
+            <svg id="farrow-method" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="fsec-method" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
+            <button onclick="toggleFilter('method','1')" data-filter="method" data-value="1" data-active="bg-blue-600 text-white border-blue-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">① 乖離埋め</button>
+            <button onclick="toggleFilter('method','2')" data-filter="method" data-value="2" data-active="bg-blue-600 text-white border-blue-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">② ３波狙い</button>
+            <button onclick="toggleFilter('method','3')" data-filter="method" data-value="3" data-active="bg-blue-600 text-white border-blue-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">③ その他</button>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-2 mb-2">
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">ステータス</label>
-            <select id="filter-status"
-              class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-              <option value="">すべて</option>
-              <option value="entry">エントリー</option>
-              <option value="through">スルー</option>
-              <option value="miss">ミス</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-xs text-slate-400 mb-1">結果</label>
-            <select id="filter-result"
-              class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-              <option value="">すべて</option>
-              <option value="reg">REG</option>
-              <option value="big">BIG</option>
-              <option value="max">MAX</option>
-              <option value="small">微益</option>
-              <option value="breakeven">建値決済</option>
-              <option value="stoploss">損切</option>
-            </select>
+
+        <!-- メイン通貨 -->
+        <div class="border-b border-slate-50">
+          <button onclick="toggleFilterSection('pair')" class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-500">メイン通貨</span>
+              <span id="fcount-pair" class="hidden text-xs bg-indigo-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
+            </div>
+            <svg id="farrow-pair" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="fsec-pair" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
+            <button onclick="toggleFilter('pair','US500')" data-filter="pair" data-value="US500" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">US500</button>
+            <button onclick="toggleFilter('pair','US100')" data-filter="pair" data-value="US100" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">US100</button>
+            <button onclick="toggleFilter('pair','US30')" data-filter="pair" data-value="US30" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">US30</button>
+            <button onclick="toggleFilter('pair','JP225')" data-filter="pair" data-value="JP225" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">JP225</button>
+            <button onclick="toggleFilter('pair','BTC/USD')" data-filter="pair" data-value="BTC/USD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">BTC/USD</button>
+            <button onclick="toggleFilter('pair','ETH/USD')" data-filter="pair" data-value="ETH/USD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">ETH/USD</button>
+            <button onclick="toggleFilter('pair','GOLD')" data-filter="pair" data-value="GOLD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">GOLD</button>
+            <button onclick="toggleFilter('pair','SILVER')" data-filter="pair" data-value="SILVER" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">SILVER</button>
+            <button onclick="toggleFilter('pair','WTI')" data-filter="pair" data-value="WTI" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">WTI</button>
+            <button onclick="toggleFilter('pair','USD/JPY')" data-filter="pair" data-value="USD/JPY" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">USD/JPY</button>
+            <button onclick="toggleFilter('pair','EUR/JPY')" data-filter="pair" data-value="EUR/JPY" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">EUR/JPY</button>
+            <button onclick="toggleFilter('pair','GBP/JPY')" data-filter="pair" data-value="GBP/JPY" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">GBP/JPY</button>
+            <button onclick="toggleFilter('pair','EUR/USD')" data-filter="pair" data-value="EUR/USD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">EUR/USD</button>
+            <button onclick="toggleFilter('pair','GBP/USD')" data-filter="pair" data-value="GBP/USD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">GBP/USD</button>
+            <button onclick="toggleFilter('pair','AUD/JPY')" data-filter="pair" data-value="AUD/JPY" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">AUD/JPY</button>
+            <button onclick="toggleFilter('pair','AUD/USD')" data-filter="pair" data-value="AUD/USD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">AUD/USD</button>
+            <button onclick="toggleFilter('pair','NZD/JPY')" data-filter="pair" data-value="NZD/JPY" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">NZD/JPY</button>
+            <button onclick="toggleFilter('pair','NZD/USD')" data-filter="pair" data-value="NZD/USD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">NZD/USD</button>
+            <button onclick="toggleFilter('pair','CAD/JPY')" data-filter="pair" data-value="CAD/JPY" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">CAD/JPY</button>
+            <button onclick="toggleFilter('pair','USD/CAD')" data-filter="pair" data-value="USD/CAD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">USD/CAD</button>
+            <button onclick="toggleFilter('pair','CHF/JPY')" data-filter="pair" data-value="CHF/JPY" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">CHF/JPY</button>
+            <button onclick="toggleFilter('pair','USD/CHF')" data-filter="pair" data-value="USD/CHF" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">USD/CHF</button>
           </div>
         </div>
-        <button onclick="resetFilters()"
-          class="w-full text-xs text-slate-400 py-2 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
-          フィルターをリセット
-        </button>
+
+        <!-- 時間足 -->
+        <div class="border-b border-slate-50">
+          <button onclick="toggleFilterSection('timeframe')" class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-500">時間足</span>
+              <span id="fcount-timeframe" class="hidden text-xs bg-slate-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
+            </div>
+            <svg id="farrow-timeframe" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="fsec-timeframe" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
+            <button onclick="toggleFilter('timeframe','M1')" data-filter="timeframe" data-value="M1" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">M1</button>
+            <button onclick="toggleFilter('timeframe','M5')" data-filter="timeframe" data-value="M5" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">M5</button>
+            <button onclick="toggleFilter('timeframe','M15')" data-filter="timeframe" data-value="M15" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">M15</button>
+            <button onclick="toggleFilter('timeframe','M30')" data-filter="timeframe" data-value="M30" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">M30</button>
+            <button onclick="toggleFilter('timeframe','H1')" data-filter="timeframe" data-value="H1" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">H1</button>
+            <button onclick="toggleFilter('timeframe','H4')" data-filter="timeframe" data-value="H4" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">H4</button>
+            <button onclick="toggleFilter('timeframe','D1')" data-filter="timeframe" data-value="D1" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">D1</button>
+            <button onclick="toggleFilter('timeframe','W1')" data-filter="timeframe" data-value="W1" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">W1</button>
+          </div>
+        </div>
+
+        <!-- サブ通貨 -->
+        <div class="border-b border-slate-50">
+          <button onclick="toggleFilterSection('subpair')" class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-500">サブ通貨</span>
+              <span id="fcount-subpair" class="hidden text-xs bg-purple-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
+            </div>
+            <svg id="farrow-subpair" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="fsec-subpair" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
+            <button onclick="toggleFilter('subpair','EUR/GBP')" data-filter="subpair" data-value="EUR/GBP" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">EUR/GBP</button>
+            <button onclick="toggleFilter('subpair','AUD/NZD')" data-filter="subpair" data-value="AUD/NZD" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">AUD/NZD</button>
+            <button onclick="toggleFilter('subpair','EUR/AUD')" data-filter="subpair" data-value="EUR/AUD" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">EUR/AUD</button>
+            <button onclick="toggleFilter('subpair','GBP/AUD')" data-filter="subpair" data-value="GBP/AUD" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">GBP/AUD</button>
+            <button onclick="toggleFilter('subpair','EUR/NZD')" data-filter="subpair" data-value="EUR/NZD" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">EUR/NZD</button>
+            <button onclick="toggleFilter('subpair','GBP/NZD')" data-filter="subpair" data-value="GBP/NZD" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">GBP/NZD</button>
+            <button onclick="toggleFilter('subpair','EUR/CHF')" data-filter="subpair" data-value="EUR/CHF" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">EUR/CHF</button>
+            <button onclick="toggleFilter('subpair','GBP/CHF')" data-filter="subpair" data-value="GBP/CHF" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">GBP/CHF</button>
+            <button onclick="toggleFilter('subpair','EUR/CAD')" data-filter="subpair" data-value="EUR/CAD" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">EUR/CAD</button>
+            <button onclick="toggleFilter('subpair','GBP/CAD')" data-filter="subpair" data-value="GBP/CAD" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">GBP/CAD</button>
+          </div>
+        </div>
+
+        <!-- ステータス -->
+        <div class="border-b border-slate-50">
+          <button onclick="toggleFilterSection('status')" class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-500">ステータス</span>
+              <span id="fcount-status" class="hidden text-xs bg-blue-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
+            </div>
+            <svg id="farrow-status" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="fsec-status" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
+            <button onclick="toggleFilter('status','entry')" data-filter="status" data-value="entry" data-active="bg-blue-600 text-white border-blue-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">エントリー</button>
+            <button onclick="toggleFilter('status','through')" data-filter="status" data-value="through" data-active="bg-yellow-500 text-white border-yellow-500" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">スルー</button>
+            <button onclick="toggleFilter('status','miss')" data-filter="status" data-value="miss" data-active="bg-orange-500 text-white border-orange-500" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">ミス</button>
+          </div>
+        </div>
+
+        <!-- 結果 -->
+        <div>
+          <button onclick="toggleFilterSection('result')" class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-500">結果</span>
+              <span id="fcount-result" class="hidden text-xs bg-emerald-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
+            </div>
+            <svg id="farrow-result" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="fsec-result" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
+            <button onclick="toggleFilter('result','reg')" data-filter="result" data-value="reg" data-active="bg-emerald-600 text-white border-emerald-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">REG</button>
+            <button onclick="toggleFilter('result','big')" data-filter="result" data-value="big" data-active="bg-blue-600 text-white border-blue-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">BIG</button>
+            <button onclick="toggleFilter('result','max')" data-filter="result" data-value="max" data-active="bg-violet-600 text-white border-violet-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">MAX</button>
+            <button onclick="toggleFilter('result','small')" data-filter="result" data-value="small" data-active="bg-teal-600 text-white border-teal-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">微益</button>
+            <button onclick="toggleFilter('result','breakeven')" data-filter="result" data-value="breakeven" data-active="bg-slate-500 text-white border-slate-500" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">建値決済</button>
+            <button onclick="toggleFilter('result','stoploss')" data-filter="result" data-value="stoploss" data-active="bg-red-600 text-white border-red-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">損切</button>
+          </div>
+        </div>
+
+        <!-- Tag -->
+        <div class="border-t border-slate-100">
+          <button onclick="toggleFilterSection('tag')" class="w-full px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-500">タグ</span>
+              <span id="fcount-tag" class="hidden text-xs bg-emerald-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
+            </div>
+            <svg id="farrow-tag" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="fsec-tag" class="hidden px-4 pb-3 flex flex-wrap gap-1.5"></div>
+        </div>
+
+        <!-- 見送り理由 -->
+        <div class="border-t border-slate-100">
+          <button onclick="toggleFilterSection('skipReason')" class="w-full px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-500">見送り理由</span>
+              <span id="fcount-skipReason" class="hidden text-xs bg-violet-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
+            </div>
+            <svg id="farrow-skipReason" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="fsec-skipReason" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
+            <button onclick="toggleFilter('skipReason','m15')" data-filter="skipReason" data-value="m15" data-active="bg-violet-500 text-white border-violet-500" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">M15見送り</button>
+            <button onclick="toggleFilter('skipReason','sub')" data-filter="skipReason" data-value="sub" data-active="bg-orange-500 text-white border-orange-500" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">サブ通貨見送り</button>
+            <button onclick="toggleFilter('skipReason','low_setup')" data-filter="skipReason" data-value="low_setup" data-active="bg-red-500 text-white border-red-500" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">優位性低い</button>
+            <button onclick="toggleFilter('skipReason','other')" data-filter="skipReason" data-value="other" data-active="bg-slate-500 text-white border-slate-500" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">その他</button>
+          </div>
+        </div>
+
+        <!-- Reviewed -->
+        <div class="border-t border-slate-100">
+          <button onclick="toggleFilterSection('reviewed')" class="w-full px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-500">レビュー状態</span>
+              <span id="fcount-reviewed" class="hidden text-xs bg-emerald-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
+            </div>
+            <svg id="farrow-reviewed" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div id="fsec-reviewed" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
+            <button onclick="toggleFilter('reviewed','unreviewed')" data-filter="reviewed" data-value="unreviewed" data-active="bg-amber-600 text-white border-amber-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">未レビューのみ</button>
+            <button onclick="toggleFilter('reviewed','reviewed')" data-filter="reviewed" data-value="reviewed" data-active="bg-emerald-600 text-white border-emerald-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">レビュー済みのみ</button>
+          </div>
+        </div>
+
       </div>
 
       <!-- Trade list -->
@@ -423,16 +793,73 @@
         <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center"></div>
       </div>
 
+      <!-- Status breakdown -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">ステータス別件数</h3>
+        <div id="status-breakdown"></div>
+      </div>
+
+      <!-- 見送り分析 -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">🔍 見送り分析</h3>
+        <div id="skip-opportunity-loss" class="mb-4"></div>
+        <h4 class="text-xs font-bold text-slate-500 mb-2 mt-4 uppercase tracking-wide">見送り理由別成績</h4>
+        <div id="skip-by-reason"></div>
+        <h4 class="text-xs font-bold text-slate-500 mb-2 mt-5 uppercase tracking-wide">実エントリー vs 見送り 比較</h4>
+        <div id="skip-vs-entry"></div>
+      </div>
+
       <!-- Method breakdown -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
         <h3 class="text-sm font-bold text-slate-600 mb-3">手法別成績（エントリーのみ）</h3>
         <div id="method-breakdown"></div>
       </div>
 
-      <!-- Pair breakdown -->
+      <!-- Timeframe breakdown -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">通貨ペア別成績</h3>
-        <div id="pair-breakdown"></div>
+        <h3 class="text-sm font-bold text-slate-600 mb-3">時間足別成績（エントリーのみ）</h3>
+        <div id="timeframe-breakdown"></div>
+      </div>
+
+      <!-- Main pair breakdown -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">メイン通貨別成績（エントリーのみ）</h3>
+        <div id="mainpair-breakdown"></div>
+      </div>
+
+      <!-- Sub pair breakdown -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">サブ通貨別成績（エントリーのみ）</h3>
+        <div id="subpair-breakdown"></div>
+      </div>
+
+      <!-- Capital simulation from real trades -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">実資金推移シミュレーション</h3>
+        <div class="mb-3">
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">初期資金（円）</label>
+          <input type="number" id="cap-initial" value="1000000" step="100000" min="1"
+            oninput="renderCapitalChart()"
+            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 select-text">
+        </div>
+        <div id="cap-stats" class="grid grid-cols-3 gap-2 mb-3 hidden">
+          <div class="bg-slate-50 rounded-xl p-2.5 text-center">
+            <div class="text-xs text-slate-400 mb-0.5">現在資金</div>
+            <div id="cap-current" class="text-sm font-bold text-slate-700">−</div>
+          </div>
+          <div class="bg-slate-50 rounded-xl p-2.5 text-center">
+            <div class="text-xs text-slate-400 mb-0.5">増減額</div>
+            <div id="cap-delta" class="text-sm font-bold">−</div>
+          </div>
+          <div class="bg-slate-50 rounded-xl p-2.5 text-center">
+            <div class="text-xs text-slate-400 mb-0.5">増減率</div>
+            <div id="cap-rate" class="text-sm font-bold">−</div>
+          </div>
+        </div>
+        <div id="cap-empty" class="text-xs text-slate-300 text-center py-6">エントリーのデータがありません</div>
+        <div style="position:relative;height:180px" id="cap-chart-wrap" class="hidden">
+          <canvas id="chart-capital"></canvas>
+        </div>
       </div>
     </div>
 
@@ -504,6 +931,45 @@
         </div>
       </div>
 
+      <!-- ===== 資金シミュレーション ===== -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-4">資金シミュレーション</h3>
+
+        <!-- 初期リスク額 -->
+        <div class="mb-3">
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">初期リスク額（円）</label>
+          <input type="number" id="sim-initial" value="100000" step="10000" min="1000"
+            oninput="renderSimulation()"
+            class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 select-text">
+        </div>
+
+        <!-- トレード回数 -->
+        <div class="mb-4">
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">トレード回数</label>
+            <div class="flex items-center gap-2">
+              <button onclick="simChangeCount(-1)"
+                class="w-7 h-7 rounded-full border border-slate-200 text-slate-500 text-lg font-bold flex items-center justify-center active:scale-95 transition-all">−</button>
+              <span id="sim-count-display" class="text-sm font-bold text-slate-700 w-6 text-center">5</span>
+              <button onclick="simChangeCount(1)"
+                class="w-7 h-7 rounded-full border border-slate-200 text-slate-500 text-lg font-bold flex items-center justify-center active:scale-95 transition-all">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- サマリー -->
+        <div id="sim-summary" class="bg-gradient-to-r from-violet-50 to-blue-50 border border-violet-100 rounded-xl px-4 py-3 mb-3">
+          <div class="flex justify-between items-center">
+            <div class="text-xs text-slate-500">現在の資金</div>
+            <div id="sim-final" class="text-xl font-black text-violet-700">−</div>
+          </div>
+          <div id="sim-growth" class="text-xs text-slate-400 mt-0.5"></div>
+        </div>
+
+        <!-- トレード行 -->
+        <div id="sim-trade-rows" class="space-y-2"></div>
+      </div>
+
       <!-- Data management -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
         <h3 class="text-sm font-bold text-slate-600 mb-3">データ管理</h3>
@@ -544,7 +1010,7 @@
   </main>
 
   <!-- ===================== BOTTOM NAV ===================== -->
-  <nav class="nav-safe fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 z-40">
+  <nav class="nav-safe fixed bottom-0 left-0 right-0 z-40" style="background:#0d0d18;border-top:1px solid #1e1e30">
     <div class="grid grid-cols-4 h-16">
 
       <button onclick="switchTab('register')" data-tab="register"
@@ -616,6 +1082,15 @@
     </div>
   </div>
 
+  <!-- ===================== IMAGE VIEWER ===================== -->
+  <div id="img-viewer" class="hidden fixed inset-0 z-[60] flex items-center justify-center" style="background:rgba(0,0,0,0.92)" onclick="closeImgViewer()">
+    <button onclick="imgViewerPrev(event)" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white text-xl z-10">‹</button>
+    <img id="img-viewer-img" src="" class="max-w-[96vw] max-h-[88vh] object-contain rounded-xl shadow-2xl" onclick="event.stopPropagation()">
+    <button onclick="imgViewerNext(event)" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white text-xl z-10">›</button>
+    <div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2" id="img-viewer-dots"></div>
+    <button onclick="closeImgViewer()" class="absolute top-4 right-4 w-9 h-9 bg-white/10 rounded-full flex items-center justify-center text-white text-lg">✕</button>
+  </div>
+
   <!-- ===================== TOAST ===================== -->
   <div id="toast"
     class="hidden fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-slate-800 text-white text-sm px-4 py-2.5 rounded-full shadow-lg whitespace-nowrap">
@@ -647,13 +1122,38 @@
   // ============================================================
   let currentTab   = 'register';
   let statsPeriod  = 'month';
+
+  // Multi-select filter state
+  const activeFilters = {
+    method:    new Set(),
+    pair:      new Set(),
+    timeframe: new Set(),
+    subpair:   new Set(),
+    status:    new Set(),
+    result:    new Set(),
+    tag:       new Set(),
+    reviewed:  new Set(),
+    skipReason: new Set(),
+  };
   let calYear      = new Date().getFullYear();
   let calMonth     = new Date().getMonth();
   let editingId    = null;
   let chartProfit  = null;
   let chartWinrate = null;
+  let chartCapital = null;
   let confirmCb    = null;
   let toastTimer   = null;
+  // Image state
+  // images: { m15: null|base64, h1: null|base64, h4: null|base64, d1: null|base64, others: [] }
+  function emptyImgs() { return { m15: null, h1: null, h4: null, d1: null, others: [] }; }
+  let fImgs = emptyImgs();
+  let eImgs = emptyImgs();
+  let viewerImgs   = [];
+  let viewerLabels = [];
+  let viewerIndex  = 0;
+  // Tag state
+  let fTags = [];
+  let eTags = [];
 
   // ============================================================
   // INIT
@@ -670,11 +1170,7 @@
     // Form submit
     document.getElementById('trade-form').addEventListener('submit', handleRegister);
 
-    // Filter listeners
-    ['filter-method','filter-status','filter-result','filter-pair'].forEach(id => {
-      document.getElementById(id).addEventListener('input', renderHistory);
-      document.getElementById(id).addEventListener('change', renderHistory);
-    });
+    // Filter listeners handled via toggleFilter() chip buttons
 
     // Confirm OK button
     document.getElementById('confirm-ok-btn').addEventListener('click', () => {
@@ -723,7 +1219,7 @@
     currentTab = tab;
     if (tab === 'history') renderHistory();
     if (tab === 'stats')   { renderStats(); renderCalendar(); }
-    if (tab === 'summary') renderSummary();
+    if (tab === 'summary') { renderSummary(); renderSimulation(); }
   }
 
   // ============================================================
@@ -743,6 +1239,12 @@
       through: 'border-yellow-500 bg-yellow-50 text-yellow-700',
       miss:    'border-orange-500 bg-orange-50 text-orange-700',
     },
+    skipreason: {
+      m15:       'border-violet-500 bg-violet-50 text-violet-700',
+      sub:       'border-orange-500 bg-orange-50 text-orange-700',
+      low_setup: 'border-red-500 bg-red-50 text-red-700',
+      other:     'border-slate-500 bg-slate-100 text-slate-700',
+    },
   };
   const INACTIVE_STYLE = 'border-slate-200 text-slate-500';
 
@@ -754,11 +1256,28 @@
       const active = btn.dataset.value === value;
       btn.className = btn.className
         .replace(/border-\S+|bg-\S+|text-\S+/g, '').trim();
-      // result buttons are text-xs (6 items), status buttons are text-sm (3 items)
-      const isResult = group === 'result';
-      const base = `toggle-btn py-2.5 rounded-xl ${isResult ? 'text-xs' : 'text-sm'} font-semibold border-2 transition-all active:scale-95`;
+      const isSmall = group === 'result' || group === 'skipreason';
+      const base = `toggle-btn py-2.5 rounded-xl ${isSmall ? 'text-xs' : 'text-sm'} font-semibold border-2 transition-all active:scale-95`;
       btn.className = base + ' ' + (active ? TOGGLE_STYLES[group][value] : INACTIVE_STYLE);
     });
+
+    // Show/hide skip reason block when status changes
+    if (group === 'status') {
+      const p = prefix || 'f';
+      const block = document.getElementById(p + '-skip-block');
+      if (block) {
+        if (isSkipStatus(value)) {
+          block.classList.remove('hidden');
+        } else {
+          block.classList.add('hidden');
+          const hidden = document.getElementById(p + '-skipreason');
+          if (hidden) hidden.value = '';
+          document.querySelectorAll(`[data-group="skipreason"][data-prefix="${p}"]`).forEach(b => {
+            b.className = 'toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 transition-all active:scale-95 ' + INACTIVE_STYLE;
+          });
+        }
+      }
+    }
   }
 
   // ============================================================
@@ -804,6 +1323,10 @@
       result,
       status,
       reason:    document.getElementById('f-reason').value.trim(),
+      images:    { m15: fImgs.m15, h1: fImgs.h1, h4: fImgs.h4, d1: fImgs.d1, others: [...fImgs.others] },
+      tags:      [...fTags],
+      reviewed:  false,
+      skipReason: isSkipStatus(status) ? (document.getElementById('f-skipreason').value || null) : null,
       createdAt: new Date().toISOString(),
     };
 
@@ -823,25 +1346,66 @@
       const base = 'toggle-btn py-3 rounded-xl text-sm font-semibold border-2 transition-all active:scale-95';
       btn.className = base + ' ' + INACTIVE_STYLE;
     });
+    fImgs = emptyImgs();
+    renderImgPreview('f');
+    fTags = [];
+    renderTagChips('f');
+    // Reset skip reason block
+    const skipBlock = document.getElementById('f-skip-block');
+    if (skipBlock) skipBlock.classList.add('hidden');
+    const skipHidden = document.getElementById('f-skipreason');
+    if (skipHidden) skipHidden.value = '';
+    document.querySelectorAll('[data-group="skipreason"][data-prefix="f"]').forEach(b => {
+      b.className = 'toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 transition-all active:scale-95 ' + INACTIVE_STYLE;
+    });
   }
 
   // ============================================================
   // HISTORY
   // ============================================================
   function getFilteredTrades() {
-    const method = document.getElementById('filter-method').value;
-    const status = document.getElementById('filter-status').value;
-    const result = document.getElementById('filter-result').value;
-    const pair   = document.getElementById('filter-pair').value;
-    return dbLoad().filter(t =>
-      (!method || t.method === method) &&
-      (!status || t.status === status) &&
-      (!result || t.result === result) &&
-      (!pair   || (t.pairMain || t.pair) === pair)
-    );
+    return dbLoad().filter(t => {
+      if (activeFilters.method.size    > 0 && !activeFilters.method.has(t.method)) return false;
+      if (activeFilters.pair.size      > 0 && !activeFilters.pair.has(t.pairMain || t.pair || '')) return false;
+      if (activeFilters.timeframe.size > 0 && !activeFilters.timeframe.has(t.timeframe || '')) return false;
+      if (activeFilters.subpair.size   > 0 && !activeFilters.subpair.has(t.pairSub || '')) return false;
+      if (activeFilters.status.size    > 0 && !activeFilters.status.has(t.status)) return false;
+      if (activeFilters.result.size    > 0 && !activeFilters.result.has(t.result)) return false;
+      if (activeFilters.tag.size       > 0) {
+        const tags = t.tags || [];
+        if (!tags.some(tg => activeFilters.tag.has(tg))) return false;
+      }
+      if (activeFilters.skipReason.size > 0) {
+        if (!t.skipReason || !activeFilters.skipReason.has(t.skipReason)) return false;
+      }
+      if (activeFilters.reviewed.size > 0) {
+        const wantReviewed   = activeFilters.reviewed.has('reviewed');
+        const wantUnreviewed = activeFilters.reviewed.has('unreviewed');
+        if (wantReviewed && wantUnreviewed) { /* both = pass */ }
+        else if (wantReviewed   && !t.reviewed) return false;
+        else if (wantUnreviewed &&  t.reviewed) return false;
+      }
+      return true;
+    });
+  }
+
+  function renderTagFilterChips() {
+    const container = document.getElementById('fsec-tag');
+    if (!container) return;
+    const allTags = getAllUsedTags();
+    if (allTags.length === 0) {
+      container.innerHTML = '<span class="text-xs text-slate-400">タグなし</span>';
+      return;
+    }
+    container.innerHTML = allTags.map(tg => {
+      const active = activeFilters.tag.has(tg);
+      const safe = esc(tg).replace(/'/g, "\\'");
+      return `<button onclick="toggleFilter('tag','${safe}')" data-filter="tag" data-value="${esc(tg)}" data-active="bg-blue-600 text-white border-blue-600" class="filter-chip px-3 py-1 rounded-full text-xs border ${active ? 'bg-blue-600 text-white border-blue-600' : 'border-slate-200 bg-white text-slate-500'} transition-all active:scale-95">#${esc(tg)}</button>`;
+    }).join('');
   }
 
   function renderHistory() {
+    renderTagFilterChips();
     const trades = getFilteredTrades();
     const list  = document.getElementById('trade-list');
     const empty = document.getElementById('empty-history');
@@ -853,29 +1417,85 @@
   }
 
   function tradeCard(t) {
-    const pnlStr  = (t.pnl >= 0 ? '+' : '') + t.pnl.toLocaleString() + '円';
+    const pnlStr   = (t.pnl >= 0 ? '+' : '') + t.pnl.toLocaleString() + '円';
     const mainPair = t.pairMain || t.pair || '';
     const subPair  = t.pairSub  || '';
-    const exitStr  = t.datetimeExit ? ' → ' + fmtTime(t.datetimeExit) : '';
+
+    // Elapsed time
+    let timeStr = fmtDate(t.datetimeEntry || t.datetime);
+    if (t.datetimeExit) {
+      const diffMin = Math.round((new Date(t.datetimeExit) - new Date(t.datetimeEntry || t.datetime)) / 60000);
+      const elapsedStr = diffMin >= 60
+        ? Math.floor(diffMin / 60) + '時間' + (diffMin % 60 > 0 ? (diffMin % 60) + '分' : '')
+        : diffMin + '分';
+      timeStr += ' → ' + fmtTime(t.datetimeExit) + ' <span style="color:#60a5fa">(' + elapsedStr + ')</span>';
+    }
+
+    // Chart images (new slot format or backward-compat array)
+    const flatImgList = flattenImgs(t.images || []);
+
+    // Tags
+    const tags = t.tags || [];
+    const tagsHtml = tags.length > 0
+      ? `<div class="flex gap-1 mt-1.5 flex-wrap">${tags.map(tg =>
+          `<span class="text-[10px] px-2 py-0.5 rounded-full" style="background:#1e3a5f;color:#93c5fd">#${esc(tg)}</span>`
+        ).join('')}</div>`
+      : '';
+
+    const reviewedIcon = t.reviewed
+      ? `<button onclick="toggleReviewed('${t.id}')" title="レビュー済み"
+           class="w-8 h-8 flex items-center justify-center rounded-xl text-emerald-500 hover:bg-emerald-50 transition-colors">
+           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+         </button>`
+      : `<button onclick="toggleReviewed('${t.id}')" title="未レビュー"
+           class="w-8 h-8 flex items-center justify-center rounded-xl text-slate-500 hover:text-emerald-500 transition-colors">
+           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+         </button>`;
+
+    // Images inline — horizontal row between text and buttons
+    const imgInlineHtml = flatImgList.length > 0
+      ? `<div class="flex gap-1 flex-shrink-0 items-center ml-2">
+          ${flatImgList.map((item, i) =>
+            `<div class="flex flex-col items-center gap-0.5 flex-shrink-0">
+               <img src="${item.src}" onclick="openImgViewer('${t.id}',${i})"
+                 class="object-cover rounded-lg cursor-pointer active:scale-95 transition-all"
+                 style="width:56px;height:42px;border:1px solid #2a2a3e">
+               <span class="text-[8px] leading-none" style="color:#60a5fa">${item.label}</span>
+             </div>`
+          ).join('')}
+         </div>`
+      : '';
+
     return `
     <div class="bg-white rounded-2xl p-4 shadow-sm">
-      <div class="flex items-start justify-between mb-2">
+      <!-- Top row: badges + pnl -->
+      <div class="flex items-start justify-between mb-1.5">
         <div class="flex flex-wrap gap-1.5">
           <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${resultBadge(t.result)}">${resultLabel(t.result)}</span>
           <span class="text-xs px-2 py-0.5 rounded-full ${statusBadge(t.status)}">${statusLabel(t.status)}</span>
           <span class="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">${esc(mainPair)}</span>
           ${subPair ? `<span class="text-xs text-slate-400 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full">${esc(subPair)}</span>` : ''}
           <span class="text-xs text-slate-400">${esc(t.timeframe)}</span>
+          ${isSkipStatus(t.status) && t.skipReason && SKIP_REASONS[t.skipReason]
+            ? `<span class="text-xs px-2 py-0.5 rounded-full" style="background:${SKIP_REASONS[t.skipReason].color}20;color:${SKIP_REASONS[t.skipReason].color};border:1px solid ${SKIP_REASONS[t.skipReason].color}40">${SKIP_REASONS[t.skipReason].label}</span>`
+            : ''}
         </div>
         <span class="text-sm font-bold ml-2 whitespace-nowrap ${t.pnl >= 0 ? 'text-emerald-600' : 'text-red-500'}">${pnlStr}</span>
       </div>
-      <div class="flex items-end justify-between">
-        <div class="min-w-0">
+      <!-- Content row: text | images | buttons — all same vertical space -->
+      <div class="flex items-center gap-0">
+        <!-- Text -->
+        <div class="min-w-0 flex-1">
           <div class="text-sm font-semibold text-slate-700 truncate">${methodLabel(t.method)}</div>
           ${t.reason ? `<div class="text-xs text-slate-400 mt-0.5 line-clamp-1">${esc(t.reason)}</div>` : ''}
-          <div class="text-xs text-slate-300 mt-0.5">${fmtDate(t.datetimeEntry || t.datetime)}${exitStr}</div>
+          <div class="text-xs text-slate-300 mt-0.5">${timeStr}</div>
+          ${tagsHtml}
         </div>
+        <!-- Images inline to the right of text -->
+        ${imgInlineHtml}
+        <!-- Action buttons -->
         <div class="flex gap-1 ml-2 flex-shrink-0">
+          ${reviewedIcon}
           <button onclick="openEdit('${t.id}')"
             class="w-8 h-8 flex items-center justify-center rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -893,11 +1513,96 @@
     </div>`;
   }
 
+  // ============================================================
+  // MULTI-SELECT FILTER CHIPS
+  // ============================================================
+  function toggleFilter(field, value) {
+    if (activeFilters[field].has(value)) {
+      activeFilters[field].delete(value);
+    } else {
+      activeFilters[field].add(value);
+    }
+    updateChipUI(field, value);
+    updateSectionBadge(field);
+    updateFilterBadge();
+    renderHistory();
+  }
+
+  function updateChipUI(field, value) {
+    const btn = document.querySelector(`[data-filter="${field}"][data-value="${value}"]`);
+    if (!btn) return;
+    const isActive     = activeFilters[field].has(value);
+    const activeClasses = (btn.dataset.active || 'bg-blue-600 text-white border-blue-600').split(' ');
+    const inactiveClasses = ['bg-white', 'text-slate-500', 'border-slate-200'];
+    if (isActive) {
+      btn.classList.remove(...inactiveClasses);
+      btn.classList.add(...activeClasses);
+    } else {
+      btn.classList.remove(...activeClasses);
+      btn.classList.add(...inactiveClasses);
+    }
+  }
+
+  function updateFilterBadge() {
+    const total = Object.values(activeFilters).reduce((s, set) => s + set.size, 0);
+    const badge = document.getElementById('filter-badge');
+    if (!badge) return;
+    if (total > 0) {
+      badge.textContent = total + '項目選択中';
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
+
   function resetFilters() {
-    ['filter-method','filter-status','filter-result','filter-pair'].forEach(id => {
-      const el = document.getElementById(id);
-      el.value = '';
+    Object.keys(activeFilters).forEach(f => activeFilters[f].clear());
+    document.querySelectorAll('.filter-chip').forEach(btn => {
+      const activeClasses = (btn.dataset.active || 'bg-blue-600 text-white border-blue-600').split(' ');
+      btn.classList.remove(...activeClasses);
+      btn.classList.add('bg-white', 'text-slate-500', 'border-slate-200');
     });
+    // Reset all section badges and close all sections
+    ['method','pair','timeframe','subpair','status','result','tag','reviewed','skipReason'].forEach(name => {
+      const sec   = document.getElementById('fsec-' + name);
+      const badge = document.getElementById('fcount-' + name);
+      const arrow = document.getElementById('farrow-' + name);
+      if (sec)   sec.classList.add('hidden');
+      if (badge) { badge.textContent = ''; badge.classList.add('hidden'); }
+      if (arrow) arrow.style.transform = 'rotate(0deg)';
+    });
+    updateFilterBadge();
+    renderHistory();
+  }
+
+  function toggleFilterSection(name) {
+    const sec   = document.getElementById('fsec-' + name);
+    const arrow = document.getElementById('farrow-' + name);
+    if (!sec) return;
+    const opening = sec.classList.contains('hidden');
+    sec.classList.toggle('hidden');
+    if (arrow) arrow.style.transform = opening ? 'rotate(180deg)' : 'rotate(0deg)';
+  }
+
+  function updateSectionBadge(field) {
+    const count = activeFilters[field].size;
+    const badge = document.getElementById('fcount-' + field);
+    if (!badge) return;
+    if (count > 0) {
+      badge.textContent = count;
+      badge.classList.remove('hidden');
+    } else {
+      badge.textContent = '';
+      badge.classList.add('hidden');
+    }
+  }
+
+  function toggleReviewed(id) {
+    const trades = dbLoad();
+    const idx = trades.findIndex(t => t.id === id);
+    if (idx === -1) return;
+    trades[idx].reviewed = !trades[idx].reviewed;
+    dbSave(trades);
     renderHistory();
   }
 
@@ -943,6 +1648,22 @@
         ${statusLabel(s)}
       </button>`
     ).join('');
+
+    const skipBtnList = [
+      ['m15', 'M15見送り'],
+      ['sub', 'サブ通貨見送り'],
+      ['low_setup', '優位性低い'],
+      ['other', 'その他'],
+    ];
+    const skipBtns = skipBtnList.map(([v, label]) =>
+      `<button type="button" data-group="skipreason" data-prefix="e" data-value="${v}"
+        onclick="selectToggle('skipreason','${v}','e')"
+        class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 transition-all active:scale-95
+          ${t.skipReason === v ? TOGGLE_STYLES.skipreason[v] : INACTIVE_STYLE}">
+        ${label}
+      </button>`
+    ).join('');
+    const skipBlockHidden = isSkipStatus(t.status) ? '' : 'hidden';
 
     document.getElementById('edit-form-wrap').innerHTML = `
       <div class="space-y-4">
@@ -1005,10 +1726,77 @@
           <div class="grid grid-cols-3 gap-2">${statusBtns}</div>
           <input type="hidden" id="e-status" value="${t.status}">
         </div>
+        <div id="e-skip-block" class="${skipBlockHidden}">
+          <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#a78bfa">見送り理由</label>
+          <div class="grid grid-cols-2 gap-2">${skipBtns}</div>
+          <input type="hidden" id="e-skipreason" value="${t.skipReason || ''}">
+        </div>
         <div>
           <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">理由・メモ</label>
           <textarea id="e-reason" rows="3"
             class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none select-text">${esc(t.reason || '')}</textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">タグ</label>
+          <div id="e-tag-chips" class="flex gap-1.5 flex-wrap mb-2"></div>
+          <div class="flex gap-2">
+            <input type="text" id="e-tag-input" placeholder="タグ追加"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();addTag('e')}"
+              class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="button" onclick="addTag('e')"
+              class="px-3 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold">追加</button>
+          </div>
+          <div id="e-tag-suggest" class="flex gap-1.5 flex-wrap mt-2"></div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">チャート画像</label>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div>
+              <div class="text-xs font-semibold mb-1" style="color:#94a3b8">15分足</div>
+              <div id="e-img-m15-preview"></div>
+              <label id="e-img-m15-label" class="flex items-center gap-1 cursor-pointer text-blue-400 text-xs font-semibold mt-1">
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center text-base" style="background:#1e3a5f;border:1.5px dashed #3b82f6">+</span>
+                追加
+                <input type="file" id="e-img-m15-input" accept="image/*" class="hidden" onchange="handleImgAdd('e','m15',event)">
+              </label>
+            </div>
+            <div>
+              <div class="text-xs font-semibold mb-1" style="color:#94a3b8">1時間足</div>
+              <div id="e-img-h1-preview"></div>
+              <label id="e-img-h1-label" class="flex items-center gap-1 cursor-pointer text-blue-400 text-xs font-semibold mt-1">
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center text-base" style="background:#1e3a5f;border:1.5px dashed #3b82f6">+</span>
+                追加
+                <input type="file" id="e-img-h1-input" accept="image/*" class="hidden" onchange="handleImgAdd('e','h1',event)">
+              </label>
+            </div>
+            <div>
+              <div class="text-xs font-semibold mb-1" style="color:#94a3b8">4時間足</div>
+              <div id="e-img-h4-preview"></div>
+              <label id="e-img-h4-label" class="flex items-center gap-1 cursor-pointer text-blue-400 text-xs font-semibold mt-1">
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center text-base" style="background:#1e3a5f;border:1.5px dashed #3b82f6">+</span>
+                追加
+                <input type="file" id="e-img-h4-input" accept="image/*" class="hidden" onchange="handleImgAdd('e','h4',event)">
+              </label>
+            </div>
+            <div>
+              <div class="text-xs font-semibold mb-1" style="color:#94a3b8">日足</div>
+              <div id="e-img-d1-preview"></div>
+              <label id="e-img-d1-label" class="flex items-center gap-1 cursor-pointer text-blue-400 text-xs font-semibold mt-1">
+                <span class="w-7 h-7 rounded-lg flex items-center justify-center text-base" style="background:#1e3a5f;border:1.5px dashed #3b82f6">+</span>
+                追加
+                <input type="file" id="e-img-d1-input" accept="image/*" class="hidden" onchange="handleImgAdd('e','d1',event)">
+              </label>
+            </div>
+          </div>
+          <div>
+            <div class="text-xs font-semibold mb-1" style="color:#94a3b8">その他</div>
+            <div id="e-img-others-preview" class="flex gap-2 flex-wrap mb-1"></div>
+            <label class="flex items-center gap-1 cursor-pointer text-blue-400 text-xs font-semibold">
+              <span class="w-7 h-7 rounded-lg flex items-center justify-center text-base" style="background:#1e3a5f;border:1.5px dashed #3b82f6">+</span>
+              追加（何枚でも可）
+              <input type="file" id="e-img-others-input" accept="image/*" multiple class="hidden" onchange="handleImgAdd('e','others',event)">
+            </label>
+          </div>
         </div>
         <button type="button" onclick="saveEdit()"
           class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-2xl transition-colors">
@@ -1017,6 +1805,19 @@
       </div>`;
 
     document.getElementById('edit-modal').classList.remove('hidden');
+    // Load existing images into edit state
+    if (t.images && !Array.isArray(t.images)) {
+      eImgs = { m15: t.images.m15||null, h1: t.images.h1||null, h4: t.images.h4||null, d1: t.images.d1||null, others: [...(t.images.others||[])] };
+    } else if (Array.isArray(t.images)) {
+      // backward compat: old flat array → put all in others
+      eImgs = emptyImgs();
+      eImgs.others = [...t.images];
+    } else {
+      eImgs = emptyImgs();
+    }
+    renderImgPreview('e');
+    eTags = t.tags ? [...t.tags] : [];
+    renderTagChips('e');
   }
 
   function saveEdit() {
@@ -1038,7 +1839,12 @@
       pnl:       parseFloat(document.getElementById('e-pnl').value) || 0,
       result:    document.getElementById('e-result').value,
       status:    document.getElementById('e-status').value,
+      skipReason: isSkipStatus(document.getElementById('e-status').value)
+        ? (document.getElementById('e-skipreason').value || null)
+        : null,
       reason:    document.getElementById('e-reason').value.trim(),
+      images:    { m15: eImgs.m15, h1: eImgs.h1, h4: eImgs.h4, d1: eImgs.d1, others: [...eImgs.others] },
+      tags:      [...eTags],
       updatedAt: new Date().toISOString(),
     };
     dbSave(trades);
@@ -1076,26 +1882,69 @@
     return cutoff ? all.filter(t => new Date(t.datetime) >= cutoff) : all;
   }
 
+  // ============================================================
+  // STAT HELPERS (pnl-based, schema-agnostic)
+  // ============================================================
+  function isWin(t)       { return t.pnl > 0; }
+  function isLoss(t)      { return t.pnl < 0; }
+  function isBreakeven(t) { return t.pnl === 0; }
+
+  // Compute full stat set for a group of trades
+  function computeSegStats(trades) {
+    const total = trades.length;
+    if (total === 0) {
+      return { total: 0, wins: 0, losses: 0, breakevens: 0, winrate: 0,
+               sumPnl: 0, avgPnl: 0, best: 0, worst: 0,
+               grossProfit: 0, grossLoss: 0, pf: null, ev: 0,
+               avgWin: 0, avgLoss: 0 };
+    }
+    let wins = 0, losses = 0, breakevens = 0;
+    let sumPnl = 0, grossProfit = 0, grossLoss = 0;
+    let best = -Infinity, worst = Infinity;
+    trades.forEach(t => {
+      const p = t.pnl;
+      sumPnl += p;
+      if (p > best)  best  = p;
+      if (p < worst) worst = p;
+      if (p > 0)      { wins++;       grossProfit += p; }
+      else if (p < 0) { losses++;     grossLoss   += -p; }
+      else            { breakevens++; }
+    });
+    const winrate = Math.round(wins / total * 100);
+    const avgPnl  = sumPnl / total;
+    const avgWin  = wins   > 0 ? grossProfit / wins   : 0;
+    const avgLoss = losses > 0 ? grossLoss   / losses : 0;
+    const pf      = grossLoss > 0 ? grossProfit / grossLoss : (grossProfit > 0 ? Infinity : null);
+    const ev      = (wins / total) * avgWin - (losses / total) * avgLoss;
+    return { total, wins, losses, breakevens, winrate, sumPnl, avgPnl,
+             best: best === -Infinity ? 0 : best,
+             worst: worst === Infinity ? 0 : worst,
+             grossProfit, grossLoss, pf, ev, avgWin, avgLoss };
+  }
+
   function renderStats() {
     const trades  = tradesForPeriod(statsPeriod);
     const entries = trades.filter(t => t.status === 'entry');
-    const wins    = entries.filter(t => t.result === 'win').length;
-    const losses  = entries.filter(t => t.result === 'loss').length;
-    const draws   = entries.filter(t => t.result === 'draw').length;
-    const total   = entries.length;
-    const winrate = total > 0 ? Math.round(wins / total * 100) : null;
-    const totalPnl = entries.reduce((s, t) => s + t.pnl, 0);
+    const seg     = computeSegStats(entries);
+    const wins    = seg.wins;
+    const losses  = seg.losses;
+    const draws   = seg.breakevens;
 
-    document.getElementById('stat-winrate').textContent = winrate !== null ? winrate + '%' : '—';
+    document.getElementById('stat-winrate').textContent = seg.total > 0 ? seg.winrate + '%' : '—';
     const statTotalEl = document.getElementById('stat-total');
-    statTotalEl.textContent = total > 0 ? (totalPnl >= 0 ? '+' : '') + totalPnl.toLocaleString() : '—';
-    statTotalEl.className = 'text-xl font-bold ' + (totalPnl >= 0 ? 'text-emerald-600' : 'text-red-500');
+    statTotalEl.textContent = seg.total > 0 ? (seg.sumPnl >= 0 ? '+' : '') + Math.round(seg.sumPnl).toLocaleString() : '—';
+    statTotalEl.className = 'text-xl font-bold ' + (seg.sumPnl >= 0 ? 'text-emerald-600' : 'text-red-500');
     document.getElementById('stat-count').textContent = trades.length;
 
     renderProfitChart(entries);
-    renderWinrateChart(wins, losses, draws, total);
-    renderBreakdown('method-breakdown', entries, 'method');
-    renderBreakdown('pair-breakdown', entries, 'pair');
+    renderWinrateChart(wins, losses, draws, seg.total);
+    renderBreakdownV2('method-breakdown',    entries, 'method');
+    renderBreakdownV2('timeframe-breakdown', entries, 'timeframe');
+    renderBreakdownV2('mainpair-breakdown',  entries, 'pairMain');
+    renderBreakdownV2('subpair-breakdown',   entries, 'pairSub');
+    renderStatusBreakdown(trades);
+    renderSkipAnalysis(trades);
+    renderCapitalChart();
   }
 
   function renderProfitChart(entries) {
@@ -1128,7 +1977,7 @@
         plugins: { legend: { display: false } },
         scales: {
           x: { display: true, ticks: { maxTicksLimit: 8, font: { size: 10 }, color: '#94A3B8' }, grid: { display: false } },
-          y: { display: true, ticks: { font: { size: 10 }, color: '#94A3B8' }, grid: { color: 'rgba(0,0,0,0.04)' } },
+          y: { display: true, ticks: { font: { size: 10 }, color: '#94A3B8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
         },
       },
     });
@@ -1144,7 +1993,7 @@
         labels: ['勝', '負', '分'],
         datasets: [{
           data: total > 0 ? [wins, losses, draws] : [1],
-          backgroundColor: total > 0 ? ['#10B981', '#EF4444', '#94A3B8'] : ['#E2E8F0'],
+          backgroundColor: total > 0 ? ['#10B981', '#EF4444', '#64748b'] : ['#2d3748'],
           borderWidth: 0,
         }],
       },
@@ -1176,40 +2025,246 @@
     }
   }
 
-  function renderBreakdown(containerId, entries, key) {
+  // Format helpers for breakdown cards
+  function fmtSigned(n)  { const r = Math.round(n); return (r >= 0 ? '+' : '') + r.toLocaleString(); }
+  function fmtPF(pf)     { if (pf === null) return '—'; if (pf === Infinity) return '∞'; return pf.toFixed(2); }
+  function labelForKey(key, raw) {
+    if (raw === '' || raw == null) return '(未設定)';
+    if (key === 'method') return methodLabel(raw);
+    return raw;
+  }
+
+  function renderBreakdownV2(containerId, entries, key) {
     const el = document.getElementById(containerId);
+    if (!el) return;
     if (entries.length === 0) { el.innerHTML = '<p class="text-slate-400 text-sm">データがありません</p>'; return; }
 
-    const map = {};
+    // Group trades by key value
+    const groups = {};
     entries.forEach(t => {
-      const k = t[key] || '不明';
-      if (!map[k]) map[k] = { wins: 0, total: 0, pnl: 0 };
-      map[k].total++;
-      if (t.result === 'win') map[k].wins++;
-      map[k].pnl += t.pnl;
+      let k = t[key];
+      if (key === 'pairMain') k = t.pairMain || t.pair || '';
+      if (k === undefined || k === null) k = '';
+      if (!groups[k]) groups[k] = [];
+      groups[k].push(t);
     });
 
-    el.innerHTML = Object.entries(map)
-      .sort((a, b) => b[1].total - a[1].total)
-      .map(([name, s]) => {
-        const wr = Math.round(s.wins / s.total * 100);
-        const barW = wr;
-        return `
-        <div class="py-2 border-b border-slate-50 last:border-0">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-sm font-medium text-slate-700">${esc(name)}</span>
-            <span class="text-sm font-bold ${s.pnl >= 0 ? 'text-emerald-600' : 'text-red-500'}">
-              ${s.pnl >= 0 ? '+' : ''}${s.pnl.toLocaleString()}
-            </span>
+    // For subpair, drop empty (no sub) entries
+    if (key === 'pairSub') delete groups[''];
+
+    const segs = Object.entries(groups)
+      .map(([name, ts]) => ({ name, stats: computeSegStats(ts) }))
+      .sort((a, b) => b.stats.total - a.stats.total);
+
+    if (segs.length === 0) { el.innerHTML = '<p class="text-slate-400 text-sm">データがありません</p>'; return; }
+
+    el.innerHTML = segs.map(({ name, stats: s }) => {
+      const pnlColor = s.sumPnl >= 0 ? 'text-emerald-400' : 'text-red-400';
+      const barW     = s.winrate;
+      return `
+      <div class="py-3 border-b border-slate-50 last:border-0">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-sm font-semibold" style="color:#cbd5e1">${esc(labelForKey(key, name))}</span>
+          <span class="text-sm font-bold ${pnlColor}">${fmtSigned(s.sumPnl)}円</span>
+        </div>
+        <div class="flex items-center gap-2 mb-2">
+          <div class="flex-1 rounded-full h-1.5" style="background:#2a2a3e">
+            <div class="h-1.5 rounded-full" style="width:${barW}%;background:#3b82f6"></div>
           </div>
-          <div class="flex items-center gap-2">
-            <div class="flex-1 bg-slate-100 rounded-full h-1.5">
-              <div class="bg-blue-500 h-1.5 rounded-full" style="width:${barW}%"></div>
-            </div>
-            <span class="text-xs text-slate-400">${s.total}回・勝率${wr}%</span>
+          <span class="text-xs" style="color:#94a3b8">${s.total}回・勝率${s.winrate}%</span>
+        </div>
+        <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-xs" style="color:#94a3b8">
+          <div>平均 <span style="color:#cbd5e1">${fmtSigned(s.avgPnl)}</span></div>
+          <div>PF <span style="color:#cbd5e1">${fmtPF(s.pf)}</span></div>
+          <div>Best <span class="text-emerald-400">${fmtSigned(s.best)}</span></div>
+          <div>Worst <span class="text-red-400">${fmtSigned(s.worst)}</span></div>
+          <div class="col-span-2">期待値 <span style="color:#cbd5e1">${fmtSigned(s.ev)}円/回</span></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Status breakdown — special: shows entry/through/miss counts + ratio,
+  // and PF/winrate for entries only
+  function renderStatusBreakdown(allTrades) {
+    const el = document.getElementById('status-breakdown');
+    if (!el) return;
+    if (allTrades.length === 0) { el.innerHTML = '<p class="text-slate-400 text-sm">データがありません</p>'; return; }
+
+    const total = allTrades.length;
+    const groups = { entry: [], through: [], miss: [] };
+    allTrades.forEach(t => {
+      if (groups[t.status]) groups[t.status].push(t);
+    });
+
+    const rows = [
+      { key: 'entry',   label: 'エントリー', color: '#60a5fa' },
+      { key: 'through', label: 'スルー',     color: '#facc15' },
+      { key: 'miss',    label: 'ミス',       color: '#fb923c' },
+    ];
+
+    el.innerHTML = rows.map(r => {
+      const ts    = groups[r.key];
+      const count = ts.length;
+      const pct   = Math.round(count / total * 100);
+      const barW  = pct;
+      const isEntry = r.key === 'entry';
+      const stats = isEntry && count > 0 ? computeSegStats(ts) : null;
+
+      let extraHtml = '';
+      if (stats) {
+        const pnlColor = stats.sumPnl >= 0 ? 'text-emerald-400' : 'text-red-400';
+        extraHtml = `
+          <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-xs mt-2" style="color:#94a3b8">
+            <div>勝率 <span style="color:#cbd5e1">${stats.winrate}%</span></div>
+            <div>PF <span style="color:#cbd5e1">${fmtPF(stats.pf)}</span></div>
+            <div class="col-span-2">合計損益 <span class="${pnlColor}">${fmtSigned(stats.sumPnl)}円</span></div>
+          </div>`;
+      }
+
+      return `
+      <div class="py-3 border-b border-slate-50 last:border-0">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-sm font-semibold" style="color:#cbd5e1">${r.label}</span>
+          <span class="text-sm font-bold" style="color:${r.color}">${count}回</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="flex-1 rounded-full h-1.5" style="background:#2a2a3e">
+            <div class="h-1.5 rounded-full" style="width:${barW}%;background:${r.color}"></div>
           </div>
-        </div>`;
-      }).join('');
+          <span class="text-xs" style="color:#94a3b8">${pct}%</span>
+        </div>
+        ${extraHtml}
+      </div>`;
+    }).join('');
+  }
+
+  // ============================================================
+  // SKIP ANALYSIS — 見送り分析
+  // ============================================================
+  function renderSkipAnalysis(trades) {
+    const skips = trades.filter(t => isSkipStatus(t.status));
+    renderOpportunityLoss(skips);
+    renderSkipByReason(skips);
+    renderEntryVsSkip(trades);
+  }
+
+  function renderOpportunityLoss(skips) {
+    const el = document.getElementById('skip-opportunity-loss');
+    if (!el) return;
+    if (skips.length === 0) {
+      el.innerHTML = '<p class="text-slate-400 text-sm">見送りトレードがありません</p>';
+      return;
+    }
+    const s = computeSegStats(skips);
+    const sumColor = s.sumPnl >= 0 ? 'text-emerald-400' : 'text-red-400';
+    const sumHint  = s.sumPnl >= 0 ? '機会損失' : 'スキップ正解';
+    el.innerHTML = `
+      <div class="rounded-xl p-4" style="background:#1e293b;border:1px solid #334155">
+        <div class="flex items-baseline justify-between mb-2">
+          <span class="text-xs uppercase tracking-wide" style="color:#94a3b8">🔍 機会損失の累計</span>
+          <span class="text-[10px]" style="color:#94a3b8">${sumHint}</span>
+        </div>
+        <div class="flex items-end justify-between mb-3">
+          <span class="text-2xl font-bold ${sumColor}">${fmtSigned(s.sumPnl)}円</span>
+          <div class="text-right">
+            <div class="text-sm font-bold" style="color:#cbd5e1">勝率 ${s.winrate}%</div>
+            <div class="text-xs" style="color:#94a3b8">${s.wins}/${s.total}</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-x-3 text-xs" style="color:#94a3b8">
+          <div>PF <span style="color:#cbd5e1">${fmtPF(s.pf)}</span></div>
+          <div>期待値 <span style="color:#cbd5e1">${fmtSigned(s.ev)}円/回</span></div>
+        </div>
+      </div>`;
+  }
+
+  function renderSkipByReason(skips) {
+    const el = document.getElementById('skip-by-reason');
+    if (!el) return;
+    if (skips.length === 0) {
+      el.innerHTML = '<p class="text-slate-400 text-sm">データがありません</p>';
+      return;
+    }
+    const groups = { m15: [], sub: [], low_setup: [], other: [], _unclassified: [] };
+    skips.forEach(t => {
+      const r = t.skipReason;
+      if (r && groups[r]) groups[r].push(t);
+      else groups._unclassified.push(t);
+    });
+    const order = [
+      { key: 'm15',           label: 'M15見送り',     color: '#a78bfa' },
+      { key: 'sub',           label: 'サブ通貨見送り', color: '#fb923c' },
+      { key: 'low_setup',     label: '優位性低い',     color: '#f87171' },
+      { key: 'other',         label: 'その他',         color: '#94a3b8' },
+      { key: '_unclassified', label: '未分類',         color: '#64748b' },
+    ];
+    const segs = order.filter(r => groups[r.key].length > 0);
+    if (segs.length === 0) { el.innerHTML = '<p class="text-slate-400 text-sm">データがありません</p>'; return; }
+    el.innerHTML = segs.map(r => {
+      const s = computeSegStats(groups[r.key]);
+      const pnlColor = s.sumPnl >= 0 ? 'text-emerald-400' : 'text-red-400';
+      return `
+      <div class="py-3 border-b border-slate-50 last:border-0">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-sm font-semibold" style="color:${r.color}">${r.label}</span>
+          <span class="text-sm font-bold ${pnlColor}">${fmtSigned(s.sumPnl)}円</span>
+        </div>
+        <div class="flex items-center gap-2 mb-2">
+          <div class="flex-1 rounded-full h-1.5" style="background:#2a2a3e">
+            <div class="h-1.5 rounded-full" style="width:${s.winrate}%;background:${r.color}"></div>
+          </div>
+          <span class="text-xs" style="color:#94a3b8">${s.total}回・勝率${s.winrate}%</span>
+        </div>
+        <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-xs" style="color:#94a3b8">
+          <div>平均 <span style="color:#cbd5e1">${fmtSigned(s.avgPnl)}</span></div>
+          <div>PF <span style="color:#cbd5e1">${fmtPF(s.pf)}</span></div>
+          <div>Best <span class="text-emerald-400">${fmtSigned(s.best)}</span></div>
+          <div>Worst <span class="text-red-400">${fmtSigned(s.worst)}</span></div>
+          <div class="col-span-2">期待値 <span style="color:#cbd5e1">${fmtSigned(s.ev)}円/回</span></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderEntryVsSkip(trades) {
+    const el = document.getElementById('skip-vs-entry');
+    if (!el) return;
+    const entries = trades.filter(t => t.status === 'entry');
+    const skips   = trades.filter(t => isSkipStatus(t.status));
+    if (entries.length === 0 && skips.length === 0) {
+      el.innerHTML = '<p class="text-slate-400 text-sm">データがありません</p>';
+      return;
+    }
+    const e = computeSegStats(entries);
+    const s = computeSegStats(skips);
+
+    const pfNum = (pf) => pf === null ? -1 : (pf === Infinity ? 1e9 : pf);
+    const rows = [
+      { label: '件数',     eVal: e.total + '回',        sVal: s.total + '回',        highlight: false },
+      { label: '勝率',     eVal: e.winrate + '%',       sVal: s.winrate + '%',       highlight: s.total > 0 && e.total > 0 && s.winrate > e.winrate },
+      { label: 'PF',       eVal: fmtPF(e.pf),           sVal: fmtPF(s.pf),           highlight: s.total > 0 && e.total > 0 && pfNum(s.pf) > pfNum(e.pf) },
+      { label: '期待値',   eVal: fmtSigned(e.ev) + '円', sVal: fmtSigned(s.ev) + '円', highlight: s.total > 0 && e.total > 0 && s.ev > e.ev },
+      { label: '合計損益', eVal: fmtSigned(e.sumPnl) + '円', sVal: fmtSigned(s.sumPnl) + '円', highlight: false },
+    ];
+    el.innerHTML = `
+      <div class="rounded-xl overflow-hidden" style="border:1px solid #334155">
+        <div class="grid grid-cols-3 text-xs font-bold py-2 px-3" style="background:#1e293b;color:#94a3b8">
+          <div></div>
+          <div class="text-right">実エントリー</div>
+          <div class="text-right">見送り</div>
+        </div>
+        ${rows.map(r => `
+          <div class="grid grid-cols-3 text-xs py-2 px-3 items-center ${r.highlight ? '' : ''}"
+               style="${r.highlight ? 'background:#3a3410;border-left:2px solid #facc15' : 'background:#0f172a'};color:#cbd5e1;border-top:1px solid #1e293b">
+            <div style="color:#94a3b8">${r.label}${r.highlight ? ' ⚠' : ''}</div>
+            <div class="text-right font-semibold">${r.eVal}</div>
+            <div class="text-right font-semibold ${r.highlight ? 'text-yellow-300' : ''}">${r.sVal}</div>
+          </div>`).join('')}
+      </div>
+      ${rows.some(r => r.highlight)
+        ? '<p class="text-[10px] mt-2" style="color:#facc15">⚠ = 見送り側が実エントリーを上回っています。積極的にエントリーを検討してください。</p>'
+        : ''}`;
   }
 
   // ============================================================
@@ -1245,14 +2300,14 @@
       const isToday = isCurrentMonth && today.getDate() === day;
       const data = dayMap[day];
       const wd = new Date(calYear, calMonth, day).getDay();
-      const color = wd === 0 ? 'text-red-500' : wd === 6 ? 'text-blue-500' : 'text-slate-700';
+      const color = wd === 0 ? 'text-red-400' : wd === 6 ? 'text-blue-400' : 'text-slate-300';
 
       let dot = '';
       if (data) {
         if (data.hasEntry) {
           dot = `<span class="w-1.5 h-1.5 rounded-full ${data.pnl > 0 ? 'bg-emerald-400' : data.pnl < 0 ? 'bg-red-400' : 'bg-slate-300'} mx-auto"></span>`;
         } else {
-          dot = `<span class="w-1.5 h-1.5 rounded-full bg-slate-200 mx-auto"></span>`;
+          dot = `<span class="w-1.5 h-1.5 rounded-full bg-slate-600 mx-auto"></span>`;
         }
       }
 
@@ -1316,6 +2371,124 @@
     document.getElementById('sum-pf').textContent            = pf;
     document.getElementById('sum-streak-win').textContent    = maxStreakW + '連勝';
     document.getElementById('sum-streak-loss').textContent   = maxStreakL + '連敗';
+  }
+
+  // ============================================================
+  // SIMULATION (per-trade interactive)
+  // ============================================================
+  // result key → { profitMultiplier }
+  // MAX profit = 3×risk, BIG = 2×risk, REG = 1×risk, 微益 = 0.5×risk
+  // 建値決済 = 0, 損切 = -1×risk (risk resets to initial)
+  const SIM_RESULT = {
+    max:       { mult: 3,    label: 'MAX',    color: 'border-violet-500 bg-violet-500 text-white' },
+    big:       { mult: 2,    label: 'BIG',    color: 'border-blue-500 bg-blue-500 text-white' },
+    reg:       { mult: 1,    label: 'REG',    color: 'border-emerald-500 bg-emerald-500 text-white' },
+    small:     { mult: 0.5,  label: '微益',   color: 'border-teal-400 bg-teal-400 text-white' },
+    breakeven: { mult: 0,    label: '建値',   color: 'border-slate-400 bg-slate-400 text-white' },
+    stoploss:  { mult: -1,   label: '損切',   color: 'border-red-500 bg-red-500 text-white' },
+  };
+
+  let simTradeCount   = 5;
+  let simTradeResults = Array(10).fill(null); // null = 未選択
+
+  function simChangeCount(delta) {
+    simTradeCount = Math.min(10, Math.max(1, simTradeCount + delta));
+    document.getElementById('sim-count-display').textContent = simTradeCount;
+    renderSimulation();
+  }
+
+  function setTradeResult(idx, key) {
+    // Toggle off if same key tapped again
+    simTradeResults[idx] = simTradeResults[idx] === key ? null : key;
+    renderSimulation();
+  }
+
+  function renderSimulation() {
+    const initial = parseInt(document.getElementById('sim-initial')?.value) || 100000;
+
+    // Compute compound capital row-by-row
+    let capital = initial;
+    let risk    = initial;
+    const rows = [];
+
+    for (let i = 0; i < simTradeCount; i++) {
+      const key = simTradeResults[i];
+      const cfg = key ? SIM_RESULT[key] : null;
+      const rowRisk = risk;
+
+      let pnl = null;
+      let nextCapital = capital;
+      let nextRisk    = risk;
+
+      if (cfg) {
+        pnl = risk * cfg.mult;
+        nextCapital = capital + pnl;
+        if (key === 'stoploss') {
+          nextRisk = initial;           // reset to initial after loss
+        } else if (key === 'breakeven') {
+          nextRisk = risk;              // unchanged
+        } else {
+          nextRisk = Math.abs(pnl);     // reinvest profit as next risk
+        }
+      }
+
+      rows.push({ idx: i, key, cfg, risk: rowRisk, pnl, capital, nextCapital });
+
+      capital = nextCapital;
+      risk    = nextRisk;
+    }
+
+    // Update summary
+    const lastRow   = rows[rows.length - 1];
+    const finalCap  = lastRow.key ? lastRow.nextCapital : lastRow.capital;
+    const growth    = ((finalCap / initial - 1) * 100).toFixed(1);
+    const finalEl   = document.getElementById('sim-final');
+    const growthEl  = document.getElementById('sim-growth');
+    if (finalEl)  finalEl.textContent  = fmt(finalCap) + '円';
+    if (growthEl) {
+      const diff = finalCap - initial;
+      growthEl.textContent = `初期 ${fmt(initial)}円 ${diff >= 0 ? '+' : ''}${fmt(diff)}円（${growth}%）`;
+    }
+
+    // Render rows
+    const container = document.getElementById('sim-trade-rows');
+    if (!container) return;
+
+    container.innerHTML = rows.map(r => {
+      const chips = Object.entries(SIM_RESULT).map(([k, c]) => {
+        const active = r.key === k;
+        const baseClass = 'px-2.5 py-1.5 rounded-lg text-xs font-bold border-2 transition-all active:scale-95 ';
+        const cls = active
+          ? baseClass + c.color
+          : baseClass + 'border-slate-200 bg-white text-slate-500';
+        return `<button onclick="setTradeResult(${r.idx},'${k}')" class="${cls}">${c.label}</button>`;
+      }).join('');
+
+      const pnlText = r.pnl !== null
+        ? (r.pnl >= 0 ? `<span class="text-emerald-600">+${fmt(r.pnl)}円</span>` : `<span class="text-red-500">${fmt(r.pnl)}円</span>`)
+        : '<span class="text-slate-300">−</span>';
+
+      const capText = r.key
+        ? `<span class="${r.nextCapital >= initial ? 'text-slate-700' : 'text-red-600'}">${fmt(r.nextCapital)}円</span>`
+        : `<span class="text-slate-300">${fmt(r.capital)}円</span>`;
+
+      return `
+        <div class="border border-slate-100 rounded-2xl overflow-hidden">
+          <div class="flex items-center gap-2 px-3 py-2 bg-slate-50">
+            <span class="w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">${r.idx + 1}</span>
+            <span class="text-xs text-slate-400">リスク <span class="font-semibold text-slate-600">${fmt(r.risk)}円</span></span>
+            <span class="ml-auto text-xs">${pnlText}</span>
+            <span class="text-xs text-slate-300">→</span>
+            <span class="text-xs font-semibold">${capText}</span>
+          </div>
+          <div class="px-3 py-2 flex flex-wrap gap-1.5">${chips}</div>
+        </div>`;
+    }).join('');
+  }
+
+  // Format number with commas
+  function fmt(n) {
+    return Math.round(n).toLocaleString('ja-JP');
   }
 
   // ============================================================
@@ -1409,6 +2582,16 @@
   }
   function statusLabel(s) { return { entry: 'エントリー', through: 'スルー', miss: 'ミス' }[s] || s; }
 
+  // Skip reason definitions
+  const SKIP_REASONS = {
+    m15:       { label: 'M15見送り',     color: '#a78bfa', hint: '15分足だから見送った' },
+    sub:       { label: 'サブ通貨見送り', color: '#fb923c', hint: 'サブ通貨だから見送った' },
+    low_setup: { label: '優位性低い',     color: '#f87171', hint: 'チャート形状の優位性が低い' },
+    other:     { label: 'その他',         color: '#94a3b8', hint: 'その他の理由' },
+  };
+  function skipReasonLabel(r) { return SKIP_REASONS[r]?.label || '未分類'; }
+  function isSkipStatus(s) { return s === 'through' || s === 'miss'; }
+
   function resultBadge(r) {
     return {
       reg:       'bg-emerald-100 text-emerald-700',
@@ -1427,6 +2610,295 @@
   }
   function statusBadge(s) {
     return { entry: 'bg-blue-100 text-blue-700', through: 'bg-yellow-100 text-yellow-700', miss: 'bg-orange-100 text-orange-700' }[s] || 'bg-slate-100 text-slate-600';
+  }
+
+  // ============================================================
+  // IMAGE HANDLING (timeframe-slot based)
+  // Slots: m15 / h1 / h4 / d1 = single image each
+  //        others              = unlimited
+  // ============================================================
+  const IMG_SLOTS = ['m15','h1','h4','d1'];
+
+  function compressImage(file) {
+    return new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxW = 1200;
+          const scale = img.width > maxW ? maxW / img.width : 1;
+          canvas.width  = Math.round(img.width  * scale);
+          canvas.height = Math.round(img.height * scale);
+          canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.72));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function handleImgAdd(prefix, slot, event) {
+    const files = Array.from(event.target.files);
+    event.target.value = '';
+    if (!files.length) return;
+    const store = prefix === 'f' ? fImgs : eImgs;
+
+    if (slot === 'others') {
+      for (const file of files) {
+        const url = await compressImage(file);
+        store.others.push(url);
+      }
+    } else {
+      // single-slot: replace existing
+      const url = await compressImage(files[0]);
+      store[slot] = url;
+    }
+    renderImgPreview(prefix);
+  }
+
+  function renderImgPreview(prefix) {
+    const store = prefix === 'f' ? fImgs : eImgs;
+
+    // Single-slot tiles (m15, h1, h4, d1)
+    IMG_SLOTS.forEach(slot => {
+      const preview = document.getElementById(prefix + '-img-' + slot + '-preview');
+      const addLabel = document.getElementById(prefix + '-img-' + slot + '-label');
+      if (!preview) return;
+      if (store[slot]) {
+        preview.innerHTML = `
+          <div class="relative inline-block">
+            <img src="${store[slot]}" class="w-full h-20 object-cover rounded-xl cursor-pointer"
+              onclick="openImgViewerSlot('${prefix}','${slot}')">
+            <button onclick="removeImg('${prefix}','${slot}',0)"
+              class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center shadow">✕</button>
+          </div>`;
+        if (addLabel) addLabel.style.display = 'none';
+      } else {
+        preview.innerHTML = '';
+        if (addLabel) addLabel.style.display = 'flex';
+      }
+    });
+
+    // Others (unlimited)
+    const othersEl = document.getElementById(prefix + '-img-others-preview');
+    if (othersEl) {
+      othersEl.innerHTML = store.others.map((src, i) => `
+        <div class="relative">
+          <img src="${src}" class="w-20 h-16 object-cover rounded-xl cursor-pointer"
+            onclick="openImgViewerSlot('${prefix}','others',${i})">
+          <button onclick="removeImg('${prefix}','others',${i})"
+            class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center shadow">✕</button>
+        </div>`).join('');
+    }
+  }
+
+  function removeImg(prefix, slot, idx) {
+    const store = prefix === 'f' ? fImgs : eImgs;
+    if (slot === 'others') {
+      store.others.splice(idx, 1);
+    } else {
+      store[slot] = null;
+    }
+    renderImgPreview(prefix);
+  }
+
+  // Viewer helper for registration/edit preview
+  function openImgViewerSlot(prefix, slot, othersIdx) {
+    const store = prefix === 'f' ? fImgs : eImgs;
+    const flat = flattenImgs(store);
+    let startIdx = 0;
+    if (slot === 'others') {
+      startIdx = IMG_SLOTS.filter(s => store[s]).length + (othersIdx || 0);
+    } else {
+      startIdx = IMG_SLOTS.filter((s, i) => store[s] && IMG_SLOTS.indexOf(slot) > i).length;
+    }
+    viewerImgs  = flat.map(x => x.src);
+    viewerIndex = Math.min(startIdx, viewerImgs.length - 1);
+    updateImgViewer();
+    document.getElementById('img-viewer').classList.remove('hidden');
+  }
+
+  // Flatten images object → [{slot, label, src}]
+  function flattenImgs(imgs) {
+    if (Array.isArray(imgs)) {
+      // backward compat: old format was plain array
+      return imgs.map((src, i) => ({ slot: 'img' + i, label: '画像' + (i + 1), src }));
+    }
+    const SLOT_LABEL = { m15: '15分足', h1: '1時間足', h4: '4時間足', d1: '日足' };
+    const result = [];
+    IMG_SLOTS.forEach(s => { if (imgs[s]) result.push({ slot: s, label: SLOT_LABEL[s], src: imgs[s] }); });
+    (imgs.others || []).forEach((src, i) => result.push({ slot: 'others', label: 'その他' + (i + 1), src }));
+    return result;
+  }
+
+  // ============================================================
+  // TAG HANDLING
+  // ============================================================
+  function getAllUsedTags() {
+    const set = new Set();
+    dbLoad().forEach(t => (t.tags || []).forEach(tag => set.add(tag)));
+    return Array.from(set).sort();
+  }
+
+  function addTag(prefix, value) {
+    const inputEl = document.getElementById(prefix + '-tag-input');
+    const raw = (value !== undefined ? value : inputEl.value).trim();
+    if (!raw) return;
+    const arr = prefix === 'f' ? fTags : eTags;
+    if (!arr.includes(raw)) arr.push(raw);
+    inputEl.value = '';
+    renderTagChips(prefix);
+  }
+
+  function removeTag(prefix, idx) {
+    if (prefix === 'f') fTags.splice(idx, 1);
+    else                eTags.splice(idx, 1);
+    renderTagChips(prefix);
+  }
+
+  function renderTagChips(prefix) {
+    const arr     = prefix === 'f' ? fTags : eTags;
+    const chipsEl = document.getElementById(prefix + '-tag-chips');
+    const sugEl   = document.getElementById(prefix + '-tag-suggest');
+    if (!chipsEl) return;
+
+    chipsEl.innerHTML = arr.length === 0
+      ? '<span class="text-xs text-slate-400">タグなし</span>'
+      : arr.map((tag, i) => `
+        <span class="inline-flex items-center gap-1 bg-blue-600 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+          #${esc(tag)}
+          <button type="button" onclick="removeTag('${prefix}',${i})" class="text-white/80 hover:text-white">✕</button>
+        </span>`).join('');
+
+    if (sugEl) {
+      const all = getAllUsedTags().filter(t => !arr.includes(t)).slice(0, 8);
+      sugEl.innerHTML = all.length === 0 ? '' :
+        '<span class="text-xs text-slate-400 mr-1">候補:</span>' +
+        all.map(t => `<button type="button" onclick="addTag('${prefix}','${esc(t).replace(/'/g, "\\'")}')"
+          class="text-xs px-2 py-0.5 rounded-full border border-slate-200 text-slate-400 hover:bg-slate-100">#${esc(t)}</button>`).join(' ');
+    }
+  }
+
+  // ============================================================
+  // IMAGE VIEWER
+  // ============================================================
+  function openImgViewer(tradeId, startIdx) {
+    const t = dbLoad().find(t => t.id === tradeId);
+    if (!t) return;
+    const flat = flattenImgs(t.images || []);
+    if (!flat.length) return;
+    viewerImgs  = flat.map(x => x.src);
+    viewerLabels = flat.map(x => x.label);
+    viewerIndex = Math.min(startIdx, viewerImgs.length - 1);
+    updateImgViewer();
+    document.getElementById('img-viewer').classList.remove('hidden');
+  }
+
+  function updateImgViewer() {
+    document.getElementById('img-viewer-img').src = viewerImgs[viewerIndex];
+    const dots = document.getElementById('img-viewer-dots');
+    dots.innerHTML = viewerImgs.map((_, i) =>
+      `<div class="w-2 h-2 rounded-full ${i === viewerIndex ? 'bg-white' : 'bg-white/30'}"></div>`
+    ).join('');
+    // show label if available
+    let labelEl = document.getElementById('img-viewer-label');
+    if (!labelEl) {
+      labelEl = document.createElement('div');
+      labelEl.id = 'img-viewer-label';
+      labelEl.style.cssText = 'position:absolute;top:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);color:#fff;font-size:12px;padding:2px 10px;border-radius:99px;pointer-events:none';
+      document.getElementById('img-viewer').querySelector('.relative')?.appendChild(labelEl);
+    }
+    if (labelEl && viewerLabels) labelEl.textContent = viewerLabels[viewerIndex] || '';
+  }
+
+  function imgViewerPrev(e) {
+    e.stopPropagation();
+    viewerIndex = (viewerIndex - 1 + viewerImgs.length) % viewerImgs.length;
+    updateImgViewer();
+  }
+  function imgViewerNext(e) {
+    e.stopPropagation();
+    viewerIndex = (viewerIndex + 1) % viewerImgs.length;
+    updateImgViewer();
+  }
+  function closeImgViewer() {
+    document.getElementById('img-viewer').classList.add('hidden');
+    viewerImgs = []; viewerIndex = 0;
+  }
+
+  // ============================================================
+  // CAPITAL CHART (real trades)
+  // ============================================================
+  function renderCapitalChart() {
+    const initial  = parseInt(document.getElementById('cap-initial')?.value) || 1000000;
+    const allTrades = tradesForPeriod(statsPeriod);
+    const entries  = allTrades
+      .filter(t => t.status === 'entry')
+      .sort((a, b) => new Date(a.datetimeEntry || a.datetime) - new Date(b.datetimeEntry || b.datetime));
+
+    const emptyEl = document.getElementById('cap-empty');
+    const wrapEl  = document.getElementById('cap-chart-wrap');
+    const statsEl = document.getElementById('cap-stats');
+
+    if (entries.length === 0) {
+      emptyEl?.classList.remove('hidden');
+      wrapEl?.classList.add('hidden');
+      statsEl?.classList.add('hidden');
+      return;
+    }
+    emptyEl?.classList.add('hidden');
+    wrapEl?.classList.remove('hidden');
+    statsEl?.classList.remove('hidden');
+
+    let capital = initial;
+    const labels = ['開始'];
+    const data   = [initial];
+    entries.forEach((t, i) => {
+      capital += t.pnl;
+      labels.push('#' + (i + 1));
+      data.push(capital);
+    });
+
+    // Update summary
+    const delta  = capital - initial;
+    const rate   = ((capital / initial - 1) * 100).toFixed(1);
+    document.getElementById('cap-current').textContent = fmt(capital) + '円';
+    const deltaEl = document.getElementById('cap-delta');
+    deltaEl.textContent = (delta >= 0 ? '+' : '') + fmt(delta) + '円';
+    deltaEl.className   = 'text-sm font-bold ' + (delta >= 0 ? 'text-emerald-600' : 'text-red-500');
+    const rateEl = document.getElementById('cap-rate');
+    rateEl.textContent = (delta >= 0 ? '+' : '') + rate + '%';
+    rateEl.className   = 'text-sm font-bold ' + (delta >= 0 ? 'text-emerald-600' : 'text-red-500');
+
+    const ctx = document.getElementById('chart-capital').getContext('2d');
+    if (chartCapital) chartCapital.destroy();
+    const isPositive = capital >= initial;
+    chartCapital = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data,
+          borderColor: isPositive ? '#10B981' : '#EF4444',
+          backgroundColor: isPositive ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3,
+          pointRadius: data.length > 40 ? 0 : 3,
+          pointHoverRadius: 5,
+        }],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { display: true, ticks: { maxTicksLimit: 8, font: { size: 10 }, color: '#94A3B8' }, grid: { display: false } },
+          y: { display: true, ticks: { font: { size: 10 }, color: '#94A3B8', callback: v => fmt(v) }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        },
+      },
+    });
   }
 
   function fmtDate(str) {
