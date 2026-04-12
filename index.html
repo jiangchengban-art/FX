@@ -218,12 +218,12 @@
         <!-- 日時 -->
         <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">エントリー日時</label>
+            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#34d399">エントリー日時</label>
             <input type="datetime-local" id="f-datetime-entry"
               class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">エグジット日時 <span class="text-slate-300 font-normal normal-case tracking-normal">（任意）</span></label>
+            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#67e8f9">エグジット日時 <span class="font-normal normal-case tracking-normal" style="color:#94a3b8">（任意）</span></label>
             <input type="datetime-local" id="f-datetime-exit"
               class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
           </div>
@@ -235,7 +235,7 @@
           <!-- 手法 -->
           <div>
             <div class="flex items-baseline gap-2 mb-2">
-              <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">手法</label>
+              <label class="text-xs font-semibold uppercase tracking-wide" style="color:#c084fc">手法</label>
               <span class="text-xs text-slate-400">①乖離埋め　②３波狙い　③その他</span>
             </div>
             <select id="f-method"
@@ -250,9 +250,10 @@
           <!-- メイン通貨 / サブ通貨 -->
           <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">メイン通貨</label>
+              <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#fbbf24">メイン通貨</label>
               <select id="f-pair-main"
                 class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                <option value="">なし</option>
                 <option value="US500">US500</option>
                 <option value="US100">US100</option>
                 <option value="US30">US30</option>
@@ -278,7 +279,7 @@
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">サブ通貨 <span class="text-slate-300 font-normal normal-case">（任意）</span></label>
+              <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#fb923c">サブ通貨 <span class="font-normal normal-case" style="color:#94a3b8">（任意）</span></label>
               <select id="f-pair-sub"
                 class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                 <option value="">なし</option>
@@ -298,7 +299,7 @@
 
           <!-- 時間足 -->
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">時間足</label>
+            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#6ee7b7">時間足</label>
             <select id="f-timeframe"
               class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
               <option value="M1">M1（1分）</option>
@@ -318,7 +319,7 @@
 
           <!-- 損益 -->
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">損益（円）</label>
+            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#fb7185">損益（円）</label>
             <div class="flex gap-2">
               <div class="relative flex-1">
                 <input type="number" id="f-pnl" placeholder="0" step="1"
@@ -333,7 +334,7 @@
 
           <!-- 結果 -->
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">結果</label>
+            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#6ee7b7">結果</label>
             <div class="grid grid-cols-3 gap-2">
               <button type="button" data-group="result" data-value="reg" onclick="selectToggle('result','reg')"
                 class="toggle-btn py-2.5 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
@@ -365,7 +366,7 @@
 
           <!-- ステータス -->
           <div>
-            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">ステータス</label>
+            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#38bdf8">ステータス</label>
             <div class="grid grid-cols-3 gap-2">
               <button type="button" data-group="status" data-value="entry" onclick="selectToggle('status','entry')"
                 class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
@@ -402,11 +403,42 @@
             </div>
             <input type="hidden" id="f-skipreason" value="">
           </div>
+
+          <!-- 建値タッチ (entry のときのみ表示) -->
+          <div id="f-be-block">
+            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#fbbf24">建値タッチ</label>
+            <div class="grid grid-cols-3 gap-2">
+              <button type="button" data-group="breakeventouch" data-prefix="f" data-value="none"
+                onclick="selectToggle('breakeventouch','none','f')"
+                class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">無し</button>
+              <button type="button" data-group="breakeventouch" data-prefix="f" data-value="touch"
+                onclick="selectToggle('breakeventouch','touch','f')"
+                class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">タッチ有</button>
+              <button type="button" data-group="breakeventouch" data-prefix="f" data-value="stoploss"
+                onclick="selectToggle('breakeventouch','stoploss','f')"
+                class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">損切</button>
+            </div>
+            <input type="hidden" id="f-breakeventouch" value="">
+          </div>
+
+          <!-- MA収束・拡散の形状 -->
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#60a5fa">MA収束・拡散の形状</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" data-group="mashape" data-prefix="f" data-value="straight"
+                onclick="selectToggle('mashape','straight','f')"
+                class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">ストレート</button>
+              <button type="button" data-group="mashape" data-prefix="f" data-value="fake"
+                onclick="selectToggle('mashape','fake','f')"
+                class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">フェイク</button>
+            </div>
+            <input type="hidden" id="f-mashape" value="">
+          </div>
         </div>
 
         <!-- 理由 -->
         <div class="bg-white rounded-2xl p-4 shadow-sm">
-          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">理由・メモ</label>
+          <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#a78bfa">理由・メモ</label>
           <textarea id="f-reason" rows="3"
             placeholder="エントリー/スルー/ミスの理由、チャートの状況などを記録..."
             class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none select-text"></textarea>
@@ -414,7 +446,7 @@
 
         <!-- タグ -->
         <div class="bg-white rounded-2xl p-4 shadow-sm">
-          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">タグ <span class="text-slate-300 font-normal normal-case tracking-normal">（複数可）</span></label>
+          <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#f472b6">タグ <span class="font-normal normal-case tracking-normal" style="color:#94a3b8">（複数可）</span></label>
           <div id="f-tag-chips" class="flex gap-1.5 flex-wrap mb-2"></div>
           <div class="flex gap-2">
             <input type="text" id="f-tag-input" placeholder="例: お手本 / 反省 / トレンド転換"
@@ -428,7 +460,7 @@
 
         <!-- チャート画像 -->
         <div class="bg-white rounded-2xl p-4 shadow-sm">
-          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">チャート画像</label>
+          <label class="block text-xs font-semibold uppercase tracking-wide mb-3" style="color:#7dd3fc">チャート画像</label>
           <div class="grid grid-cols-2 gap-3 mb-3">
             <div id="f-slot-m15" class="img-slot" data-prefix="f" data-slot="m15">
               <div class="text-xs font-semibold mb-1" style="color:#94a3b8">15分足</div>
@@ -793,6 +825,12 @@
         <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center"></div>
       </div>
 
+      <!-- エントリーチャンス集計 -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">📊 エントリーチャンス集計</h3>
+        <div id="opportunity-stats"></div>
+      </div>
+
       <!-- Status breakdown -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
         <h3 class="text-sm font-bold text-slate-600 mb-3">ステータス別件数</h3>
@@ -866,70 +904,6 @@
     <!-- ========== TAB: まとめ ========== -->
     <div id="panel-summary" class="tab-panel p-4">
       <h2 class="text-base font-bold text-slate-600 mb-4">まとめ・管理</h2>
-
-      <!-- Summary cards -->
-      <div class="grid grid-cols-2 gap-3 mb-4">
-        <div class="bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-2xl p-4 shadow-sm">
-          <div class="text-xs opacity-75 mb-1">総トレード数</div>
-          <div id="sum-total-trades" class="text-3xl font-black">0</div>
-          <div class="text-xs opacity-60 mt-0.5">件</div>
-        </div>
-        <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 text-white rounded-2xl p-4 shadow-sm">
-          <div class="text-xs opacity-75 mb-1">合計損益</div>
-          <div id="sum-total-pnl" class="text-3xl font-black">0</div>
-          <div class="text-xs opacity-60 mt-0.5">円 / pips</div>
-        </div>
-        <div class="bg-gradient-to-br from-violet-500 to-violet-700 text-white rounded-2xl p-4 shadow-sm">
-          <div class="text-xs opacity-75 mb-1">勝率</div>
-          <div id="sum-winrate" class="text-3xl font-black">0%</div>
-          <div class="text-xs opacity-60 mt-0.5">エントリーのみ</div>
-        </div>
-        <div class="bg-gradient-to-br from-amber-500 to-amber-700 text-white rounded-2xl p-4 shadow-sm">
-          <div class="text-xs opacity-75 mb-1">平均損益</div>
-          <div id="sum-avg-pnl" class="text-3xl font-black">0</div>
-          <div class="text-xs opacity-60 mt-0.5">円 / pips</div>
-        </div>
-      </div>
-
-      <!-- Detailed stats -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">詳細統計</h3>
-        <div class="space-y-2.5">
-          <div class="flex justify-between text-sm">
-            <span class="text-slate-500">エントリー回数</span>
-            <span id="sum-entry-count" class="font-semibold text-blue-600">0</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-slate-500">スルー回数</span>
-            <span id="sum-through-count" class="font-semibold text-yellow-600">0</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-slate-500">ミス回数</span>
-            <span id="sum-miss-count" class="font-semibold text-orange-600">0</span>
-          </div>
-          <hr class="border-slate-100">
-          <div class="flex justify-between text-sm">
-            <span class="text-slate-500">最大利益（1回）</span>
-            <span id="sum-max-win" class="font-semibold text-emerald-600">0</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-slate-500">最大損失（1回）</span>
-            <span id="sum-max-loss" class="font-semibold text-red-600">0</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-slate-500">プロフィットファクター</span>
-            <span id="sum-pf" class="font-semibold">—</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-slate-500">連勝記録</span>
-            <span id="sum-streak-win" class="font-semibold text-emerald-600">0</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-slate-500">連敗記録</span>
-            <span id="sum-streak-loss" class="font-semibold text-red-600">0</span>
-          </div>
-        </div>
-      </div>
 
       <!-- ===== 資金シミュレーション ===== -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
@@ -1245,6 +1219,15 @@
       low_setup: 'border-red-500 bg-red-50 text-red-700',
       other:     'border-slate-500 bg-slate-100 text-slate-700',
     },
+    breakeventouch: {
+      none:     'border-slate-400 bg-slate-100 text-slate-600',
+      touch:    'border-amber-500 bg-amber-50 text-amber-700',
+      stoploss: 'border-red-500 bg-red-50 text-red-700',
+    },
+    mashape: {
+      straight: 'border-blue-500 bg-blue-50 text-blue-700',
+      fake:     'border-pink-500 bg-pink-50 text-pink-700',
+    },
   };
   const INACTIVE_STYLE = 'border-slate-200 text-slate-500';
 
@@ -1256,7 +1239,7 @@
       const active = btn.dataset.value === value;
       btn.className = btn.className
         .replace(/border-\S+|bg-\S+|text-\S+/g, '').trim();
-      const isSmall = group === 'result' || group === 'skipreason';
+      const isSmall = group === 'result' || group === 'skipreason' || group === 'breakeventouch' || group === 'mashape';
       const base = `toggle-btn py-2.5 rounded-xl ${isSmall ? 'text-xs' : 'text-sm'} font-semibold border-2 transition-all active:scale-95`;
       btn.className = base + ' ' + (active ? TOGGLE_STYLES[group][value] : INACTIVE_STYLE);
     });
@@ -1264,6 +1247,7 @@
     // Show/hide skip reason block when status changes
     if (group === 'status') {
       const p = prefix || 'f';
+      // skip-block: through/miss のみ表示
       const block = document.getElementById(p + '-skip-block');
       if (block) {
         if (isSkipStatus(value)) {
@@ -1327,6 +1311,8 @@
       tags:      [...fTags],
       reviewed:  false,
       skipReason: isSkipStatus(status) ? (document.getElementById('f-skipreason').value || null) : null,
+      breakevenTouch: document.getElementById('f-breakeventouch').value || null,
+      maShape: document.getElementById('f-mashape').value || null,
       createdAt: new Date().toISOString(),
     };
 
@@ -1356,6 +1342,17 @@
     const skipHidden = document.getElementById('f-skipreason');
     if (skipHidden) skipHidden.value = '';
     document.querySelectorAll('[data-group="skipreason"][data-prefix="f"]').forEach(b => {
+      b.className = 'toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 transition-all active:scale-95 ' + INACTIVE_STYLE;
+    });
+    // Reset be-block
+    const beHidden = document.getElementById('f-breakeventouch');
+    if (beHidden) beHidden.value = '';
+    document.querySelectorAll('[data-group="breakeventouch"][data-prefix="f"]').forEach(b => {
+      b.className = 'toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 transition-all active:scale-95 ' + INACTIVE_STYLE;
+    });
+    const maHidden = document.getElementById('f-mashape');
+    if (maHidden) maHidden.value = '';
+    document.querySelectorAll('[data-group="mashape"][data-prefix="f"]').forEach(b => {
       b.className = 'toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 transition-all active:scale-95 ' + INACTIVE_STYLE;
     });
   }
@@ -1479,6 +1476,15 @@
           ${isSkipStatus(t.status) && t.skipReason && SKIP_REASONS[t.skipReason]
             ? `<span class="text-xs px-2 py-0.5 rounded-full" style="background:${SKIP_REASONS[t.skipReason].color}20;color:${SKIP_REASONS[t.skipReason].color};border:1px solid ${SKIP_REASONS[t.skipReason].color}40">${SKIP_REASONS[t.skipReason].label}</span>`
             : ''}
+          ${t.breakevenTouch
+            ? (() => {
+                const BT = { none: { label: '無し', color: '#94a3b8' }, touch: { label: 'タッチ有', color: '#f59e0b' }, stoploss: { label: '損切', color: '#ef4444' } };
+                const bt = BT[t.breakevenTouch];
+                return bt ? `<span class="text-xs px-2 py-0.5 rounded-full" style="background:${bt.color}20;color:${bt.color};border:1px solid ${bt.color}40">${bt.label}</span>` : '';
+              })()
+            : ''}
+          ${t.maShape === 'straight' ? '<span class="text-xs px-2 py-0.5 rounded-full" style="background:#3b82f620;color:#60a5fa;border:1px solid #3b82f640">ストレート</span>' : ''}
+          ${t.maShape === 'fake'     ? '<span class="text-xs px-2 py-0.5 rounded-full" style="background:#ec489920;color:#f472b6;border:1px solid #ec489940">フェイク</span>' : ''}
         </div>
         <span class="text-sm font-bold ml-2 whitespace-nowrap ${t.pnl >= 0 ? 'text-emerald-600' : 'text-red-500'}">${pnlStr}</span>
       </div>
@@ -1665,6 +1671,25 @@
     ).join('');
     const skipBlockHidden = isSkipStatus(t.status) ? '' : 'hidden';
 
+    const beBtns = [['none','無し'],['touch','タッチ有'],['stoploss','損切']].map(([v, label]) =>
+      `<button type="button" data-group="breakeventouch" data-prefix="e" data-value="${v}"
+        onclick="selectToggle('breakeventouch','${v}','e')"
+        class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 transition-all active:scale-95
+          ${t.breakevenTouch === v ? TOGGLE_STYLES.breakeventouch[v] : INACTIVE_STYLE}">
+        ${label}
+      </button>`
+    ).join('');
+
+    const maShapeBtns = [['straight','ストレート'],['fake','フェイク']].map(([v, label]) =>
+      `<button type="button" data-group="mashape" data-prefix="e" data-value="${v}"
+        onclick="selectToggle('mashape','${v}','e')"
+        class="toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 transition-all active:scale-95
+          ${t.maShape === v ? TOGGLE_STYLES.mashape[v] : INACTIVE_STYLE}">
+        ${label}
+      </button>`
+    ).join('');
+    const beBlockHidden = '';
+
     document.getElementById('edit-form-wrap').innerHTML = `
       <div class="space-y-4">
         <div class="grid grid-cols-2 gap-3">
@@ -1730,6 +1755,16 @@
           <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#a78bfa">見送り理由</label>
           <div class="grid grid-cols-2 gap-2">${skipBtns}</div>
           <input type="hidden" id="e-skipreason" value="${t.skipReason || ''}">
+        </div>
+        <div id="e-be-block" class="${beBlockHidden}">
+          <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#fbbf24">建値タッチ</label>
+          <div class="grid grid-cols-3 gap-2">${beBtns}</div>
+          <input type="hidden" id="e-breakeventouch" value="${t.breakevenTouch || ''}">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#60a5fa">MA収束・拡散の形状</label>
+          <div class="grid grid-cols-2 gap-2">${maShapeBtns}</div>
+          <input type="hidden" id="e-mashape" value="${t.maShape || ''}">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">理由・メモ</label>
@@ -1842,6 +1877,8 @@
       skipReason: isSkipStatus(document.getElementById('e-status').value)
         ? (document.getElementById('e-skipreason').value || null)
         : null,
+      breakevenTouch: document.getElementById('e-breakeventouch').value || null,
+      maShape: document.getElementById('e-mashape').value || null,
       reason:    document.getElementById('e-reason').value.trim(),
       images:    { m15: eImgs.m15, h1: eImgs.h1, h4: eImgs.h4, d1: eImgs.d1, others: [...eImgs.others] },
       tags:      [...eTags],
@@ -1942,6 +1979,7 @@
     renderBreakdownV2('timeframe-breakdown', entries, 'timeframe');
     renderBreakdownV2('mainpair-breakdown',  entries, 'pairMain');
     renderBreakdownV2('subpair-breakdown',   entries, 'pairSub');
+    renderOpportunityStats(trades);
     renderStatusBreakdown(trades);
     renderSkipAnalysis(trades);
     renderCapitalChart();
@@ -2137,6 +2175,77 @@
         ${extraHtml}
       </div>`;
     }).join('');
+  }
+
+  // ============================================================
+  // OPPORTUNITY STATS — エントリーチャンス集計
+  // ============================================================
+  function renderOpportunityStats(trades) {
+    const el = document.getElementById('opportunity-stats');
+    if (!el) return;
+    if (trades.length === 0) {
+      el.innerHTML = '<p class="text-slate-400 text-sm">データがありません</p>';
+      return;
+    }
+
+    const RESULT_DEF = [
+      { key: 'reg',       label: 'REG',  color: '#10b981' },
+      { key: 'big',       label: 'BIG',  color: '#3b82f6' },
+      { key: 'max',       label: 'MAX',  color: '#8b5cf6' },
+      { key: 'small',     label: '微益', color: '#14b8a6' },
+      { key: 'breakeven', label: '建値', color: '#64748b' },
+      { key: 'stoploss',  label: '損切', color: '#ef4444' },
+    ];
+    const STATUS_DEF = [
+      { key: 'entry',   label: 'エントリー', color: '#60a5fa' },
+      { key: 'through', label: 'スルー',     color: '#facc15' },
+      { key: 'miss',    label: 'ミス',       color: '#fb923c' },
+    ];
+
+    const groups = [
+      { label: 'メイン通貨', trades: trades.filter(t => !t.pairSub) },
+      { label: 'サブ通貨',   trades: trades.filter(t => !!t.pairSub) },
+      { label: 'H1足',       trades: trades.filter(t => t.timeframe === 'H1') },
+      { label: 'M15足',      trades: trades.filter(t => t.timeframe === 'M15') },
+    ];
+
+    // Total row
+    const totalHtml = `
+      <div class="flex items-center justify-between py-2 border-b border-slate-100 mb-3">
+        <span class="text-sm font-bold" style="color:#cbd5e1">合計チャンス</span>
+        <span class="text-xl font-bold" style="color:#60a5fa">${trades.length}回</span>
+      </div>`;
+
+    const groupsHtml = groups.map(g => {
+      if (g.trades.length === 0) return '';
+      const total = g.trades.length;
+
+      // status breakdown
+      const statusHtml = STATUS_DEF.map(s => {
+        const cnt = g.trades.filter(t => t.status === s.key).length;
+        if (cnt === 0) return '';
+        return `<span class="text-[10px] px-1.5 py-0.5 rounded-full font-semibold" style="background:${s.color}20;color:${s.color};border:1px solid ${s.color}40">${s.label} ${cnt}</span>`;
+      }).join('');
+
+      // result breakdown
+      const resultHtml = RESULT_DEF.map(r => {
+        const cnt = g.trades.filter(t => t.result === r.key).length;
+        if (cnt === 0) return '';
+        return `<span class="text-[10px] px-1.5 py-0.5 rounded-full font-semibold" style="background:${r.color}20;color:${r.color};border:1px solid ${r.color}40">${r.label} ${cnt}</span>`;
+      }).join('');
+
+      return `
+      <div class="py-2.5 border-b border-slate-50 last:border-0">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-xs font-bold" style="color:#94a3b8">${g.label}</span>
+          <span class="text-sm font-bold" style="color:#cbd5e1">${total}回</span>
+        </div>
+        <div class="flex flex-wrap gap-1 mb-1">${statusHtml}</div>
+        <div class="flex flex-wrap gap-1">${resultHtml}</div>
+      </div>`;
+    }).join('');
+
+    el.innerHTML = totalHtml + groupsHtml;
   }
 
   // ============================================================
@@ -2358,19 +2467,19 @@
       else { curW = 0; curL = 0; }
     });
 
-    document.getElementById('sum-total-trades').textContent = trades.length;
-    document.getElementById('sum-total-pnl').textContent    = (totalPnl >= 0 ? '+' : '') + totalPnl.toLocaleString();
-    document.getElementById('sum-winrate').textContent      = winrate + '%';
-    document.getElementById('sum-avg-pnl').textContent      = (avgPnl >= 0 ? '+' : '') + avgPnl.toFixed(1);
-
-    document.getElementById('sum-entry-count').textContent   = trades.filter(t => t.status === 'entry').length + '回';
-    document.getElementById('sum-through-count').textContent = trades.filter(t => t.status === 'through').length + '回';
-    document.getElementById('sum-miss-count').textContent    = trades.filter(t => t.status === 'miss').length + '回';
-    document.getElementById('sum-max-win').textContent       = '+' + maxWin.toLocaleString();
-    document.getElementById('sum-max-loss').textContent      = maxLoss.toLocaleString();
-    document.getElementById('sum-pf').textContent            = pf;
-    document.getElementById('sum-streak-win').textContent    = maxStreakW + '連勝';
-    document.getElementById('sum-streak-loss').textContent   = maxStreakL + '連敗';
+    const setEl = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    setEl('sum-total-trades', trades.length);
+    setEl('sum-total-pnl',    (totalPnl >= 0 ? '+' : '') + totalPnl.toLocaleString());
+    setEl('sum-winrate',      winrate + '%');
+    setEl('sum-avg-pnl',      (avgPnl >= 0 ? '+' : '') + avgPnl.toFixed(1));
+    setEl('sum-entry-count',  trades.filter(t => t.status === 'entry').length + '回');
+    setEl('sum-through-count',trades.filter(t => t.status === 'through').length + '回');
+    setEl('sum-miss-count',   trades.filter(t => t.status === 'miss').length + '回');
+    setEl('sum-max-win',      '+' + maxWin.toLocaleString());
+    setEl('sum-max-loss',     maxLoss.toLocaleString());
+    setEl('sum-pf',           pf);
+    setEl('sum-streak-win',   maxStreakW + '連勝');
+    setEl('sum-streak-loss',  maxStreakL + '連敗');
   }
 
   // ============================================================
