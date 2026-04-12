@@ -777,6 +777,38 @@
         </div>
       </div>
 
+      <!-- エントリーチャンス集計 -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">📊 エントリーチャンス集計</h3>
+        <div id="opportunity-stats"></div>
+      </div>
+
+      <!-- Status breakdown -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">ステータス別件数</h3>
+        <div id="status-breakdown"></div>
+      </div>
+
+      <!-- 見送り分析 -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">🔍 見送り分析</h3>
+        <!-- 金額シミュレーター -->
+        <div class="flex items-center gap-2 mb-3 p-3 rounded-xl" style="background:#1e293b">
+          <label class="text-xs font-semibold whitespace-nowrap" style="color:#94a3b8">1トレード リスク額</label>
+          <input type="number" id="skip-sim-risk" value="10000" step="1000" min="0"
+            oninput="renderSkipAmountSim()"
+            class="flex-1 rounded-lg px-2.5 py-1.5 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-violet-500 select-text"
+            style="background:#0f172a;color:#c4b5fd;border:1px solid #334155">
+          <span class="text-xs font-semibold" style="color:#94a3b8">円</span>
+        </div>
+        <div id="skip-amount-sim" class="mb-4"></div>
+        <div id="skip-opportunity-loss" class="mb-4"></div>
+        <h4 class="text-xs font-bold text-slate-500 mb-2 mt-4 uppercase tracking-wide">見送り理由別成績</h4>
+        <div id="skip-by-reason"></div>
+        <h4 class="text-xs font-bold text-slate-500 mb-2 mt-5 uppercase tracking-wide">実エントリー vs 見送り 比較</h4>
+        <div id="skip-vs-entry"></div>
+      </div>
+
       <!-- Profit trend -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
         <h3 class="text-sm font-bold text-slate-600 mb-3">収益推移（累計）</h3>
@@ -794,6 +826,30 @@
           </div>
           <div id="winrate-legend" class="flex-1 space-y-2 text-sm"></div>
         </div>
+      </div>
+
+      <!-- Method breakdown -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">手法別成績（エントリーのみ）</h3>
+        <div id="method-breakdown"></div>
+      </div>
+
+      <!-- Timeframe breakdown -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">時間足別成績（エントリーのみ）</h3>
+        <div id="timeframe-breakdown"></div>
+      </div>
+
+      <!-- Main pair breakdown -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">メイン通貨別成績（エントリーのみ）</h3>
+        <div id="mainpair-breakdown"></div>
+      </div>
+
+      <!-- Sub pair breakdown -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <h3 class="text-sm font-bold text-slate-600 mb-3">サブ通貨別成績（エントリーのみ）</h3>
+        <div id="subpair-breakdown"></div>
       </div>
 
       <!-- Calendar -->
@@ -823,52 +879,6 @@
           <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 inline-block"></span>スルー/ミス</span>
         </div>
         <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center"></div>
-      </div>
-
-      <!-- エントリーチャンス集計 -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">📊 エントリーチャンス集計</h3>
-        <div id="opportunity-stats"></div>
-      </div>
-
-      <!-- Status breakdown -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">ステータス別件数</h3>
-        <div id="status-breakdown"></div>
-      </div>
-
-      <!-- 見送り分析 -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">🔍 見送り分析</h3>
-        <div id="skip-opportunity-loss" class="mb-4"></div>
-        <h4 class="text-xs font-bold text-slate-500 mb-2 mt-4 uppercase tracking-wide">見送り理由別成績</h4>
-        <div id="skip-by-reason"></div>
-        <h4 class="text-xs font-bold text-slate-500 mb-2 mt-5 uppercase tracking-wide">実エントリー vs 見送り 比較</h4>
-        <div id="skip-vs-entry"></div>
-      </div>
-
-      <!-- Method breakdown -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">手法別成績（エントリーのみ）</h3>
-        <div id="method-breakdown"></div>
-      </div>
-
-      <!-- Timeframe breakdown -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">時間足別成績（エントリーのみ）</h3>
-        <div id="timeframe-breakdown"></div>
-      </div>
-
-      <!-- Main pair breakdown -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">メイン通貨別成績（エントリーのみ）</h3>
-        <div id="mainpair-breakdown"></div>
-      </div>
-
-      <!-- Sub pair breakdown -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">サブ通貨別成績（エントリーのみ）</h3>
-        <div id="subpair-breakdown"></div>
       </div>
 
       <!-- Capital simulation from real trades -->
@@ -907,7 +917,13 @@
 
       <!-- ===== 資金シミュレーション ===== -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-4">資金シミュレーション</h3>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-bold text-slate-600">資金シミュレーション</h3>
+          <button onclick="resetSimulation()"
+            class="text-xs px-3 py-1.5 rounded-xl border border-red-200 text-red-500 hover:bg-red-50 active:scale-95 transition-all font-semibold">
+            クリア
+          </button>
+        </div>
 
         <!-- 初期リスク額 -->
         <div class="mb-3">
@@ -1463,16 +1479,28 @@
          </div>`
       : '';
 
+    // Card accent color (left border + tint) based on result/status
+    const cardAccent = t.status === 'through' ? '#f59e0b'
+      : t.status === 'miss'                   ? '#fb923c'
+      : t.pnl > 0                             ? '#10b981'
+      : t.pnl < 0                             ? '#ef4444'
+      :                                         '#94a3b8';
+    const cardBg = t.status === 'through' ? '#fffbeb'
+      : t.status === 'miss'               ? '#fff7ed'
+      : t.pnl > 0                         ? '#f0fdf4'
+      : t.pnl < 0                         ? '#fef2f2'
+      :                                     '#f8fafc';
+
     return `
-    <div class="bg-white rounded-2xl p-4 shadow-sm">
+    <div class="rounded-2xl p-4 shadow-sm" style="background:${cardBg};border-left:4px solid ${cardAccent}">
       <!-- Top row: badges + pnl -->
       <div class="flex items-start justify-between mb-1.5">
-        <div class="flex flex-wrap gap-1.5">
-          <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${resultBadge(t.result)}">${resultLabel(t.result)}</span>
-          <span class="text-xs px-2 py-0.5 rounded-full ${statusBadge(t.status)}">${statusLabel(t.status)}</span>
-          <span class="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">${esc(mainPair)}</span>
-          ${subPair ? `<span class="text-xs text-slate-400 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded-full">${esc(subPair)}</span>` : ''}
-          <span class="text-xs text-slate-400">${esc(t.timeframe)}</span>
+        <div class="flex flex-wrap gap-1.5 items-center">
+          <span class="text-xs font-bold px-2.5 py-0.5 rounded-full ${resultBadge(t.result)}">${resultLabel(t.result)}</span>
+          <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full ${statusBadge(t.status)}">${statusLabel(t.status)}</span>
+          ${mainPair ? `<span class="text-xs font-bold px-2 py-0.5 rounded-full" style="background:#1e3a5f;color:#93c5fd">${esc(mainPair)}</span>` : ''}
+          ${subPair  ? `<span class="text-xs font-semibold px-2 py-0.5 rounded-full" style="background:#2d1b4e;color:#c4b5fd">${esc(subPair)}</span>` : ''}
+          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded" style="background:#1e293b;color:#94a3b8">${esc(t.timeframe)}</span>
           ${isSkipStatus(t.status) && t.skipReason && SKIP_REASONS[t.skipReason]
             ? `<span class="text-xs px-2 py-0.5 rounded-full" style="background:${SKIP_REASONS[t.skipReason].color}20;color:${SKIP_REASONS[t.skipReason].color};border:1px solid ${SKIP_REASONS[t.skipReason].color}40">${SKIP_REASONS[t.skipReason].label}</span>`
             : ''}
@@ -1486,15 +1514,15 @@
           ${t.maShape === 'straight' ? '<span class="text-xs px-2 py-0.5 rounded-full" style="background:#3b82f620;color:#60a5fa;border:1px solid #3b82f640">ストレート</span>' : ''}
           ${t.maShape === 'fake'     ? '<span class="text-xs px-2 py-0.5 rounded-full" style="background:#ec489920;color:#f472b6;border:1px solid #ec489940">フェイク</span>' : ''}
         </div>
-        <span class="text-sm font-bold ml-2 whitespace-nowrap ${t.pnl >= 0 ? 'text-emerald-600' : 'text-red-500'}">${pnlStr}</span>
+        <span class="text-sm font-black ml-2 whitespace-nowrap" style="color:${cardAccent}">${pnlStr}</span>
       </div>
       <!-- Content row: text | images | buttons — all same vertical space -->
       <div class="flex items-center gap-0">
         <!-- Text -->
         <div class="min-w-0 flex-1">
-          <div class="text-sm font-semibold text-slate-700 truncate">${methodLabel(t.method)}</div>
-          ${t.reason ? `<div class="text-xs text-slate-400 mt-0.5 line-clamp-1">${esc(t.reason)}</div>` : ''}
-          <div class="text-xs text-slate-300 mt-0.5">${timeStr}</div>
+          <div class="text-sm font-bold truncate" style="color:#1e293b">${methodLabel(t.method)}</div>
+          ${t.reason ? `<div class="text-xs mt-0.5 line-clamp-1" style="color:#64748b">${esc(t.reason)}</div>` : ''}
+          <div class="text-xs mt-0.5" style="color:#94a3b8">${timeStr}</div>
           ${tagsHtml}
         </div>
         <!-- Images inline to the right of text -->
@@ -1503,13 +1531,13 @@
         <div class="flex gap-1 ml-2 flex-shrink-0">
           ${reviewedIcon}
           <button onclick="openEdit('${t.id}')"
-            class="w-8 h-8 flex items-center justify-center rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+            class="w-8 h-8 flex items-center justify-center rounded-xl transition-colors" style="color:#94a3b8">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
             </svg>
           </button>
           <button onclick="deleteTrade('${t.id}')"
-            class="w-8 h-8 flex items-center justify-center rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+            class="w-8 h-8 flex items-center justify-center rounded-xl transition-colors" style="color:#94a3b8">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
             </svg>
@@ -2253,9 +2281,56 @@
   // ============================================================
   function renderSkipAnalysis(trades) {
     const skips = trades.filter(t => isSkipStatus(t.status));
+    renderSkipAmountSim();   // amount simulator (reads statsPeriod internally)
     renderOpportunityLoss(skips);
     renderSkipByReason(skips);
     renderEntryVsSkip(trades);
+  }
+
+  // 金額シミュレーター: 1トレードあたりのリスク額 × result倍率 で機会損失を試算
+  function renderSkipAmountSim() {
+    const el = document.getElementById('skip-amount-sim');
+    if (!el) return;
+    const riskInput = parseFloat(document.getElementById('skip-sim-risk')?.value) || 0;
+    if (riskInput <= 0) { el.innerHTML = ''; return; }
+
+    const trades = tradesForPeriod(statsPeriod);
+    const skips  = trades.filter(t => isSkipStatus(t.status));
+    if (skips.length === 0) { el.innerHTML = ''; return; }
+
+    // result → mult (same as SIM_RESULT)
+    const MULT = { max: 3, big: 2, reg: 1, small: 0.5, breakeven: 0, stoploss: -1 };
+    let simTotal = 0, simWins = 0, simLosses = 0;
+    skips.forEach(t => {
+      const mult = MULT[t.result];
+      if (mult === undefined) return;
+      const pnl = riskInput * mult;
+      simTotal += pnl;
+      if (pnl > 0) simWins++;
+      else if (pnl < 0) simLosses++;
+    });
+    const validCount = skips.filter(t => MULT[t.result] !== undefined).length;
+    if (validCount === 0) { el.innerHTML = ''; return; }
+
+    const color   = simTotal >= 0 ? '#10b981' : '#ef4444';
+    const hint    = simTotal >= 0 ? '機会損失' : 'スキップ正解';
+    const sign    = simTotal >= 0 ? '+' : '';
+    const winrate = Math.round(simWins / validCount * 100);
+
+    el.innerHTML = `
+      <div class="rounded-xl p-3" style="background:#2d1b4e;border:1px solid #4c1d95">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-xs font-semibold" style="color:#c4b5fd">💰 金額シミュレーション（${riskInput.toLocaleString()}円/回）</span>
+          <span class="text-[10px]" style="color:#94a3b8">${hint}</span>
+        </div>
+        <div class="flex items-end justify-between">
+          <span class="text-xl font-black" style="color:${color}">${sign}${Math.round(simTotal).toLocaleString()}円</span>
+          <div class="text-right">
+            <div class="text-sm font-bold" style="color:#e2e8f0">勝率 ${winrate}%</div>
+            <div class="text-[10px]" style="color:#94a3b8">${simWins}勝${simLosses}敗 / ${validCount}回</div>
+          </div>
+        </div>
+      </div>`;
   }
 
   function renderOpportunityLoss(skips) {
@@ -2499,6 +2574,15 @@
 
   let simTradeCount   = 5;
   let simTradeResults = Array(10).fill(null); // null = 未選択
+
+  function resetSimulation() {
+    const initialEl = document.getElementById('sim-initial');
+    if (initialEl) initialEl.value = 100000;
+    simTradeCount   = 5;
+    simTradeResults = Array(10).fill(null);
+    document.getElementById('sim-count-display').textContent = simTradeCount;
+    renderSimulation();
+  }
 
   function simChangeCount(delta) {
     simTradeCount = Math.min(10, Math.max(1, simTradeCount + delta));
