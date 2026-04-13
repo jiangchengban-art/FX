@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>もちぽよ手法 エントリー判定チェックシート</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="header-inner">
+    <h1>もちぽよ手法 エントリー判定チェックシート</h1>
+    <div class="header-meta">
+      <span id="currentDatetime"></span>
+    </div>
+  </div>
+  <nav class="tabs no-print">
+    <button class="tab-btn active" data-tab="check">チェック画面</button>
+    <button class="tab-btn" data-tab="history">履歴</button>
+  </nav>
+</header>
+
+<main>
+  <!-- ======== チェック画面 ======== -->
+  <section id="tab-check" class="tab-panel active">
+    <div class="layout">
+      <div class="main-col">
+
+        <!-- エントリー設定 -->
+        <section class="card">
+          <h2>1. エントリー設定</h2>
+          <div class="form-row">
+            <label>通貨ペア</label>
+            <div class="pair-group" id="pairGroup">
+              <label><input type="radio" name="pair" value="GBPJPY" checked> GBP/JPY</label>
+              <label><input type="radio" name="pair" value="GBPUSD"> GBP/USD</label>
+              <label><input type="radio" name="pair" value="XAUUSD"> XAU/USD</label>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>方向</label>
+            <div class="direction-toggle">
+              <button type="button" class="dir-btn active" data-dir="long">ロング（買い）</button>
+              <button type="button" class="dir-btn" data-dir="short">ショート（売り）</button>
+            </div>
+          </div>
+          <div class="price-row">
+            <div class="price-field">
+              <label for="entryPrice">エントリー価格</label>
+              <input type="number" id="entryPrice" step="any" inputmode="decimal">
+            </div>
+            <div class="price-field">
+              <label for="slPrice">損切価格</label>
+              <input type="number" id="slPrice" step="any" inputmode="decimal">
+            </div>
+            <div class="price-field">
+              <label for="tpPrice">利確価格</label>
+              <input type="number" id="tpPrice" step="any" inputmode="decimal">
+            </div>
+          </div>
+          <div class="rr-display">
+            RR比: <span id="rrValue">-</span>
+          </div>
+        </section>
+
+        <!-- チェック項目 -->
+        <section class="card">
+          <h2>2. 加点項目（合計12点）</h2>
+          <ul class="check-list" id="scoreChecks"></ul>
+        </section>
+
+        <section class="card mandatory-card">
+          <h2>3. 必須項目（欠けたらエントリー不可）</h2>
+          <ul class="check-list mandatory-list" id="mandatoryChecks"></ul>
+        </section>
+
+        <!-- スクリーンショット -->
+        <section class="card no-print">
+          <h2>4. スクリーンショット</h2>
+          <div class="screenshot-grid">
+            <div class="ss-slot" data-tf="h4">
+              <label class="ss-label">H4足</label>
+              <input type="file" accept="image/*" data-tf="h4">
+              <div class="ss-preview"></div>
+              <button type="button" class="btn-clear-ss" data-tf="h4">削除</button>
+            </div>
+            <div class="ss-slot" data-tf="m15">
+              <label class="ss-label">M15足</label>
+              <input type="file" accept="image/*" data-tf="m15">
+              <div class="ss-preview"></div>
+              <button type="button" class="btn-clear-ss" data-tf="m15">削除</button>
+            </div>
+            <div class="ss-slot" data-tf="m5">
+              <label class="ss-label">M5足</label>
+              <input type="file" accept="image/*" data-tf="m5">
+              <div class="ss-preview"></div>
+              <button type="button" class="btn-clear-ss" data-tf="m5">削除</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- メモ -->
+        <section class="card">
+          <h2>5. メモ</h2>
+          <textarea id="memo" rows="4" placeholder="エントリー根拠・市場環境・注意点など"></textarea>
+        </section>
+
+        <div class="action-row no-print">
+          <button type="button" id="btnSave" class="btn-primary">記録する</button>
+          <button type="button" id="btnReset" class="btn-secondary">フォームリセット</button>
+        </div>
+      </div>
+
+      <!-- サイドバー: スコア表示 -->
+      <aside class="side-col no-print">
+        <div class="score-panel">
+          <div class="score-main">
+            <div class="score-number"><span id="scoreNum">0</span> <span class="score-slash">/</span> 12 点</div>
+            <div class="score-label">現在スコア</div>
+          </div>
+          <div class="mandatory-indicator">
+            <h3>必須項目</h3>
+            <ul id="mandatoryIndicator">
+              <li data-key="news"><span class="ind">×</span> 経済指標フィルタ</li>
+              <li data-key="range"><span class="ind">×</span> 非レンジ相場</li>
+              <li data-key="rr"><span class="ind">×</span> RR比 ≥ 1.0</li>
+            </ul>
+          </div>
+          <div class="verdict" id="verdict">
+            <div class="verdict-text">判定待ち</div>
+            <ul class="verdict-reasons" id="verdictReasons"></ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ======== 履歴画面 ======== -->
+  <section id="tab-history" class="tab-panel no-print">
+    <div class="card">
+      <div class="history-header">
+        <h2>トレード履歴</h2>
+        <div class="history-actions">
+          <button type="button" id="btnExportCsv" class="btn-secondary">CSV書き出し</button>
+          <button type="button" id="btnClearAll" class="btn-danger">全履歴クリア</button>
+        </div>
+      </div>
+      <div id="historyList" class="history-list"></div>
+    </div>
+  </section>
+</main>
+
+<!-- 詳細モーダル -->
+<div id="detailModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+  <div class="modal">
+    <button type="button" class="modal-close" id="modalClose">×</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
