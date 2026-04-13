@@ -302,14 +302,8 @@
             <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#6ee7b7">時間足</label>
             <select id="f-timeframe"
               class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-              <option value="M1">M1（1分）</option>
-              <option value="M5">M5（5分）</option>
-              <option value="M15">M15（15分）</option>
-              <option value="M30">M30（30分）</option>
-              <option value="H1" selected>H1（1時間）</option>
-              <option value="H4">H4（4時間）</option>
-              <option value="D1">D1（日足）</option>
-              <option value="W1">W1（週足）</option>
+              <option value="H1" selected>H1（1時間足）</option>
+              <option value="M15">M15（15分足）</option>
             </select>
           </div>
         </div>
@@ -830,55 +824,135 @@
 
       <!-- Method breakdown -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">手法別成績（エントリーのみ）</h3>
+        <div class="flex items-center gap-2 mb-3">
+          <h3 class="text-sm font-bold text-slate-600 flex-1">手法別成績</h3>
+          <select id="bd-method-filter" onchange="renderBreakdowns()"
+            class="text-xs border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-slate-600">
+            <option value="">全て</option>
+            <option value="1">手法①</option>
+            <option value="2">手法②</option>
+            <option value="other">その他</option>
+          </select>
+        </div>
         <div id="method-breakdown"></div>
       </div>
 
       <!-- Timeframe breakdown -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">時間足別成績（エントリーのみ）</h3>
+        <div class="flex items-center gap-2 mb-3 flex-wrap">
+          <h3 class="text-sm font-bold text-slate-600 flex-1">時間足別成績</h3>
+          <select id="bd-tf-time" onchange="renderBreakdowns()"
+            class="text-xs border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-slate-600">
+            <option value="">全時間足</option>
+            <option value="H1">H1（1時間足）</option>
+            <option value="M15">M15（15分足）</option>
+          </select>
+          <select id="bd-tf-status" onchange="renderBreakdowns()"
+            class="text-xs border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-slate-600">
+            <option value="">全ステータス</option>
+            <option value="entry">エントリー</option>
+            <option value="through">スルー</option>
+            <option value="miss">ミス</option>
+          </select>
+        </div>
         <div id="timeframe-breakdown"></div>
       </div>
 
       <!-- Main pair breakdown -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">メイン通貨別成績（エントリーのみ）</h3>
+        <div class="flex items-center gap-2 mb-3">
+          <h3 class="text-sm font-bold text-slate-600 flex-1">メイン通貨別成績</h3>
+          <select id="bd-main-status" onchange="renderBreakdowns()"
+            class="text-xs border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-slate-600">
+            <option value="">全ステータス</option>
+            <option value="entry">エントリー</option>
+            <option value="through">スルー</option>
+            <option value="miss">ミス</option>
+          </select>
+        </div>
         <div id="mainpair-breakdown"></div>
       </div>
 
       <!-- Sub pair breakdown -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">サブ通貨別成績（エントリーのみ）</h3>
+        <div class="flex items-center gap-2 mb-3">
+          <h3 class="text-sm font-bold text-slate-600 flex-1">サブ通貨別成績</h3>
+          <select id="bd-sub-status" onchange="renderBreakdowns()"
+            class="text-xs border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white text-slate-600">
+            <option value="">全ステータス</option>
+            <option value="entry">エントリー</option>
+            <option value="through">スルー</option>
+            <option value="miss">ミス</option>
+          </select>
+        </div>
         <div id="subpair-breakdown"></div>
       </div>
 
-      <!-- Calendar -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="text-sm font-bold text-slate-600">トレードカレンダー</h3>
+      <!-- Calendar + Chance Rate -->
+      <div class="rounded-2xl p-4 shadow-sm mb-4" style="background:#0f172a">
+        <!-- Calendar header -->
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-sm font-bold" style="color:#94a3b8">トレードカレンダー</h3>
           <div class="flex items-center gap-1">
             <button onclick="prevMonth()"
-              class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors">
-              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="w-7 h-7 flex items-center justify-center rounded-lg transition-colors" style="color:#64748b">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
               </svg>
             </button>
-            <span id="cal-title" class="text-sm font-medium text-slate-700 w-20 text-center"></span>
+            <span id="cal-title" class="text-sm font-medium w-20 text-center" style="color:#cbd5e1"></span>
             <button onclick="nextMonth()"
-              class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors">
-              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="w-7 h-7 flex items-center justify-center rounded-lg transition-colors" style="color:#64748b">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
               </svg>
             </button>
           </div>
         </div>
-        <!-- Calendar legend -->
-        <div class="flex gap-4 mb-3 text-xs text-slate-400">
-          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>利益</span>
-          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-400 inline-block"></span>損失</span>
-          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 inline-block"></span>スルー/ミス</span>
+        <!-- Legend row -->
+        <div class="flex gap-3 mb-2 flex-wrap" style="font-size:10px;color:#475569">
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm inline-block" style="background:#10b981"></span>エントリー勝ち</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm inline-block" style="background:#ef4444"></span>エントリー負け</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm inline-block" style="background:#94a3b8"></span>建値/引き分け</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm inline-block" style="background:#f59e0b"></span>スルー</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-sm inline-block" style="background:#fb923c"></span>ミス</span>
         </div>
-        <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-center"></div>
+        <div id="calendar-grid" class="grid grid-cols-7 gap-0.5 text-center"></div>
+
+        <!-- ── チャンス出現率 ── -->
+        <div class="mt-4 pt-3" style="border-top:1px solid #1e293b">
+          <div class="flex items-center gap-2 mb-2">
+            <h4 class="text-xs font-bold flex-1" style="color:#7dd3fc">📊 チャンス出現率</h4>
+            <label style="color:#475569;font-size:10px">集計開始日</label>
+            <input type="date" id="chance-rate-from"
+              oninput="renderChanceRate()"
+              class="rounded-lg px-2 py-1 text-xs focus:outline-none"
+              style="background:#1e293b;color:#cbd5e1;border:1px solid #334155">
+          </div>
+          <div id="chance-rate-display"></div>
+        </div>
+
+        <!-- ── 出現率ベース シミュレーション ── -->
+        <div class="mt-3 pt-3" style="border-top:1px solid #1e293b">
+          <h4 class="text-xs font-bold mb-2" style="color:#a78bfa">💹 出現率ベース 資金シミュレーション</h4>
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <div>
+              <label style="color:#475569;font-size:10px;display:block;margin-bottom:3px">リスク額（円/回）</label>
+              <input type="number" id="chance-sim-risk" value="10000" step="1000" min="0"
+                oninput="renderChanceSimulation()"
+                class="w-full rounded-lg px-2 py-1.5 text-xs focus:outline-none"
+                style="background:#1e293b;color:#c4b5fd;border:1px solid #334155">
+            </div>
+            <div>
+              <label style="color:#475569;font-size:10px;display:block;margin-bottom:3px">シミュレーション期間（日）</label>
+              <input type="number" id="chance-sim-days" value="30" step="1" min="1"
+                oninput="renderChanceSimulation()"
+                class="w-full rounded-lg px-2 py-1.5 text-xs focus:outline-none"
+                style="background:#1e293b;color:#c4b5fd;border:1px solid #334155">
+            </div>
+          </div>
+          <div id="chance-sim-display"></div>
+        </div>
       </div>
 
       <!-- Capital simulation from real trades -->
@@ -914,6 +988,19 @@
     <!-- ========== TAB: まとめ ========== -->
     <div id="panel-summary" class="tab-panel p-4">
       <h2 class="text-base font-bold text-slate-600 mb-4">まとめ・管理</h2>
+
+      <!-- ===== エントリーチャンス メモ ===== -->
+      <div class="rounded-2xl p-4 shadow-sm mb-4" style="background:#1e1b4b">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-bold" style="color:#a5b4fc">📌 エントリーチャンス</h3>
+          <button onclick="clearChanceMemos()"
+            class="text-xs px-3 py-1 rounded-lg font-semibold active:scale-95 transition-all"
+            style="background:#312e81;color:#a5b4fc;border:1px solid #4338ca">クリア</button>
+        </div>
+        <div id="chance-memo-slots" class="space-y-2">
+          <!-- slots generated by initChanceMemos() -->
+        </div>
+      </div>
 
       <!-- ===== 資金シミュレーション ===== -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
@@ -1181,6 +1268,7 @@
     // Initial renders
     renderHistory();
     renderSummary();
+    initChanceMemos();
   });
 
   function setDefaultDatetime() {
@@ -1208,8 +1296,8 @@
 
     currentTab = tab;
     if (tab === 'history') renderHistory();
-    if (tab === 'stats')   { renderStats(); renderCalendar(); }
-    if (tab === 'summary') { renderSummary(); renderSimulation(); }
+    if (tab === 'stats')   { renderStats(); renderCalendar(); renderChanceRate(); renderChanceSimulation(); }
+    if (tab === 'summary') { renderSummary(); renderSimulation(); initChanceMemos(); }
   }
 
   // ============================================================
@@ -2003,14 +2091,13 @@
 
     renderProfitChart(entries);
     renderWinrateChart(wins, losses, draws, seg.total);
-    renderBreakdownV2('method-breakdown',    entries, 'method');
-    renderBreakdownV2('timeframe-breakdown', entries, 'timeframe');
-    renderBreakdownV2('mainpair-breakdown',  entries, 'pairMain');
-    renderBreakdownV2('subpair-breakdown',   entries, 'pairSub');
+    renderBreakdowns(trades);
     renderOpportunityStats(trades);
     renderStatusBreakdown(trades);
     renderSkipAnalysis(trades);
     renderCapitalChart();
+    renderChanceRate();
+    renderChanceSimulation();
   }
 
   function renderProfitChart(entries) {
@@ -2098,6 +2185,47 @@
     if (raw === '' || raw == null) return '(未設定)';
     if (key === 'method') return methodLabel(raw);
     return raw;
+  }
+
+  // ============================================================
+  // BREAKDOWN WITH FILTERS
+  // ============================================================
+  function renderBreakdowns(allTrades) {
+    if (!allTrades) allTrades = tradesForPeriod(statsPeriod);
+
+    // — 手法別 —
+    {
+      const mf = document.getElementById('bd-method-filter')?.value || '';
+      let base = allTrades.filter(t => t.status === 'entry');
+      if (mf) base = base.filter(t => (t.method || '') === mf);
+      renderBreakdownV2('method-breakdown', base, 'method');
+    }
+
+    // — 時間足別 —
+    {
+      const tf = document.getElementById('bd-tf-time')?.value || '';
+      const sf = document.getElementById('bd-tf-status')?.value || '';
+      let base = sf ? allTrades.filter(t => t.status === sf)
+                    : allTrades.filter(t => t.status === 'entry');
+      if (tf) base = base.filter(t => t.timeframe === tf);
+      renderBreakdownV2('timeframe-breakdown', base, 'timeframe');
+    }
+
+    // — メイン通貨別 —
+    {
+      const sf = document.getElementById('bd-main-status')?.value || '';
+      const base = sf ? allTrades.filter(t => t.status === sf)
+                      : allTrades.filter(t => t.status === 'entry');
+      renderBreakdownV2('mainpair-breakdown', base, 'pairMain');
+    }
+
+    // — サブ通貨別 —
+    {
+      const sf = document.getElementById('bd-sub-status')?.value || '';
+      const base = sf ? allTrades.filter(t => t.status === sf)
+                      : allTrades.filter(t => t.status === 'entry');
+      renderBreakdownV2('subpair-breakdown', base, 'pairSub');
+    }
   }
 
   function renderBreakdownV2(containerId, entries, key) {
@@ -2457,14 +2585,15 @@
   function renderCalendar() {
     document.getElementById('cal-title').textContent = calYear + '/' + String(calMonth + 1).padStart(2, '0');
     const trades = dbLoad();
+
+    // Build per-day map: day → array of trades
     const dayMap = {};
     trades.forEach(t => {
       const d = new Date(t.datetime);
       if (d.getFullYear() === calYear && d.getMonth() === calMonth) {
         const day = d.getDate();
-        if (!dayMap[day]) dayMap[day] = { pnl: 0, hasEntry: false, hasTrade: false };
-        dayMap[day].hasTrade = true;
-        if (t.status === 'entry') { dayMap[day].hasEntry = true; dayMap[day].pnl += t.pnl; }
+        if (!dayMap[day]) dayMap[day] = [];
+        dayMap[day].push(t);
       }
     });
 
@@ -2475,30 +2604,41 @@
 
     const DOW = ['日','月','火','水','木','金','土'];
     let html = DOW.map((d, i) =>
-      `<div class="text-xs font-semibold py-1 ${i === 0 ? 'text-red-400' : i === 6 ? 'text-blue-400' : 'text-slate-400'}">${d}</div>`
+      `<div class="text-[9px] font-semibold py-1" style="color:${i===0?'#f87171':i===6?'#60a5fa':'#475569'}">${d}</div>`
     ).join('');
 
     for (let i = 0; i < firstWeekday; i++) html += '<div></div>';
 
     for (let day = 1; day <= daysInMonth; day++) {
       const isToday = isCurrentMonth && today.getDate() === day;
-      const data = dayMap[day];
+      const dayTrades = dayMap[day] || [];
       const wd = new Date(calYear, calMonth, day).getDay();
-      const color = wd === 0 ? 'text-red-400' : wd === 6 ? 'text-blue-400' : 'text-slate-300';
+      const numColor = wd === 0 ? '#f87171' : wd === 6 ? '#60a5fa' : '#64748b';
 
-      let dot = '';
-      if (data) {
-        if (data.hasEntry) {
-          dot = `<span class="w-1.5 h-1.5 rounded-full ${data.pnl > 0 ? 'bg-emerald-400' : data.pnl < 0 ? 'bg-red-400' : 'bg-slate-300'} mx-auto"></span>`;
-        } else {
-          dot = `<span class="w-1.5 h-1.5 rounded-full bg-slate-600 mx-auto"></span>`;
-        }
-      }
+      // Build indicator dots — max 3 shown
+      const dotColor = t => {
+        if (t.status === 'through') return '#f59e0b';
+        if (t.status === 'miss')    return '#fb923c';
+        if (t.pnl > 0)  return '#10b981';
+        if (t.pnl < 0)  return '#ef4444';
+        return '#94a3b8';
+      };
+      const dots = dayTrades.slice(0, 3).map(t =>
+        `<span style="width:5px;height:5px;border-radius:1px;background:${dotColor(t)};display:inline-block"></span>`
+      ).join('');
+      const dotsHtml = dots
+        ? `<div style="display:flex;gap:1px;justify-content:center;flex-wrap:wrap;min-height:7px">${dots}</div>`
+        : `<div style="min-height:7px"></div>`;
+
+      // Day cell background when it has trades
+      const hasTrades = dayTrades.length > 0;
+      const cellBg = isToday ? '#1d4ed8' : hasTrades ? '#1e293b' : 'transparent';
+      const numStyle = isToday ? 'color:#fff;font-weight:700' : `color:${numColor}`;
 
       html += `
-        <div class="flex flex-col items-center gap-0.5 py-1 rounded-xl ${isToday ? 'bg-blue-600' : ''}">
-          <span class="text-xs ${isToday ? 'text-white font-bold' : color}">${day}</span>
-          ${dot || '<span class="w-1.5 h-1.5"></span>'}
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px;padding:3px 1px;border-radius:6px;background:${cellBg}">
+          <span style="font-size:9px;line-height:1.2;${numStyle}">${day}</span>
+          ${dotsHtml}
         </div>`;
     }
 
@@ -2512,6 +2652,185 @@
   function nextMonth() {
     if (calMonth === 11) { calMonth = 0; calYear++; } else calMonth++;
     renderCalendar();
+  }
+
+  // ============================================================
+  // チャンス出現率 & 出現率シミュレーション
+  // ============================================================
+
+  // resultキー → SIM_RESULT の mult を返す（PnLではなくmultベース）
+  const RESULT_MULT = { max: 3, big: 2, reg: 1, small: 0.5, breakeven: 0, stoploss: -1 };
+
+  // 1グループ分の期待値 multiplier を計算（trades に result がある前提）
+  function calcEvMult(trades) {
+    if (!trades.length) return 0;
+    let sum = 0;
+    trades.forEach(t => { sum += (RESULT_MULT[t.result] ?? 0); });
+    return sum / trades.length;
+  }
+
+  function renderChanceRate() {
+    const el = document.getElementById('chance-rate-display');
+    if (!el) return;
+
+    const fromInput = document.getElementById('chance-rate-from')?.value;
+    const allTrades = dbLoad();
+
+    // Determine date range
+    const toDate  = new Date(); toDate.setHours(23,59,59,999);
+    let fromDate;
+    if (fromInput) {
+      fromDate = new Date(fromInput);
+      fromDate.setHours(0,0,0,0);
+    } else if (allTrades.length > 0) {
+      // Default: earliest trade date
+      const sorted = [...allTrades].sort((a,b) => new Date(a.datetime)-new Date(b.datetime));
+      fromDate = new Date(sorted[0].datetime);
+      fromDate.setHours(0,0,0,0);
+      // Also set the input default
+      const inp = document.getElementById('chance-rate-from');
+      if (inp && !inp.value) inp.value = fromDate.toISOString().slice(0,10);
+    } else {
+      el.innerHTML = '<p style="color:#475569;font-size:11px">トレードデータがありません</p>';
+      return;
+    }
+
+    const totalDays = Math.max(1, Math.round((toDate - fromDate) / 86400000) + 1);
+
+    // Filter trades in range
+    const inRange = allTrades.filter(t => {
+      const d = new Date(t.datetime);
+      return d >= fromDate && d <= toDate;
+    });
+
+    // Unique chance days (any trade with any status)
+    const entryDaySet = new Set();
+    const allDaySet   = new Set();
+    inRange.forEach(t => {
+      const key = new Date(t.datetime).toDateString();
+      allDaySet.add(key);
+      if (t.status === 'entry') entryDaySet.add(key);
+    });
+
+    const entryDays = entryDaySet.size;
+    const allDays   = allDaySet.size;
+    const entryRate = totalDays > 0 ? (entryDays / totalDays * 100) : 0;
+    const allRate   = totalDays > 0 ? (allDays   / totalDays * 100) : 0;
+    const entryFreq = entryDays > 0 ? (totalDays / entryDays) : 0;
+    const allFreq   = allDays   > 0 ? (totalDays / allDays)   : 0;
+
+    const fmtFreq = f => f > 0 ? f.toFixed(1) : '—';
+    const fmtPct  = p => p.toFixed(1);
+
+    el.innerHTML = `
+    <div class="grid grid-cols-2 gap-2">
+      <div class="rounded-xl p-2.5 text-center" style="background:#1e293b;border:1px solid #0ea5e920">
+        <div class="text-[9px] font-semibold uppercase tracking-wide mb-1" style="color:#38bdf8">エントリーのみ</div>
+        <div class="text-2xl font-black" style="color:#7dd3fc">${fmtPct(entryRate)}<span class="text-sm font-bold">%</span></div>
+        <div class="text-[10px] mt-0.5" style="color:#475569">${fmtFreq(entryFreq)}日に1回</div>
+        <div class="text-[9px] mt-1" style="color:#334155">${entryDays}日 / ${totalDays}日</div>
+      </div>
+      <div class="rounded-xl p-2.5 text-center" style="background:#1e293b;border:1px solid #a78bfa20">
+        <div class="text-[9px] font-semibold uppercase tracking-wide mb-1" style="color:#a78bfa">全チャンス含む</div>
+        <div class="text-2xl font-black" style="color:#c4b5fd">${fmtPct(allRate)}<span class="text-sm font-bold">%</span></div>
+        <div class="text-[10px] mt-0.5" style="color:#475569">${fmtFreq(allFreq)}日に1回</div>
+        <div class="text-[9px] mt-1" style="color:#334155">${allDays}日 / ${totalDays}日</div>
+      </div>
+    </div>`;
+  }
+
+  function renderChanceSimulation() {
+    const el = document.getElementById('chance-sim-display');
+    if (!el) return;
+
+    const risk    = parseFloat(document.getElementById('chance-sim-risk')?.value)  || 0;
+    const simDays = parseFloat(document.getElementById('chance-sim-days')?.value)  || 30;
+    const allTrades = dbLoad();
+    if (!allTrades.length) { el.innerHTML = '<p style="color:#475569;font-size:11px">データがありません</p>'; return; }
+
+    // Get same period as chance-rate
+    const fromInput = document.getElementById('chance-rate-from')?.value;
+    const toDate    = new Date(); toDate.setHours(23,59,59,999);
+    let fromDate;
+    if (fromInput) {
+      fromDate = new Date(fromInput); fromDate.setHours(0,0,0,0);
+    } else {
+      const sorted = [...allTrades].sort((a,b) => new Date(a.datetime)-new Date(b.datetime));
+      fromDate = new Date(sorted[0].datetime); fromDate.setHours(0,0,0,0);
+    }
+    const totalDays = Math.max(1, Math.round((toDate - fromDate) / 86400000) + 1);
+
+    const inRange = allTrades.filter(t => {
+      const d = new Date(t.datetime);
+      return d >= fromDate && d <= toDate;
+    });
+
+    // Entry-only stats
+    const entryDaySet = new Set();
+    const allDaySet   = new Set();
+    const entries = inRange.filter(t => t.status === 'entry');
+    const allChance = inRange; // all statuses
+    inRange.forEach(t => {
+      const key = new Date(t.datetime).toDateString();
+      allDaySet.add(key);
+      if (t.status === 'entry') entryDaySet.add(key);
+    });
+
+    const entryRate = entryDaySet.size / totalDays;
+    const allRate   = allDaySet.size   / totalDays;
+
+    // Expected chances in simDays
+    const expEntry = simDays * entryRate;
+    const expAll   = simDays * allRate;
+
+    // EV per trade (mult based)
+    const evEntry = calcEvMult(entries);
+    const evAll   = calcEvMult(allChance);
+
+    // Total EV in yen
+    const totalEvEntry = expEntry * evEntry * risk;
+    const totalEvAll   = expAll   * evAll   * risk;
+
+    // Win rates
+    const entryWithResult = entries.filter(t => t.result);
+    const allWithResult   = allChance.filter(t => t.result);
+    const winRateEntry = entryWithResult.length
+      ? Math.round(entryWithResult.filter(t => RESULT_MULT[t.result] > 0).length / entryWithResult.length * 100) : 0;
+    const winRateAll   = allWithResult.length
+      ? Math.round(allWithResult.filter(t => RESULT_MULT[t.result] > 0).length / allWithResult.length * 100) : 0;
+
+    const fmtYen  = v => (v >= 0 ? '+' : '') + Math.round(v).toLocaleString() + '円';
+    const fmtN    = n => n.toFixed(1);
+    const evColor = v => v >= 0 ? '#34d399' : '#f87171';
+
+    const colHtml = (label, borderColor, textColor, expN, wr, evPerTrade, totalEv) => `
+    <div class="rounded-xl p-3" style="background:#1e293b;border-top:2px solid ${borderColor}">
+      <div class="text-[9px] font-bold uppercase tracking-wide mb-2" style="color:${textColor}">${label}</div>
+      <div class="space-y-1.5">
+        <div class="flex justify-between text-xs">
+          <span style="color:#475569">期待チャンス</span>
+          <span style="color:#cbd5e1;font-weight:700">${fmtN(expN)}回 / ${simDays}日</span>
+        </div>
+        <div class="flex justify-between text-xs">
+          <span style="color:#475569">勝率</span>
+          <span style="color:#cbd5e1;font-weight:700">${wr}%</span>
+        </div>
+        <div class="flex justify-between text-xs">
+          <span style="color:#475569">期待値/回</span>
+          <span style="font-weight:700;color:${evColor(evPerTrade * risk)}">${fmtYen(evPerTrade * risk)}</span>
+        </div>
+        <div class="pt-1.5 mt-1" style="border-top:1px solid #334155">
+          <div class="text-[9px] uppercase tracking-wide mb-0.5" style="color:#475569">総期待値</div>
+          <div class="text-xl font-black" style="color:${evColor(totalEv)}">${fmtYen(totalEv)}</div>
+        </div>
+      </div>
+    </div>`;
+
+    el.innerHTML = `
+    <div class="grid grid-cols-2 gap-2">
+      ${colHtml('エントリーのみ', '#38bdf8', '#7dd3fc', expEntry, winRateEntry, evEntry, totalEvEntry)}
+      ${colHtml('全チャンス含む',  '#a78bfa', '#c4b5fd', expAll,   winRateAll,   evAll,   totalEvAll)}
+    </div>`;
   }
 
   // ============================================================
@@ -2574,6 +2893,123 @@
 
   let simTradeCount   = 5;
   let simTradeResults = Array(10).fill(null); // null = 未選択
+
+  // ============================================================
+  // エントリーチャンス メモ
+  // ============================================================
+  const CHANCE_MEMO_KEY = 'fx_chance_memo';
+  const CHANCE_PAIRS = [
+    '','US500','US100','US30','JP225','BTC/USD','ETH/USD',
+    'GOLD','SILVER','WTI',
+    'USD/JPY','EUR/JPY','GBP/JPY','EUR/USD','GBP/USD',
+    'AUD/JPY','AUD/USD','NZD/JPY','NZD/USD',
+    'CAD/JPY','USD/CAD','CHF/JPY','USD/CHF'
+  ];
+
+  function loadChanceMemos() {
+    try { return JSON.parse(localStorage.getItem(CHANCE_MEMO_KEY)) || [{},{},{}]; }
+    catch { return [{},{},{}]; }
+  }
+
+  function saveChanceMemos() {
+    const data = [0,1,2].map(i => ({
+      pair:      document.getElementById(`cm-pair-${i}`)?.value || '',
+      method:    document.getElementById(`cm-method-${i}`)?.value || '',
+      timeframe: document.getElementById(`cm-tf-${i}`)?.value || '',
+      reason:    document.getElementById(`cm-reason-${i}`)?.value || '',
+    }));
+    localStorage.setItem(CHANCE_MEMO_KEY, JSON.stringify(data));
+  }
+
+  function clearChanceMemos() {
+    localStorage.removeItem(CHANCE_MEMO_KEY);
+    initChanceMemos();
+  }
+
+  function toggleChanceSlot(i) {
+    const el = document.getElementById(`cm-content-${i}`);
+    const arrow = document.getElementById(`cm-arrow-${i}`);
+    if (!el) return;
+    const isHidden = el.classList.toggle('hidden');
+    if (arrow) arrow.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(90deg)';
+  }
+
+  function initChanceMemos() {
+    const container = document.getElementById('chance-memo-slots');
+    if (!container) return;
+    const memos = loadChanceMemos();
+    const SLOT_COLORS = ['#818cf8','#34d399','#fb923c'];
+
+    const mkSel = (id, opts) =>
+      `<select id="${id}" onchange="saveChanceMemos()"
+         class="w-full rounded-lg px-2 py-1.5 text-xs focus:outline-none"
+         style="background:#0f172a;color:#e2e8f0;border:1px solid #334155">${opts}</select>`;
+
+    container.innerHTML = [0,1,2].map(i => {
+      const m = memos[i] || {};
+      const col = SLOT_COLORS[i];
+      const isAccordion = i > 0;          // slot 1,2 are collapsible
+      const collapsed   = isAccordion;    // start collapsed
+
+      const pairOpts = CHANCE_PAIRS.map(p =>
+        `<option value="${p}" ${m.pair === p ? 'selected':''}>${p || '-- なし --'}</option>`
+      ).join('');
+      const methodOpts = [
+        `<option value="" ${!m.method?'selected':''}>-</option>`,
+        `<option value="1" ${m.method==='1'?'selected':''}>手法①</option>`,
+        `<option value="2" ${m.method==='2'?'selected':''}>手法②</option>`,
+      ].join('');
+      const tfOpts = [
+        `<option value="" ${!m.timeframe?'selected':''}>-</option>`,
+        `<option value="H1" ${m.timeframe==='H1'?'selected':''}>H1</option>`,
+        `<option value="M15" ${m.timeframe==='M15'?'selected':''}>M15</option>`,
+      ].join('');
+
+      const headerClick = isAccordion ? `onclick="toggleChanceSlot(${i})" style="cursor:pointer"` : '';
+      const arrow = isAccordion
+        ? `<svg id="cm-arrow-${i}" class="w-3 h-3 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:${col}"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>`
+        : '';
+
+      const content = `
+        <div class="grid grid-cols-3 gap-2 mb-2">
+          <div>
+            <label class="block text-[9px] font-semibold uppercase tracking-wide mb-1" style="color:#64748b">通貨ペア</label>
+            ${mkSel(`cm-pair-${i}`, pairOpts)}
+          </div>
+          <div>
+            <label class="block text-[9px] font-semibold uppercase tracking-wide mb-1" style="color:#64748b">手法</label>
+            ${mkSel(`cm-method-${i}`, methodOpts)}
+          </div>
+          <div>
+            <label class="block text-[9px] font-semibold uppercase tracking-wide mb-1" style="color:#64748b">時間足</label>
+            ${mkSel(`cm-tf-${i}`, tfOpts)}
+          </div>
+        </div>
+        <div>
+          <label class="block text-[9px] font-semibold uppercase tracking-wide mb-1" style="color:#64748b">エントリー理由</label>
+          <textarea id="cm-reason-${i}" oninput="saveChanceMemos()"
+            placeholder="チャートの形状・根拠・注意点など..."
+            rows="2"
+            class="w-full rounded-lg px-2 py-1.5 text-xs focus:outline-none resize-none"
+            style="background:#1e293b;color:#cbd5e1;border:1px solid #334155"
+          >${(m.reason || '').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+        </div>`;
+
+      return `
+      <div class="rounded-xl" style="background:#0f172a;border-left:3px solid ${col}">
+        <div class="flex items-center gap-1.5 px-3 py-2.5" ${headerClick}>
+          <span class="text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center flex-shrink-0"
+            style="background:${col};color:#fff">${i+1}</span>
+          <span class="text-xs font-semibold flex-1" style="color:${col}">チャンス ${i+1}</span>
+          ${m.pair ? `<span class="text-xs font-bold" style="color:#94a3b8">${m.pair}</span>` : ''}
+          ${arrow}
+        </div>
+        <div id="cm-content-${i}" class="px-3 pb-3 ${collapsed ? 'hidden' : ''}">
+          ${content}
+        </div>
+      </div>`;
+    }).join('');
+  }
 
   function resetSimulation() {
     const initialEl = document.getElementById('sim-initial');
