@@ -1183,12 +1183,38 @@
   // ============================================================
   const STORAGE_KEY = 'fx_trades_v1';
 
+  const BACKUP_KEY = STORAGE_KEY + '_bk';
+  const TAB_KEY    = 'fx_active_tab';
+
   function dbLoad() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-    catch { return []; }
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (data.length > 0) {
+          // Keep sessionStorage in sync as emergency backup
+          try { sessionStorage.setItem(BACKUP_KEY, raw); } catch {}
+          return data;
+        }
+      }
+      // localStorage empty — try sessionStorage backup (survives page reload)
+      const bk = sessionStorage.getItem(BACKUP_KEY);
+      if (bk) {
+        const data = JSON.parse(bk);
+        if (data.length > 0) {
+          // Restore to localStorage
+          localStorage.setItem(STORAGE_KEY, bk);
+          return data;
+        }
+      }
+      return [];
+    } catch { return []; }
   }
   function dbSave(trades) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(trades));
+    const json = JSON.stringify(trades);
+    localStorage.setItem(STORAGE_KEY, json);
+    // Mirror to sessionStorage so data survives iOS localStorage eviction within session
+    try { sessionStorage.setItem(BACKUP_KEY, json); } catch {}
   }
   function uid() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -1265,10 +1291,14 @@
       navigator.serviceWorker.register('./sw.js').catch(() => {});
     }
 
-    // Initial renders
-    renderHistory();
-    renderSummary();
-    initChanceMemos();
+    // Request persistent storage (prevents iOS Safari from evicting localStorage)
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().catch(() => {});
+    }
+
+    // Restore last active tab (falls back to 'register')
+    const savedTab = localStorage.getItem(TAB_KEY) || 'register';
+    switchTab(savedTab);
   });
 
   function setDefaultDatetime() {
@@ -1295,6 +1325,7 @@
     });
 
     currentTab = tab;
+    localStorage.setItem(TAB_KEY, tab);
     if (tab === 'history') renderHistory();
     if (tab === 'stats')   { renderStats(); renderCalendar(); renderChanceRate(); renderChanceSimulation(); }
     if (tab === 'summary') { renderSummary(); renderSimulation(); initChanceMemos(); }
