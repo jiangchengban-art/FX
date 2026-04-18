@@ -37,6 +37,35 @@
     ::-webkit-scrollbar { width: 4px; }
     ::-webkit-scrollbar-thumb { background: #2d3748; border-radius: 4px; }
 
+    /* Tooltip */
+    .tax-tip {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #94a3b8; color: #fff;
+      font-size: 9px; font-weight: bold; cursor: pointer;
+      position: relative; flex-shrink: 0;
+      user-select: none;
+    }
+    .tax-tip::after {
+      content: attr(data-tip);
+      position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+      background: #1e293b; color: #e2e8f0;
+      font-size: 11px; font-weight: normal; line-height: 1.5;
+      padding: 6px 10px; border-radius: 8px;
+      width: 220px; z-index: 100;
+      pointer-events: none; opacity: 0; transition: opacity 0.15s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      white-space: normal;
+    }
+    .tax-tip:hover::after,
+    .tax-tip:focus::after {
+      opacity: 1;
+    }
+    /* 右端にはみ出す場合は左に出す */
+    @media (max-width: 400px) {
+      .tax-tip::after { left: auto; right: 20px; transform: translateY(-50%); }
+    }
+
     /* Line-clamp */
     .line-clamp-1 {
       overflow: hidden;
@@ -520,213 +549,80 @@
         <span id="history-count" class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full"></span>
       </div>
 
-      <!-- Filters (accordion) -->
-      <div class="bg-white rounded-2xl shadow-sm mb-4 overflow-hidden">
-
-        <!-- Filter top bar -->
-        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-          <div class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Filters (compact dropdowns) -->
+      <div class="bg-white rounded-2xl shadow-sm mb-4 p-3">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
             </svg>
-            <span class="text-sm font-semibold text-slate-600">絞込みフィルター</span>
-            <span id="filter-badge" class="hidden text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full font-bold"></span>
+            <span class="text-xs font-semibold text-slate-600">絞込み</span>
+            <span id="filter-badge" class="hidden text-xs bg-blue-600 text-white px-1.5 py-0.5 rounded-full font-bold"></span>
           </div>
           <button onclick="resetFilters()" class="text-xs text-slate-400 hover:text-red-500 transition-colors">クリア</button>
         </div>
-
-        <!-- 手法 -->
-        <div class="border-b border-slate-50">
-          <button onclick="toggleFilterSection('method')" class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-semibold text-slate-500">手法</span>
-              <span id="fcount-method" class="hidden text-xs bg-blue-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
-            </div>
-            <svg id="farrow-method" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-          <div id="fsec-method" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
-            <button onclick="toggleFilter('method','1')" data-filter="method" data-value="1" data-active="bg-blue-600 text-white border-blue-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">① 乖離埋め</button>
-            <button onclick="toggleFilter('method','2')" data-filter="method" data-value="2" data-active="bg-blue-600 text-white border-blue-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">② ３波狙い</button>
-            <button onclick="toggleFilter('method','3')" data-filter="method" data-value="3" data-active="bg-blue-600 text-white border-blue-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">③ その他</button>
-          </div>
+        <div class="grid grid-cols-3 gap-1.5">
+          <select id="fd-method" onchange="selectFilter('method',this.value)"
+            class="text-xs border border-slate-200 rounded-lg px-1.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-400">
+            <option value="">手法: 全て</option>
+            <option value="1">① 乖離埋め</option>
+            <option value="2">② ３波狙い</option>
+            <option value="3">③ その他</option>
+          </select>
+          <select id="fd-status" onchange="selectFilter('status',this.value)"
+            class="text-xs border border-slate-200 rounded-lg px-1.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-400">
+            <option value="">状態: 全て</option>
+            <option value="entry">エントリー</option>
+            <option value="through">スルー</option>
+            <option value="miss">ミス</option>
+          </select>
+          <select id="fd-result" onchange="selectFilter('result',this.value)"
+            class="text-xs border border-slate-200 rounded-lg px-1.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-400">
+            <option value="">結果: 全て</option>
+            <option value="max">MAX</option>
+            <option value="big">BIG</option>
+            <option value="reg">REG</option>
+            <option value="small">微益</option>
+            <option value="breakeven">建値</option>
+            <option value="stoploss">損切</option>
+          </select>
+          <select id="fd-pair" onchange="selectFilter('pair',this.value)"
+            class="text-xs border border-slate-200 rounded-lg px-1.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-400">
+            <option value="">通貨: 全て</option>
+            <option value="US500">US500</option><option value="US100">US100</option><option value="US30">US30</option><option value="JP225">JP225</option>
+            <option value="BTC/USD">BTC/USD</option><option value="ETH/USD">ETH/USD</option><option value="GOLD">GOLD</option><option value="SILVER">SILVER</option><option value="WTI">WTI</option>
+            <option value="USD/JPY">USD/JPY</option><option value="EUR/JPY">EUR/JPY</option><option value="GBP/JPY">GBP/JPY</option>
+            <option value="EUR/USD">EUR/USD</option><option value="GBP/USD">GBP/USD</option><option value="AUD/JPY">AUD/JPY</option><option value="AUD/USD">AUD/USD</option>
+            <option value="NZD/JPY">NZD/JPY</option><option value="NZD/USD">NZD/USD</option><option value="CAD/JPY">CAD/JPY</option><option value="USD/CAD">USD/CAD</option>
+            <option value="CHF/JPY">CHF/JPY</option><option value="USD/CHF">USD/CHF</option>
+          </select>
+          <select id="fd-timeframe" onchange="selectFilter('timeframe',this.value)"
+            class="text-xs border border-slate-200 rounded-lg px-1.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-400">
+            <option value="">足: 全て</option>
+            <option value="H1">H1</option><option value="M15">M15</option>
+            <option value="M1">M1</option><option value="M5">M5</option><option value="M30">M30</option>
+            <option value="H4">H4</option><option value="D1">D1</option><option value="W1">W1</option>
+          </select>
+          <select id="fd-skipReason" onchange="selectFilter('skipReason',this.value)"
+            class="text-xs border border-slate-200 rounded-lg px-1.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-400">
+            <option value="">見送り: 全て</option>
+            <option value="m15">M15見送り</option><option value="sub">サブ通貨</option>
+            <option value="low_setup">優位性低</option><option value="other">その他</option>
+          </select>
+          <select id="fd-subpair" onchange="selectFilter('subpair',this.value)"
+            class="text-xs border border-slate-200 rounded-lg px-1.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-400">
+            <option value="">サブ: 全て</option>
+            <option value="EUR/GBP">EUR/GBP</option><option value="AUD/NZD">AUD/NZD</option><option value="EUR/AUD">EUR/AUD</option>
+            <option value="GBP/AUD">GBP/AUD</option><option value="EUR/NZD">EUR/NZD</option><option value="GBP/NZD">GBP/NZD</option>
+            <option value="EUR/CHF">EUR/CHF</option><option value="GBP/CHF">GBP/CHF</option><option value="EUR/CAD">EUR/CAD</option><option value="GBP/CAD">GBP/CAD</option>
+          </select>
+          <select id="fd-reviewed" onchange="selectFilter('reviewed',this.value)"
+            class="text-xs border border-slate-200 rounded-lg px-1.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-400 col-span-2">
+            <option value="">レビュー: 全て</option>
+            <option value="unreviewed">未レビューのみ</option>
+            <option value="reviewed">レビュー済みのみ</option>
+          </select>
         </div>
-
-        <!-- メイン通貨 -->
-        <div class="border-b border-slate-50">
-          <button onclick="toggleFilterSection('pair')" class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-semibold text-slate-500">メイン通貨</span>
-              <span id="fcount-pair" class="hidden text-xs bg-indigo-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
-            </div>
-            <svg id="farrow-pair" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-          <div id="fsec-pair" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
-            <button onclick="toggleFilter('pair','US500')" data-filter="pair" data-value="US500" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">US500</button>
-            <button onclick="toggleFilter('pair','US100')" data-filter="pair" data-value="US100" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">US100</button>
-            <button onclick="toggleFilter('pair','US30')" data-filter="pair" data-value="US30" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">US30</button>
-            <button onclick="toggleFilter('pair','JP225')" data-filter="pair" data-value="JP225" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">JP225</button>
-            <button onclick="toggleFilter('pair','BTC/USD')" data-filter="pair" data-value="BTC/USD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">BTC/USD</button>
-            <button onclick="toggleFilter('pair','ETH/USD')" data-filter="pair" data-value="ETH/USD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">ETH/USD</button>
-            <button onclick="toggleFilter('pair','GOLD')" data-filter="pair" data-value="GOLD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">GOLD</button>
-            <button onclick="toggleFilter('pair','SILVER')" data-filter="pair" data-value="SILVER" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">SILVER</button>
-            <button onclick="toggleFilter('pair','WTI')" data-filter="pair" data-value="WTI" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">WTI</button>
-            <button onclick="toggleFilter('pair','USD/JPY')" data-filter="pair" data-value="USD/JPY" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">USD/JPY</button>
-            <button onclick="toggleFilter('pair','EUR/JPY')" data-filter="pair" data-value="EUR/JPY" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">EUR/JPY</button>
-            <button onclick="toggleFilter('pair','GBP/JPY')" data-filter="pair" data-value="GBP/JPY" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">GBP/JPY</button>
-            <button onclick="toggleFilter('pair','EUR/USD')" data-filter="pair" data-value="EUR/USD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">EUR/USD</button>
-            <button onclick="toggleFilter('pair','GBP/USD')" data-filter="pair" data-value="GBP/USD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">GBP/USD</button>
-            <button onclick="toggleFilter('pair','AUD/JPY')" data-filter="pair" data-value="AUD/JPY" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">AUD/JPY</button>
-            <button onclick="toggleFilter('pair','AUD/USD')" data-filter="pair" data-value="AUD/USD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">AUD/USD</button>
-            <button onclick="toggleFilter('pair','NZD/JPY')" data-filter="pair" data-value="NZD/JPY" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">NZD/JPY</button>
-            <button onclick="toggleFilter('pair','NZD/USD')" data-filter="pair" data-value="NZD/USD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">NZD/USD</button>
-            <button onclick="toggleFilter('pair','CAD/JPY')" data-filter="pair" data-value="CAD/JPY" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">CAD/JPY</button>
-            <button onclick="toggleFilter('pair','USD/CAD')" data-filter="pair" data-value="USD/CAD" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">USD/CAD</button>
-            <button onclick="toggleFilter('pair','CHF/JPY')" data-filter="pair" data-value="CHF/JPY" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">CHF/JPY</button>
-            <button onclick="toggleFilter('pair','USD/CHF')" data-filter="pair" data-value="USD/CHF" data-active="bg-indigo-600 text-white border-indigo-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">USD/CHF</button>
-          </div>
-        </div>
-
-        <!-- 時間足 -->
-        <div class="border-b border-slate-50">
-          <button onclick="toggleFilterSection('timeframe')" class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-semibold text-slate-500">時間足</span>
-              <span id="fcount-timeframe" class="hidden text-xs bg-slate-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
-            </div>
-            <svg id="farrow-timeframe" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-          <div id="fsec-timeframe" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
-            <button onclick="toggleFilter('timeframe','M1')" data-filter="timeframe" data-value="M1" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">M1</button>
-            <button onclick="toggleFilter('timeframe','M5')" data-filter="timeframe" data-value="M5" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">M5</button>
-            <button onclick="toggleFilter('timeframe','M15')" data-filter="timeframe" data-value="M15" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">M15</button>
-            <button onclick="toggleFilter('timeframe','M30')" data-filter="timeframe" data-value="M30" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">M30</button>
-            <button onclick="toggleFilter('timeframe','H1')" data-filter="timeframe" data-value="H1" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">H1</button>
-            <button onclick="toggleFilter('timeframe','H4')" data-filter="timeframe" data-value="H4" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">H4</button>
-            <button onclick="toggleFilter('timeframe','D1')" data-filter="timeframe" data-value="D1" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">D1</button>
-            <button onclick="toggleFilter('timeframe','W1')" data-filter="timeframe" data-value="W1" data-active="bg-slate-600 text-white border-slate-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">W1</button>
-          </div>
-        </div>
-
-        <!-- サブ通貨 -->
-        <div class="border-b border-slate-50">
-          <button onclick="toggleFilterSection('subpair')" class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-semibold text-slate-500">サブ通貨</span>
-              <span id="fcount-subpair" class="hidden text-xs bg-purple-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
-            </div>
-            <svg id="farrow-subpair" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-          <div id="fsec-subpair" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
-            <button onclick="toggleFilter('subpair','EUR/GBP')" data-filter="subpair" data-value="EUR/GBP" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">EUR/GBP</button>
-            <button onclick="toggleFilter('subpair','AUD/NZD')" data-filter="subpair" data-value="AUD/NZD" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">AUD/NZD</button>
-            <button onclick="toggleFilter('subpair','EUR/AUD')" data-filter="subpair" data-value="EUR/AUD" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">EUR/AUD</button>
-            <button onclick="toggleFilter('subpair','GBP/AUD')" data-filter="subpair" data-value="GBP/AUD" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">GBP/AUD</button>
-            <button onclick="toggleFilter('subpair','EUR/NZD')" data-filter="subpair" data-value="EUR/NZD" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">EUR/NZD</button>
-            <button onclick="toggleFilter('subpair','GBP/NZD')" data-filter="subpair" data-value="GBP/NZD" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">GBP/NZD</button>
-            <button onclick="toggleFilter('subpair','EUR/CHF')" data-filter="subpair" data-value="EUR/CHF" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">EUR/CHF</button>
-            <button onclick="toggleFilter('subpair','GBP/CHF')" data-filter="subpair" data-value="GBP/CHF" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">GBP/CHF</button>
-            <button onclick="toggleFilter('subpair','EUR/CAD')" data-filter="subpair" data-value="EUR/CAD" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">EUR/CAD</button>
-            <button onclick="toggleFilter('subpair','GBP/CAD')" data-filter="subpair" data-value="GBP/CAD" data-active="bg-purple-600 text-white border-purple-600" class="filter-chip px-2.5 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">GBP/CAD</button>
-          </div>
-        </div>
-
-        <!-- ステータス -->
-        <div class="border-b border-slate-50">
-          <button onclick="toggleFilterSection('status')" class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-semibold text-slate-500">ステータス</span>
-              <span id="fcount-status" class="hidden text-xs bg-blue-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
-            </div>
-            <svg id="farrow-status" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-          <div id="fsec-status" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
-            <button onclick="toggleFilter('status','entry')" data-filter="status" data-value="entry" data-active="bg-blue-600 text-white border-blue-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">エントリー</button>
-            <button onclick="toggleFilter('status','through')" data-filter="status" data-value="through" data-active="bg-yellow-500 text-white border-yellow-500" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">スルー</button>
-            <button onclick="toggleFilter('status','miss')" data-filter="status" data-value="miss" data-active="bg-orange-500 text-white border-orange-500" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">ミス</button>
-          </div>
-        </div>
-
-        <!-- 結果 -->
-        <div>
-          <button onclick="toggleFilterSection('result')" class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-semibold text-slate-500">結果</span>
-              <span id="fcount-result" class="hidden text-xs bg-emerald-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
-            </div>
-            <svg id="farrow-result" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-          <div id="fsec-result" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
-            <button onclick="toggleFilter('result','reg')" data-filter="result" data-value="reg" data-active="bg-emerald-600 text-white border-emerald-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">REG</button>
-            <button onclick="toggleFilter('result','big')" data-filter="result" data-value="big" data-active="bg-blue-600 text-white border-blue-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">BIG</button>
-            <button onclick="toggleFilter('result','max')" data-filter="result" data-value="max" data-active="bg-violet-600 text-white border-violet-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">MAX</button>
-            <button onclick="toggleFilter('result','small')" data-filter="result" data-value="small" data-active="bg-teal-600 text-white border-teal-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">微益</button>
-            <button onclick="toggleFilter('result','breakeven')" data-filter="result" data-value="breakeven" data-active="bg-slate-500 text-white border-slate-500" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">建値決済</button>
-            <button onclick="toggleFilter('result','stoploss')" data-filter="result" data-value="stoploss" data-active="bg-red-600 text-white border-red-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">損切</button>
-          </div>
-        </div>
-
-        <!-- Tag -->
-        <div class="border-t border-slate-100">
-          <button onclick="toggleFilterSection('tag')" class="w-full px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-semibold text-slate-500">タグ</span>
-              <span id="fcount-tag" class="hidden text-xs bg-emerald-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
-            </div>
-            <svg id="farrow-tag" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-          <div id="fsec-tag" class="hidden px-4 pb-3 flex flex-wrap gap-1.5"></div>
-        </div>
-
-        <!-- 見送り理由 -->
-        <div class="border-t border-slate-100">
-          <button onclick="toggleFilterSection('skipReason')" class="w-full px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-semibold text-slate-500">見送り理由</span>
-              <span id="fcount-skipReason" class="hidden text-xs bg-violet-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
-            </div>
-            <svg id="farrow-skipReason" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-          <div id="fsec-skipReason" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
-            <button onclick="toggleFilter('skipReason','m15')" data-filter="skipReason" data-value="m15" data-active="bg-violet-500 text-white border-violet-500" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">M15見送り</button>
-            <button onclick="toggleFilter('skipReason','sub')" data-filter="skipReason" data-value="sub" data-active="bg-orange-500 text-white border-orange-500" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">サブ通貨見送り</button>
-            <button onclick="toggleFilter('skipReason','low_setup')" data-filter="skipReason" data-value="low_setup" data-active="bg-red-500 text-white border-red-500" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">優位性低い</button>
-            <button onclick="toggleFilter('skipReason','other')" data-filter="skipReason" data-value="other" data-active="bg-slate-500 text-white border-slate-500" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">その他</button>
-          </div>
-        </div>
-
-        <!-- Reviewed -->
-        <div class="border-t border-slate-100">
-          <button onclick="toggleFilterSection('reviewed')" class="w-full px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-semibold text-slate-500">レビュー状態</span>
-              <span id="fcount-reviewed" class="hidden text-xs bg-emerald-600 text-white w-4 h-4 rounded-full flex items-center justify-center font-bold"></span>
-            </div>
-            <svg id="farrow-reviewed" style="transition:transform .2s" class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-          <div id="fsec-reviewed" class="hidden px-4 pb-3 flex flex-wrap gap-1.5">
-            <button onclick="toggleFilter('reviewed','unreviewed')" data-filter="reviewed" data-value="unreviewed" data-active="bg-amber-600 text-white border-amber-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">未レビューのみ</button>
-            <button onclick="toggleFilter('reviewed','reviewed')" data-filter="reviewed" data-value="reviewed" data-active="bg-emerald-600 text-white border-emerald-600" class="filter-chip px-3 py-1 rounded-full text-xs border border-slate-200 bg-white text-slate-500 transition-all active:scale-95">レビュー済みのみ</button>
-          </div>
-        </div>
-
       </div>
 
       <!-- Trade list -->
@@ -1015,7 +911,16 @@
         <!-- 初期リスク額 -->
         <div class="mb-3">
           <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">初期リスク額（円）</label>
-          <input type="number" id="sim-initial" value="100000" step="10000" min="1000"
+          <div class="flex gap-1.5 mb-2 flex-wrap">
+            <button onclick="simSetInitial(10000)"  class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 bg-white hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 active:scale-95 transition-all">1万</button>
+            <button onclick="simSetInitial(30000)"  class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 bg-white hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 active:scale-95 transition-all">3万</button>
+            <button onclick="simSetInitial(50000)"  class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 bg-white hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 active:scale-95 transition-all">5万</button>
+            <button onclick="simSetInitial(100000)" class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 bg-white hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 active:scale-95 transition-all">10万</button>
+            <button onclick="simSetInitial(300000)" class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 bg-white hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 active:scale-95 transition-all">30万</button>
+            <button onclick="simSetInitial(500000)" class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 bg-white hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 active:scale-95 transition-all">50万</button>
+            <button onclick="simSetInitial(1000000)" class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 bg-white hover:bg-blue-50 hover:border-blue-300 hover:text-blue-600 active:scale-95 transition-all">100万</button>
+          </div>
+          <input type="number" id="sim-initial" placeholder="直接入力も可" step="1000" min="0"
             oninput="renderSimulation()"
             class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 select-text">
         </div>
@@ -1045,6 +950,129 @@
 
         <!-- トレード行 -->
         <div id="sim-trade-rows" class="space-y-2"></div>
+      </div>
+
+      <!-- ===== 税金シミュレーター ===== -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-bold text-slate-600">💴 税金シミュレーター</h3>
+          <button onclick="resetTaxSim()"
+            class="text-xs px-3 py-1.5 rounded-xl border border-red-200 text-red-500 hover:bg-red-50 active:scale-95 transition-all font-semibold">
+            クリア
+          </button>
+        </div>
+
+        <!-- 入力フィールド -->
+        <div class="space-y-3 mb-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">海外FX利益額（円）</label>
+            <input type="number" id="tax-fx-profit" placeholder="例: 1000000" min="0" step="10000"
+              oninput="renderTaxSim()"
+              class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 select-text">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">給与収入（円）<span class="text-slate-400 normal-case font-normal ml-1">任意</span></label>
+            <input type="number" id="tax-salary" placeholder="例: 4000000" min="0" step="10000"
+              oninput="renderTaxSim()"
+              class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 select-text">
+          </div>
+        </div>
+
+        <!-- オプション設定 -->
+        <div class="space-y-2.5 mb-4 p-3 bg-slate-50 rounded-xl">
+          <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">控除オプション</p>
+
+          <!-- 基礎控除 -->
+          <div>
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="tax-apply-basic" checked onchange="renderTaxSim()"
+                class="w-4 h-4 rounded accent-blue-500">
+              <span class="text-xs font-semibold text-slate-600">基礎控除を適用（48万円）</span>
+              <span class="tax-tip" data-tip="すべての納税者に認められる控除。合計所得2,400万円以下で48万円が課税所得から差し引かれます。">?</span>
+            </label>
+            <div id="tax-other-income-block" class="mt-2 pl-6">
+              <label class="flex items-center gap-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">
+                その他の雑所得（円）
+                <span class="tax-tip" data-tip="FX利益以外の雑所得（副業・アフィリエイト・暗号資産など）。FX利益と合算して課税されます。">?</span>
+              </label>
+              <input type="number" id="tax-other-income" placeholder="0" min="0" step="10000"
+                oninput="renderTaxSim()"
+                class="w-full border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 select-text">
+            </div>
+          </div>
+
+          <!-- 給与所得控除 -->
+          <div id="tax-salary-deduction-block" class="hidden">
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="tax-apply-salary-deduction" checked onchange="renderTaxSim()"
+                class="w-4 h-4 rounded accent-blue-500">
+              <span class="text-xs font-semibold text-slate-600">給与所得控除を適用</span>
+              <span class="tax-tip" data-tip="給与収入に応じて自動計算される控除。収入162.5万円以下=55万円、180万円以下=収入×40%-10万円、360万円以下=収入×30%+8万円、660万円以下=収入×20%+44万円、850万円以下=収入×10%+110万円、850万円超=195万円（上限）。">?</span>
+            </label>
+          </div>
+
+          <!-- 住民税均等割 -->
+          <div>
+            <label class="flex items-center gap-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">
+              住民税 均等割（円）
+              <span class="tax-tip" data-tip="所得に関わらず定額で課税される住民税。市区町村民税3,500円＋道府県民税1,500円が標準（合計5,000円）ですが、自治体により異なります。">?</span>
+            </label>
+            <input type="number" id="tax-resident-flat" value="5000" min="0" step="100"
+              oninput="renderTaxSim()"
+              class="w-full border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 select-text">
+          </div>
+        </div>
+
+        <!-- 結果表示 -->
+        <div id="tax-result-area" class="hidden space-y-3">
+
+          <!-- FXのみ / FX内訳 -->
+          <div id="tax-fx-block" class="rounded-xl p-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+            <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wide mb-2">海外FX 雑所得</p>
+            <div id="tax-fx-breakdown" class="space-y-1 text-xs text-slate-600"></div>
+          </div>
+
+          <!-- 給与内訳（給与入力時のみ） -->
+          <div id="tax-salary-block" class="hidden rounded-xl p-3" style="background:#eff6ff;border:1px solid #bfdbfe">
+            <p class="text-[10px] font-bold text-blue-600 uppercase tracking-wide mb-2">給与所得</p>
+            <div id="tax-salary-breakdown" class="space-y-1 text-xs text-slate-600"></div>
+          </div>
+
+          <!-- 合算計算 -->
+          <div id="tax-combined-block" class="rounded-xl p-3" style="background:#faf5ff;border:1px solid #e9d5ff">
+            <p class="text-[10px] font-bold text-violet-600 uppercase tracking-wide mb-2">課税所得・合算</p>
+            <div id="tax-combined-breakdown" class="space-y-1 text-xs text-slate-600"></div>
+          </div>
+
+          <!-- 税額サマリー -->
+          <div class="rounded-xl p-3" style="background:#1e293b">
+            <p class="text-[10px] font-bold uppercase tracking-wide mb-2" style="color:#94a3b8">税額サマリー</p>
+            <div id="tax-summary-rows" class="space-y-1.5 mb-3"></div>
+            <div class="pt-2" style="border-top:1px solid #334155">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-xs font-bold" style="color:#cbd5e1">合計税額</span>
+                <span id="tax-total" class="text-base font-black" style="color:#f87171">−</span>
+              </div>
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-xs" style="color:#94a3b8">実効税率（FX利益に対して）</span>
+                <span id="tax-effective-rate" class="text-sm font-bold" style="color:#fbbf24">−</span>
+              </div>
+            </div>
+            <!-- FX手取り -->
+            <div class="mt-2 pt-2 rounded-lg p-2" style="background:#0f172a;border:1px solid #334155">
+              <div class="flex justify-between items-center mb-0.5">
+                <span class="text-xs font-bold" style="color:#7dd3fc">FX利益 手取り額</span>
+                <span id="tax-takehome" class="text-base font-black" style="color:#34d399">−</span>
+              </div>
+              <div class="text-[10px]" style="color:#475569" id="tax-takehome-note"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 空状態 -->
+        <div id="tax-empty-state" class="text-center py-6">
+          <p class="text-xs text-slate-400">海外FX利益額を入力すると税金を計算します</p>
+        </div>
       </div>
 
       <!-- Cloud Sync (Supabase) -->
@@ -1392,7 +1420,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     localStorage.setItem(TAB_KEY, tab);
     if (tab === 'history') renderHistory();
     if (tab === 'stats')   { renderStats(); renderCalendar(); renderChanceRate(); renderChanceSimulation(); }
-    if (tab === 'summary') { renderSummary(); renderSimulation(); initChanceMemos(); updateSyncUI(); }
+    if (tab === 'summary') { renderSummary(); renderSimulation(); initChanceMemos(); updateSyncUI(); renderTaxSim(); }
   }
 
   // ============================================================
@@ -1648,15 +1676,15 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
          </button>`;
 
-    // Images inline — horizontal row between text and buttons
-    const imgInlineHtml = flatImgList.length > 0
-      ? `<div class="flex gap-1 flex-shrink-0 items-center ml-2">
+    // Images row — displayed below text+buttons when present
+    const imgRowHtml = flatImgList.length > 0
+      ? `<div class="flex gap-2 mt-2 overflow-x-auto pb-1" style="scrollbar-width:none">
           ${flatImgList.map((item, i) =>
             `<div class="flex flex-col items-center gap-0.5 flex-shrink-0">
                <img src="${item.src}" onclick="openImgViewer('${t.id}',${i})"
                  class="object-cover rounded-lg cursor-pointer active:scale-95 transition-all"
-                 style="width:56px;height:42px;border:1px solid #2a2a3e">
-               <span class="text-[8px] leading-none" style="color:#60a5fa">${item.label}</span>
+                 style="width:72px;height:54px;border:1px solid #2a2a3e">
+               <span class="text-[9px] leading-none" style="color:#60a5fa">${item.label}</span>
              </div>`
           ).join('')}
          </div>`
@@ -1699,7 +1727,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
         </div>
         <span class="text-sm font-black ml-2 whitespace-nowrap" style="color:${cardAccent}">${pnlStr}</span>
       </div>
-      <!-- Content row: text | images | buttons — all same vertical space -->
+      <!-- Content row: text + buttons -->
       <div class="flex items-center gap-0">
         <!-- Text -->
         <div class="min-w-0 flex-1">
@@ -1708,8 +1736,6 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
           <div class="text-xs mt-0.5" style="color:#94a3b8">${timeStr}</div>
           ${tagsHtml}
         </div>
-        <!-- Images inline to the right of text -->
-        ${imgInlineHtml}
         <!-- Action buttons -->
         <div class="flex gap-1 ml-2 flex-shrink-0">
           ${reviewedIcon}
@@ -1727,6 +1753,8 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
           </button>
         </div>
       </div>
+      <!-- Images row — below text+buttons, only when images exist -->
+      ${imgRowHtml}
     </div>`;
   }
 
@@ -1772,21 +1800,20 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     }
   }
 
+  // Dropdown-based single-select filter
+  function selectFilter(group, value) {
+    if (!activeFilters[group]) return;
+    activeFilters[group].clear();
+    if (value) activeFilters[group].add(value);
+    updateFilterBadge();
+    renderHistory();
+  }
+
   function resetFilters() {
     Object.keys(activeFilters).forEach(f => activeFilters[f].clear());
-    document.querySelectorAll('.filter-chip').forEach(btn => {
-      const activeClasses = (btn.dataset.active || 'bg-blue-600 text-white border-blue-600').split(' ');
-      btn.classList.remove(...activeClasses);
-      btn.classList.add('bg-white', 'text-slate-500', 'border-slate-200');
-    });
-    // Reset all section badges and close all sections
-    ['method','pair','timeframe','subpair','status','result','tag','reviewed','skipReason'].forEach(name => {
-      const sec   = document.getElementById('fsec-' + name);
-      const badge = document.getElementById('fcount-' + name);
-      const arrow = document.getElementById('farrow-' + name);
-      if (sec)   sec.classList.add('hidden');
-      if (badge) { badge.textContent = ''; badge.classList.add('hidden'); }
-      if (arrow) arrow.style.transform = 'rotate(0deg)';
+    ['fd-method','fd-status','fd-result','fd-pair','fd-timeframe','fd-skipReason','fd-subpair','fd-reviewed'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
     });
     updateFilterBadge();
     renderHistory();
@@ -2998,7 +3025,9 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     'GOLD','SILVER','WTI',
     'USD/JPY','EUR/JPY','GBP/JPY','EUR/USD','GBP/USD',
     'AUD/JPY','AUD/USD','NZD/JPY','NZD/USD',
-    'CAD/JPY','USD/CAD','CHF/JPY','USD/CHF'
+    'CAD/JPY','USD/CAD','CHF/JPY','USD/CHF',
+    'EUR/GBP','AUD/NZD','EUR/AUD','GBP/AUD','EUR/NZD','GBP/NZD',
+    'EUR/CHF','GBP/CHF','EUR/CAD','GBP/CAD'
   ];
 
   function loadChanceMemos() {
@@ -3051,8 +3080,9 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       ).join('');
       const methodOpts = [
         `<option value="" ${!m.method?'selected':''}>-</option>`,
-        `<option value="1" ${m.method==='1'?'selected':''}>手法①</option>`,
-        `<option value="2" ${m.method==='2'?'selected':''}>手法②</option>`,
+        `<option value="1" ${m.method==='1'?'selected':''}>①乖離埋め</option>`,
+        `<option value="2" ${m.method==='2'?'selected':''}>②3波狙い</option>`,
+        `<option value="3" ${m.method==='3'?'selected':''}>③その他</option>`,
       ].join('');
       const tfOpts = [
         `<option value="" ${!m.timeframe?'selected':''}>-</option>`,
@@ -3106,9 +3136,14 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     }).join('');
   }
 
+  function simSetInitial(val) {
+    const el = document.getElementById('sim-initial');
+    if (el) { el.value = val; renderSimulation(); }
+  }
+
   function resetSimulation() {
     const initialEl = document.getElementById('sim-initial');
-    if (initialEl) initialEl.value = 100000;
+    if (initialEl) initialEl.value = '';
     simTradeCount   = 5;
     simTradeResults = Array(10).fill(null);
     document.getElementById('sim-count-display').textContent = simTradeCount;
@@ -3128,7 +3163,17 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
   }
 
   function renderSimulation() {
-    const initial = parseInt(document.getElementById('sim-initial')?.value) || 100000;
+    const rawVal = document.getElementById('sim-initial')?.value;
+    const initial = parseInt(rawVal) || 0;
+    if (!initial) {
+      const finalEl = document.getElementById('sim-final');
+      const growthEl = document.getElementById('sim-growth');
+      if (finalEl) finalEl.textContent = '−';
+      if (growthEl) growthEl.textContent = '';
+      const container = document.getElementById('sim-trade-rows');
+      if (container) container.innerHTML = '<p class="text-xs text-center text-slate-400 py-4">初期リスク額を入力してください</p>';
+      return;
+    }
 
     // Compute compound capital row-by-row
     let capital = initial;
@@ -3213,6 +3258,223 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
   // Format number with commas
   function fmt(n) {
     return Math.round(n).toLocaleString('ja-JP');
+  }
+
+  // ============================================================
+  // TAX SIMULATOR
+  // ============================================================
+
+  // 所得税の累進税率テーブル（課税所得ベース）
+  const INCOME_TAX_BRACKETS = [
+    { limit: 1950000,  rate: 0.05, deduct: 0 },
+    { limit: 3300000,  rate: 0.10, deduct: 97500 },
+    { limit: 6950000,  rate: 0.20, deduct: 427500 },
+    { limit: 9000000,  rate: 0.23, deduct: 636000 },
+    { limit: 18000000, rate: 0.33, deduct: 1536000 },
+    { limit: 40000000, rate: 0.40, deduct: 2796000 },
+    { limit: Infinity, rate: 0.45, deduct: 4796000 },
+  ];
+
+  // 所得税を計算（課税所得 → 所得税額）
+  function calcIncomeTax(taxableIncome) {
+    if (taxableIncome <= 0) return 0;
+    const bracket = INCOME_TAX_BRACKETS.find(b => taxableIncome <= b.limit);
+    return Math.floor(taxableIncome * bracket.rate - bracket.deduct);
+  }
+
+  // 給与所得控除の計算（給与収入 → 給与所得控除額）
+  function calcSalaryDeduction(salary) {
+    if (salary <= 1625000)  return 550000;
+    if (salary <= 1800000)  return Math.floor(salary * 0.40) - 100000;
+    if (salary <= 3600000)  return Math.floor(salary * 0.30) + 80000;
+    if (salary <= 6600000)  return Math.floor(salary * 0.20) + 440000;
+    if (salary <= 8500000)  return Math.floor(salary * 0.10) + 1100000;
+    return 1950000; // 上限
+  }
+
+  function resetTaxSim() {
+    ['tax-fx-profit','tax-salary','tax-other-income'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    const basicEl = document.getElementById('tax-apply-basic');
+    if (basicEl) basicEl.checked = true;
+    const salaryDedEl = document.getElementById('tax-apply-salary-deduction');
+    if (salaryDedEl) salaryDedEl.checked = true;
+    const flatEl = document.getElementById('tax-resident-flat');
+    if (flatEl) flatEl.value = 5000;
+    renderTaxSim();
+  }
+
+  function renderTaxSim() {
+    const fxProfit    = Math.max(0, parseFloat(document.getElementById('tax-fx-profit')?.value) || 0);
+    const salaryIncome = Math.max(0, parseFloat(document.getElementById('tax-salary')?.value) || 0);
+    const applyBasic  = document.getElementById('tax-apply-basic')?.checked ?? true;
+    const otherIncome = Math.max(0, parseFloat(document.getElementById('tax-other-income')?.value) || 0);
+    const applySalaryDed = document.getElementById('tax-apply-salary-deduction')?.checked ?? true;
+    const residentFlat = Math.max(0, parseFloat(document.getElementById('tax-resident-flat')?.value) || 0);
+
+    // 給与所得控除ブロックの表示制御
+    const salaryDedBlock = document.getElementById('tax-salary-deduction-block');
+    if (salaryDedBlock) {
+      salaryDedBlock.classList.toggle('hidden', salaryIncome <= 0);
+    }
+
+    const resultArea  = document.getElementById('tax-result-area');
+    const emptyState  = document.getElementById('tax-empty-state');
+
+    if (fxProfit <= 0) {
+      if (resultArea) resultArea.classList.add('hidden');
+      if (emptyState) emptyState.classList.remove('hidden');
+      return;
+    }
+
+    if (resultArea) resultArea.classList.remove('hidden');
+    if (emptyState) emptyState.classList.add('hidden');
+
+    // ── FX雑所得計算 ──
+    const fxMisc = fxProfit + otherIncome; // 雑所得合計
+
+    // ── 給与所得計算 ──
+    const salaryDeductionAmt = (salaryIncome > 0 && applySalaryDed) ? calcSalaryDeduction(salaryIncome) : 0;
+    const salaryEarning = Math.max(0, salaryIncome - salaryDeductionAmt);
+
+    // ── 基礎控除 ──
+    const basicDeduction = applyBasic ? 480000 : 0;
+
+    // ── 合計所得・課税所得 ──
+    const totalIncome   = fxMisc + salaryEarning;
+    const taxableIncome = Math.max(0, totalIncome - basicDeduction);
+
+    // ── 課税所得（給与のみ、FX除外）のベース計算 ──
+    const salaryOnlyTaxable = Math.max(0, salaryEarning - basicDeduction);
+    const salaryOnlyIT   = calcIncomeTax(salaryOnlyTaxable);
+    const salaryOnlyRes  = Math.floor(salaryOnlyTaxable * 0.10);
+
+    // ── 合算後の税額 ──
+    const combinedIT     = calcIncomeTax(taxableIncome);
+    const combinedRes    = Math.floor(taxableIncome * 0.10);
+    const combinedRevive = Math.floor(combinedIT * 0.021);
+    const totalTax       = combinedIT + combinedRevive + combinedRes + residentFlat;
+
+    // ── 給与にかかる追加税分（差額計算）──
+    const salaryRevive = Math.floor(salaryOnlyIT * 0.021);
+    const salaryTax    = salaryOnlyIT + salaryRevive + salaryOnlyRes + (salaryIncome > 0 ? residentFlat : 0);
+
+    // ── FX利益による追加税負担（差額） ──
+    const fxAdditionalIT  = combinedIT  - (salaryIncome > 0 ? salaryOnlyIT  : 0);
+    const fxAdditionalRes = combinedRes - (salaryIncome > 0 ? salaryOnlyRes : 0);
+    const fxAdditionalRevive = combinedRevive - (salaryIncome > 0 ? salaryRevive : 0);
+    const fxAdditionalFlat   = salaryIncome > 0 ? 0 : residentFlat;
+    const fxTax = fxAdditionalIT + fxAdditionalRevive + fxAdditionalRes + fxAdditionalFlat;
+
+    // ── FX実効税率・手取り ──
+    const fxEffRate  = fxProfit > 0 ? (fxTax / fxProfit * 100).toFixed(1) : '0.0';
+    const fxTakehome = fxProfit - fxTax;
+
+    // ── 表示ヘルパー ──
+    const row = (label, value, sub = false) =>
+      `<div class="flex justify-between items-center ${sub ? 'pl-3 opacity-80' : ''}">
+         <span>${label}</span>
+         <span class="font-semibold tabular-nums">${value}</span>
+       </div>`;
+    const divider = `<div style="border-top:1px solid #e2e8f0;margin:4px 0"></div>`;
+    const darkRow = (label, value, color = '#cbd5e1') =>
+      `<div class="flex justify-between items-center">
+         <span style="color:#94a3b8">${label}</span>
+         <span class="font-bold tabular-nums" style="color:${color}">${value}</span>
+       </div>`;
+
+    // ── FXブロック ──
+    const fxBreakdownEl = document.getElementById('tax-fx-breakdown');
+    if (fxBreakdownEl) {
+      let html = row('FX利益', fmt(fxProfit) + '円');
+      if (otherIncome > 0) html += row('他の雑所得', fmt(otherIncome) + '円', true);
+      if (otherIncome > 0) { html += divider; html += row('雑所得合計', fmt(fxMisc) + '円'); }
+      if (salaryIncome > 0) {
+        html += divider;
+        html += row('FX追加 所得税', fmt(fxAdditionalIT) + '円', true);
+        html += row('FX追加 復興税', fmt(fxAdditionalRevive) + '円', true);
+        html += row('FX追加 住民税(所得割)', fmt(fxAdditionalRes) + '円', true);
+        html += divider;
+        html += row('FX 税負担合計', `<strong>${fmt(fxTax)}円</strong>`);
+      } else {
+        html += divider;
+        html += row('所得税', fmt(fxAdditionalIT) + '円', true);
+        html += row('復興特別所得税', fmt(fxAdditionalRevive) + '円', true);
+        html += row('住民税（所得割）', fmt(fxAdditionalRes) + '円', true);
+        html += row('住民税（均等割）', fmt(residentFlat) + '円', true);
+        html += divider;
+        html += row('FX 税負担合計', `<strong>${fmt(fxTax)}円</strong>`);
+      }
+      fxBreakdownEl.innerHTML = html;
+    }
+
+    // ── 給与ブロック ──
+    const salaryBlock = document.getElementById('tax-salary-block');
+    const salaryBreakdownEl = document.getElementById('tax-salary-breakdown');
+    if (salaryBlock) {
+      if (salaryIncome > 0) {
+        salaryBlock.classList.remove('hidden');
+        if (salaryBreakdownEl) {
+          let html = row('給与収入', fmt(salaryIncome) + '円');
+          if (applySalaryDed) {
+            html += row('給与所得控除', '− ' + fmt(salaryDeductionAmt) + '円', true);
+            html += row('給与所得', fmt(salaryEarning) + '円');
+          }
+          html += divider;
+          html += row('給与 所得税', fmt(salaryOnlyIT) + '円', true);
+          html += row('給与 復興税', fmt(salaryRevive) + '円', true);
+          html += row('給与 住民税(所得割)', fmt(salaryOnlyRes) + '円', true);
+          html += row('給与 住民税(均等割)', fmt(residentFlat) + '円', true);
+          html += divider;
+          html += row('給与 税負担合計', `<strong>${fmt(salaryTax)}円</strong>`);
+          salaryBreakdownEl.innerHTML = html;
+        }
+      } else {
+        salaryBlock.classList.add('hidden');
+      }
+    }
+
+    // ── 合算ブロック ──
+    const combinedBreakdownEl = document.getElementById('tax-combined-breakdown');
+    if (combinedBreakdownEl) {
+      let html = row('合計所得', fmt(totalIncome) + '円');
+      if (applyBasic) html += row('基礎控除', '− ' + fmt(basicDeduction) + '円', true);
+      html += divider;
+      html += row('課税所得', `<strong>${fmt(taxableIncome)}円</strong>`);
+      combinedBreakdownEl.innerHTML = html;
+    }
+
+    // ── 税額サマリーブロック ──
+    const summaryRowsEl = document.getElementById('tax-summary-rows');
+    if (summaryRowsEl) {
+      let html = '';
+      if (salaryIncome > 0) {
+        html += darkRow('給与 税負担', fmt(salaryTax) + '円', '#93c5fd');
+        html += darkRow('FX 税負担', fmt(fxTax) + '円', '#86efac');
+        html += `<div style="border-top:1px solid #334155;margin:4px 0"></div>`;
+      } else {
+        html += darkRow('所得税', fmt(fxAdditionalIT) + '円');
+        html += darkRow('復興特別所得税', fmt(fxAdditionalRevive) + '円');
+        html += darkRow('住民税（所得割）', fmt(fxAdditionalRes) + '円');
+        html += darkRow('住民税（均等割）', fmt(residentFlat) + '円');
+        html += `<div style="border-top:1px solid #334155;margin:4px 0"></div>`;
+      }
+      summaryRowsEl.innerHTML = html;
+    }
+
+    const totalEl   = document.getElementById('tax-total');
+    const rateEl    = document.getElementById('tax-effective-rate');
+    const takehomeEl = document.getElementById('tax-takehome');
+    const noteEl    = document.getElementById('tax-takehome-note');
+
+    if (totalEl)    totalEl.textContent    = fmt(totalTax) + '円';
+    if (rateEl)     rateEl.textContent     = fxEffRate + '%';
+    if (takehomeEl) takehomeEl.textContent = fmt(fxTakehome) + '円';
+    if (noteEl)     noteEl.textContent     = salaryIncome > 0
+      ? `FX利益 ${fmt(fxProfit)}円 − FX税負担 ${fmt(fxTax)}円`
+      : `FX利益 ${fmt(fxProfit)}円 − 合計税 ${fmt(totalTax)}円`;
   }
 
   // ============================================================
