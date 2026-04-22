@@ -337,22 +337,27 @@
           </div>
         </div>
 
-        <!-- 損益 / 結果 / ステータス -->
+        <!-- ステータス / 結果 / 損益 -->
         <div class="bg-white rounded-2xl p-4 shadow-sm space-y-4">
 
-          <!-- 損益 -->
+          <!-- ステータス -->
           <div>
-            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#fb7185">損益（円）</label>
-            <div class="flex gap-2">
-              <div class="relative flex-1">
-                <input type="number" id="f-pnl" placeholder="0" step="1"
-                  class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              </div>
-              <button type="button" onclick="setPnlPositive()"
-                class="px-3 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-bold hover:bg-emerald-100 active:scale-95 transition-all">+</button>
-              <button type="button" onclick="setPnlNegative()"
-                class="px-3 py-2 bg-red-50 text-red-700 border border-red-200 rounded-xl text-sm font-bold hover:bg-red-100 active:scale-95 transition-all">-</button>
+            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#38bdf8">ステータス</label>
+            <div class="grid grid-cols-3 gap-2">
+              <button type="button" data-group="status" data-value="entry" onclick="selectToggle('status','entry')"
+                class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                エントリー
+              </button>
+              <button type="button" data-group="status" data-value="through" onclick="selectToggle('status','through')"
+                class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                スルー
+              </button>
+              <button type="button" data-group="status" data-value="miss" onclick="selectToggle('status','miss')"
+                class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                ミス
+              </button>
             </div>
+            <input type="hidden" id="f-status" value="">
           </div>
 
           <!-- 結果 -->
@@ -387,24 +392,19 @@
             <input type="hidden" id="f-result" value="">
           </div>
 
-          <!-- ステータス -->
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#38bdf8">ステータス</label>
-            <div class="grid grid-cols-3 gap-2">
-              <button type="button" data-group="status" data-value="entry" onclick="selectToggle('status','entry')"
-                class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
-                エントリー
-              </button>
-              <button type="button" data-group="status" data-value="through" onclick="selectToggle('status','through')"
-                class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
-                スルー
-              </button>
-              <button type="button" data-group="status" data-value="miss" onclick="selectToggle('status','miss')"
-                class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
-                ミス
-              </button>
+          <!-- 損益（スルー時は非表示） -->
+          <div id="f-pnl-block">
+            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#fb7185">損益（円）</label>
+            <div class="flex gap-2">
+              <div class="relative flex-1">
+                <input type="number" id="f-pnl" placeholder="0" step="1"
+                  class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <button type="button" onclick="setPnlPositive()"
+                class="px-3 py-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-sm font-bold hover:bg-emerald-100 active:scale-95 transition-all">+</button>
+              <button type="button" onclick="setPnlNegative()"
+                class="px-3 py-2 bg-red-50 text-red-700 border border-red-200 rounded-xl text-sm font-bold hover:bg-red-100 active:scale-95 transition-all">-</button>
             </div>
-            <input type="hidden" id="f-status" value="">
           </div>
 
           <!-- 見送り理由 (through/miss のときのみ表示) -->
@@ -690,10 +690,29 @@
         <div id="status-breakdown"></div>
       </div>
 
-      <!-- 見送り分析 -->
+      <!-- スルー分析 -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">🔍 見送り分析</h3>
-        <!-- 金額シミュレーター -->
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-bold text-slate-600">🔍 スルー分析</h3>
+        </div>
+        <!-- 期間フィルター -->
+        <div class="grid grid-cols-2 gap-2 mb-3 p-2.5 rounded-xl" style="background:#1e293b">
+          <div>
+            <label style="color:#475569;font-size:10px;display:block;margin-bottom:3px">集計開始日</label>
+            <input type="date" id="skip-from"
+              onchange="renderSkipAnalysisFiltered()"
+              class="w-full rounded-lg px-2 py-1.5 text-xs focus:outline-none"
+              style="background:#0f172a;color:#cbd5e1;border:1px solid #334155">
+          </div>
+          <div>
+            <label style="color:#475569;font-size:10px;display:block;margin-bottom:3px">集計終了日</label>
+            <input type="date" id="skip-to"
+              onchange="renderSkipAnalysisFiltered()"
+              class="w-full rounded-lg px-2 py-1.5 text-xs focus:outline-none"
+              style="background:#0f172a;color:#cbd5e1;border:1px solid #334155">
+          </div>
+        </div>
+        <!-- リスク額＋期待値シミュレーター -->
         <div class="mb-3 p-3 rounded-xl" style="background:#1e293b">
           <label class="block text-xs font-semibold mb-2" style="color:#94a3b8">1トレード リスク額（円）</label>
           <div class="flex gap-1 mb-2 flex-wrap">
@@ -712,9 +731,9 @@
         </div>
         <div id="skip-amount-sim" class="mb-4"></div>
         <div id="skip-opportunity-loss" class="mb-4"></div>
-        <h4 class="text-xs font-bold text-slate-500 mb-2 mt-4 uppercase tracking-wide">見送り理由別成績</h4>
+        <h4 class="text-xs font-bold text-slate-500 mb-2 mt-4 uppercase tracking-wide">スルー理由別成績</h4>
         <div id="skip-by-reason"></div>
-        <h4 class="text-xs font-bold text-slate-500 mb-2 mt-5 uppercase tracking-wide">実エントリー vs 見送り 比較</h4>
+        <h4 class="text-xs font-bold text-slate-500 mb-2 mt-5 uppercase tracking-wide">実エントリー vs スルー 比較</h4>
         <div id="skip-vs-entry"></div>
       </div>
 
@@ -1524,21 +1543,32 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       btn.className = base + ' ' + (active ? TOGGLE_STYLES[group][value] : INACTIVE_STYLE);
     });
 
-    // Show/hide skip reason block when status changes
+    // Show/hide blocks when status changes
     if (group === 'status') {
       const p = prefix || 'f';
       // skip-block: through/miss のみ表示
-      const block = document.getElementById(p + '-skip-block');
-      if (block) {
+      const skipBlock = document.getElementById(p + '-skip-block');
+      if (skipBlock) {
         if (isSkipStatus(value)) {
-          block.classList.remove('hidden');
+          skipBlock.classList.remove('hidden');
         } else {
-          block.classList.add('hidden');
+          skipBlock.classList.add('hidden');
           const hidden = document.getElementById(p + '-skipreason');
           if (hidden) hidden.value = '';
           document.querySelectorAll(`[data-group="skipreason"][data-prefix="${p}"]`).forEach(b => {
             b.className = 'toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 transition-all active:scale-95 ' + INACTIVE_STYLE;
           });
+        }
+      }
+      // pnl-block: スルー(through)のときのみ非表示（登録フォームのみ）
+      if (!prefix) {
+        const pnlBlock = document.getElementById('f-pnl-block');
+        if (pnlBlock) {
+          pnlBlock.classList.toggle('hidden', value === 'through');
+          if (value === 'through') {
+            const pnlEl = document.getElementById('f-pnl');
+            if (pnlEl) pnlEl.value = '';
+          }
         }
       }
     }
@@ -1619,6 +1649,9 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     // Reset skip reason block
     const skipBlock = document.getElementById('f-skip-block');
     if (skipBlock) skipBlock.classList.add('hidden');
+    // Reset pnl block (show again)
+    const pnlBlock = document.getElementById('f-pnl-block');
+    if (pnlBlock) pnlBlock.classList.remove('hidden');
     const skipHidden = document.getElementById('f-skipreason');
     if (skipHidden) skipHidden.value = '';
     document.querySelectorAll('[data-group="skipreason"][data-prefix="f"]').forEach(b => {
@@ -2667,30 +2700,78 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
   }
 
   // ============================================================
-  // SKIP ANALYSIS — 見送り分析
+  // SKIP ANALYSIS — スルー分析
   // ============================================================
-  function renderSkipAnalysis(trades) {
-    const skips = trades.filter(t => isSkipStatus(t.status));
-    renderSkipAmountSim();   // amount simulator (reads statsPeriod internally)
+
+  // 期間フィルター適用済みのスルートレードを返す
+  function getSkipFilteredTrades() {
+    const all = tradesForPeriod(statsPeriod);
+    const fromVal = document.getElementById('skip-from')?.value;
+    const toVal   = document.getElementById('skip-to')?.value;
+    let trades = all;
+    if (fromVal || toVal) {
+      const from = fromVal ? new Date(fromVal + 'T00:00:00') : null;
+      const to   = toVal   ? new Date(toVal   + 'T23:59:59') : null;
+      trades = all.filter(t => {
+        const dt = new Date(t.datetime);
+        if (from && dt < from) return false;
+        if (to   && dt > to)   return false;
+        return true;
+      });
+    }
+    return trades;
+  }
+
+  // 期間フィルター変更時の再描画
+  function renderSkipAnalysisFiltered() {
+    const trades = getSkipFilteredTrades();
+    const skips  = trades.filter(t => isSkipStatus(t.status));
+    renderSkipAmountSim(skips);
     renderOpportunityLoss(skips);
     renderSkipByReason(skips);
     renderEntryVsSkip(trades);
   }
 
-  // 金額シミュレーター: 1トレードあたりのリスク額 × result倍率 で機会損失を試算
-  function renderSkipAmountSim() {
+  function renderSkipAnalysis(trades) {
+    const skips = trades.filter(t => isSkipStatus(t.status));
+    // 期間フィルターが設定されていれば優先
+    const fromVal = document.getElementById('skip-from')?.value;
+    const toVal   = document.getElementById('skip-to')?.value;
+    if (fromVal || toVal) {
+      renderSkipAnalysisFiltered();
+    } else {
+      renderSkipAmountSim(skips);
+      renderOpportunityLoss(skips);
+      renderSkipByReason(skips);
+      renderEntryVsSkip(trades);
+    }
+  }
+
+  // リスク額ベースの期待値シミュレーター（結果別内訳付き）
+  function renderSkipAmountSim(skips) {
     const el = document.getElementById('skip-amount-sim');
     if (!el) return;
     const riskInput = parseFloat(document.getElementById('skip-sim-risk')?.value) || 0;
     if (riskInput <= 0) { el.innerHTML = ''; return; }
-
-    const trades = tradesForPeriod(statsPeriod);
-    const skips  = trades.filter(t => isSkipStatus(t.status));
+    if (!skips) {
+      skips = getSkipFilteredTrades().filter(t => isSkipStatus(t.status));
+    }
     if (skips.length === 0) { el.innerHTML = ''; return; }
 
-    // result → mult (same as SIM_RESULT)
     const MULT = { max: 3, big: 2, reg: 1, small: 0.5, breakeven: 0, stoploss: -1 };
+    const RESULT_DEF = [
+      { key: 'max',       label: 'MAX',  color: '#8b5cf6', mult: 3 },
+      { key: 'big',       label: 'BIG',  color: '#3b82f6', mult: 2 },
+      { key: 'reg',       label: 'REG',  color: '#10b981', mult: 1 },
+      { key: 'small',     label: '微益', color: '#14b8a6', mult: 0.5 },
+      { key: 'breakeven', label: '建値', color: '#64748b', mult: 0 },
+      { key: 'stoploss',  label: '損切', color: '#ef4444', mult: -1 },
+    ];
+
     let simTotal = 0, simWins = 0, simLosses = 0;
+    const resultBreakdown = {};
+    RESULT_DEF.forEach(r => { resultBreakdown[r.key] = { count: 0, pnl: 0 }; });
+
     skips.forEach(t => {
       const mult = MULT[t.result];
       if (mult === undefined) return;
@@ -2698,6 +2779,10 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       simTotal += pnl;
       if (pnl > 0) simWins++;
       else if (pnl < 0) simLosses++;
+      if (resultBreakdown[t.result]) {
+        resultBreakdown[t.result].count++;
+        resultBreakdown[t.result].pnl += pnl;
+      }
     });
     const validCount = skips.filter(t => MULT[t.result] !== undefined).length;
     if (validCount === 0) { el.innerHTML = ''; return; }
@@ -2706,20 +2791,43 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     const hint    = simTotal >= 0 ? '機会損失' : 'スキップ正解';
     const sign    = simTotal >= 0 ? '+' : '';
     const winrate = Math.round(simWins / validCount * 100);
+    const ev      = simTotal / validCount;
+
+    // 結果別内訳カード
+    const breakdownHtml = RESULT_DEF
+      .filter(r => resultBreakdown[r.key].count > 0)
+      .map(r => {
+        const b   = resultBreakdown[r.key];
+        const pnl = b.pnl;
+        const pnlStr = (pnl >= 0 ? '+' : '') + Math.round(pnl).toLocaleString();
+        return `
+        <div class="flex items-center justify-between py-1" style="border-top:1px solid #1e293b">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="background:${r.color}25;color:${r.color}">${r.label}</span>
+            <span style="color:#94a3b8;font-size:10px">${b.count}回 × ${riskInput.toLocaleString()}円 × ${r.mult >= 0 ? '+' : ''}${r.mult}</span>
+          </div>
+          <span class="text-xs font-bold" style="color:${pnl >= 0 ? '#34d399' : '#f87171'}">${pnlStr}円</span>
+        </div>`;
+      }).join('');
 
     el.innerHTML = `
       <div class="rounded-xl p-3" style="background:#2d1b4e;border:1px solid #4c1d95">
-        <div class="flex items-center justify-between mb-1">
-          <span class="text-xs font-semibold" style="color:#c4b5fd">💰 金額シミュレーション（${riskInput.toLocaleString()}円/回）</span>
-          <span class="text-[10px]" style="color:#94a3b8">${hint}</span>
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold" style="color:#c4b5fd">💰 もし入っていたら（${riskInput.toLocaleString()}円/回）</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background:${color}20;color:${color};border:1px solid ${color}40">${hint}</span>
         </div>
-        <div class="flex items-end justify-between">
-          <span class="text-xl font-black" style="color:${color}">${sign}${Math.round(simTotal).toLocaleString()}円</span>
+        <div class="flex items-end justify-between mb-3">
+          <div>
+            <div style="color:#94a3b8;font-size:10px">合計損益</div>
+            <span class="text-2xl font-black" style="color:${color}">${sign}${Math.round(simTotal).toLocaleString()}円</span>
+          </div>
           <div class="text-right">
             <div class="text-sm font-bold" style="color:#e2e8f0">勝率 ${winrate}%</div>
             <div class="text-[10px]" style="color:#94a3b8">${simWins}勝${simLosses}敗 / ${validCount}回</div>
+            <div class="text-[10px] mt-0.5" style="color:#a78bfa">期待値 ${ev >= 0 ? '+' : ''}${Math.round(ev).toLocaleString()}円/回</div>
           </div>
         </div>
+        ${breakdownHtml}
       </div>`;
   }
 
