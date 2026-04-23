@@ -461,6 +461,16 @@
             </div>
             <input type="hidden" id="f-mashape" value="">
           </div>
+
+          <!-- MA収束〜拡散期間 -->
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wide mb-1" style="color:#34d399">MA収束〜拡散期間 <span class="font-normal normal-case tracking-normal" style="color:#94a3b8">GC/DC後→拡散まで（時間）</span></label>
+            <div class="flex items-center gap-2">
+              <input type="number" id="f-ma-conv" placeholder="例: 12" min="0.5" step="0.5"
+                class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 select-text">
+              <span class="text-xs text-slate-400 whitespace-nowrap flex-shrink-0">時間</span>
+            </div>
+          </div>
         </div>
 
         <!-- 理由 -->
@@ -609,8 +619,8 @@
           </select>
           <select id="fd-skipReason" onchange="selectFilter('skipReason',this.value)"
             class="text-xs border border-slate-200 rounded-lg px-1.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-400">
-            <option value="">見送り: 全て</option>
-            <option value="m15">M15見送り</option><option value="sub">サブ通貨</option>
+            <option value="">スルー理由: 全て</option>
+            <option value="m15">M15スルー</option><option value="sub">サブ通貨</option>
             <option value="low_setup">優位性低</option><option value="other">その他</option>
           </select>
           <select id="fd-subpair" onchange="selectFilter('subpair',this.value)"
@@ -620,12 +630,11 @@
             <option value="GBP/AUD">GBP/AUD</option><option value="EUR/NZD">EUR/NZD</option><option value="GBP/NZD">GBP/NZD</option>
             <option value="EUR/CHF">EUR/CHF</option><option value="GBP/CHF">GBP/CHF</option><option value="EUR/CAD">EUR/CAD</option><option value="GBP/CAD">GBP/CAD</option>
           </select>
-          <select id="fd-reviewed" onchange="selectFilter('reviewed',this.value)"
-            class="text-xs border border-slate-200 rounded-lg px-1.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-400 col-span-2">
-            <option value="">レビュー: 全て</option>
-            <option value="unreviewed">未レビューのみ</option>
-            <option value="reviewed">レビュー済みのみ</option>
-          </select>
+        </div>
+        <!-- Tag filter chips -->
+        <div class="mt-2 pt-2" style="border-top:1px solid #f1f5f9">
+          <div class="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">タグで絞込み</div>
+          <div id="fsec-tag" class="flex gap-1.5 flex-wrap"></div>
         </div>
       </div>
 
@@ -739,6 +748,15 @@
         <div id="skip-by-reason"></div>
         <h4 class="text-xs font-bold text-slate-500 mb-2 mt-5 uppercase tracking-wide">実エントリー vs スルー 比較</h4>
         <div id="skip-vs-entry"></div>
+      </div>
+
+      <!-- MA収束〜拡散期間 stats -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
+        <div class="flex items-center gap-2 mb-3">
+          <h3 class="text-sm font-bold text-slate-600 flex-1">📐 MA収束〜拡散期間</h3>
+          <span class="text-[10px] text-slate-400">GC/DC後→拡散まで</span>
+        </div>
+        <div id="ma-conv-stats"></div>
       </div>
 
       <!-- Profit trend -->
@@ -1435,7 +1453,6 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     status:    new Set(),
     result:    new Set(),
     tag:       new Set(),
-    reviewed:  new Set(),
     skipReason: new Set(),
   };
   let calYear      = new Date().getFullYear();
@@ -1655,10 +1672,10 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       reason:    document.getElementById('f-reason').value.trim(),
       images:    { m15: fImgs.m15, h1: fImgs.h1, h4: fImgs.h4, d1: fImgs.d1, others: [...fImgs.others] },
       tags:      [...fTags],
-      reviewed:  false,
       skipReason: isSkipStatus(status) ? (document.getElementById('f-skipreason').value || null) : null,
       breakevenTouch: document.getElementById('f-breakeventouch').value || null,
       maShape: document.getElementById('f-mashape').value || null,
+      maConvDuration: parseInt(document.getElementById('f-ma-conv').value) || null,
       createdAt: new Date().toISOString(),
     };
 
@@ -1704,6 +1721,8 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     document.querySelectorAll('[data-group="mashape"][data-prefix="f"]').forEach(b => {
       b.className = 'toggle-btn py-2.5 rounded-xl text-xs font-semibold border-2 transition-all active:scale-95 ' + INACTIVE_STYLE;
     });
+    const maConvEl = document.getElementById('f-ma-conv');
+    if (maConvEl) maConvEl.value = '';
   }
 
   // ============================================================
@@ -1723,13 +1742,6 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       }
       if (activeFilters.skipReason.size > 0) {
         if (!t.skipReason || !activeFilters.skipReason.has(t.skipReason)) return false;
-      }
-      if (activeFilters.reviewed.size > 0) {
-        const wantReviewed   = activeFilters.reviewed.has('reviewed');
-        const wantUnreviewed = activeFilters.reviewed.has('unreviewed');
-        if (wantReviewed && wantUnreviewed) { /* both = pass */ }
-        else if (wantReviewed   && !t.reviewed) return false;
-        else if (wantUnreviewed &&  t.reviewed) return false;
       }
       return true;
     });
@@ -1752,7 +1764,11 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
 
   function renderHistory() {
     renderTagFilterChips();
-    const trades = getFilteredTrades();
+    const trades = getFilteredTrades().sort((a, b) => {
+      const da = new Date(a.datetimeEntry || a.datetime || 0);
+      const db = new Date(b.datetimeEntry || b.datetime || 0);
+      return db - da;
+    });
     const list  = document.getElementById('trade-list');
     const empty = document.getElementById('empty-history');
     const cnt   = document.getElementById('history-count');
@@ -1788,15 +1804,6 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
         ).join('')}</div>`
       : '';
 
-    const reviewedIcon = t.reviewed
-      ? `<button onclick="toggleReviewed('${t.id}')" title="レビュー済み"
-           class="w-8 h-8 flex items-center justify-center rounded-xl text-emerald-500 hover:bg-emerald-50 transition-colors">
-           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-         </button>`
-      : `<button onclick="toggleReviewed('${t.id}')" title="未レビュー"
-           class="w-8 h-8 flex items-center justify-center rounded-xl text-slate-500 hover:text-emerald-500 transition-colors">
-           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-         </button>`;
 
     // Images row — displayed below text+buttons when present
     const imgRowHtml = flatImgList.length > 0
@@ -1846,6 +1853,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
             : ''}
           ${t.maShape === 'straight' ? '<span class="text-xs px-2 py-0.5 rounded-full" style="background:#3b82f620;color:#60a5fa;border:1px solid #3b82f640">ストレート</span>' : ''}
           ${t.maShape === 'fake'     ? '<span class="text-xs px-2 py-0.5 rounded-full" style="background:#ec489920;color:#f472b6;border:1px solid #ec489940">フェイク</span>' : ''}
+          ${t.maConvDuration ? `<span class="text-xs px-2 py-0.5 rounded-full" style="background:#05966920;color:#34d399;border:1px solid #05966940">収束〜拡散 ${t.maConvDuration}h</span>` : ''}
         </div>
         <span class="text-sm font-black ml-2 whitespace-nowrap" style="color:${cardAccent}">${pnlStr}</span>
       </div>
@@ -1860,7 +1868,6 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
         </div>
         <!-- Action buttons -->
         <div class="flex gap-1 ml-2 flex-shrink-0">
-          ${reviewedIcon}
           <button onclick="openEdit('${t.id}')"
             class="w-8 h-8 flex items-center justify-center rounded-xl transition-colors" style="color:#94a3b8">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1933,7 +1940,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
 
   function resetFilters() {
     Object.keys(activeFilters).forEach(f => activeFilters[f].clear());
-    ['fd-method','fd-status','fd-result','fd-pair','fd-timeframe','fd-skipReason','fd-subpair','fd-reviewed'].forEach(id => {
+    ['fd-method','fd-status','fd-result','fd-pair','fd-timeframe','fd-skipReason','fd-subpair'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
@@ -2127,6 +2134,14 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
           <input type="hidden" id="e-mashape" value="${t.maShape || ''}">
         </div>
         <div>
+          <label class="block text-xs font-semibold uppercase tracking-wide mb-1" style="color:#34d399">MA収束〜拡散期間 <span class="font-normal normal-case tracking-normal text-slate-400">GC/DC後→拡散まで（時間）</span></label>
+          <div class="flex items-center gap-2">
+            <input type="number" id="e-ma-conv" placeholder="例: 12" min="0.5" step="0.5" value="${t.maConvDuration || ''}"
+              class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 select-text">
+            <span class="text-xs text-slate-400 whitespace-nowrap flex-shrink-0">時間</span>
+          </div>
+        </div>
+        <div>
           <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">理由・メモ</label>
           <textarea id="e-reason" rows="3"
             class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none select-text">${esc(t.reason || '')}</textarea>
@@ -2239,6 +2254,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
         : null,
       breakevenTouch: document.getElementById('e-breakeventouch').value || null,
       maShape: document.getElementById('e-mashape').value || null,
+      maConvDuration: parseInt(document.getElementById('e-ma-conv').value) || null,
       reason:    document.getElementById('e-reason').value.trim(),
       images:    { m15: eImgs.m15, h1: eImgs.h1, h4: eImgs.h4, d1: eImgs.d1, others: [...eImgs.others] },
       tags:      [...eTags],
@@ -2366,6 +2382,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     renderOpportunityStats(trades);
     renderStatusBreakdown(trades);
     renderSkipAnalysis(trades);
+    renderMaConvStats(trades);
     renderCapitalChart();
     renderChanceRate();
     renderChanceSimulation();
@@ -2628,110 +2645,108 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       { key: 'stoploss',  label: '損切', color: '#ef4444' },
     ];
 
-    const total   = trades.length;
-    const entries = trades.filter(t => t.status === 'entry');
-    const skips   = trades.filter(t => isSkipStatus(t.status));
+    const total      = trades.length;
+    const entries    = trades.filter(t => t.status === 'entry');
     const entryStats = computeSegStats(entries);
 
-    // ── トップサマリー ──
-    const statusCounts = STATUS_DEF.map(s => {
+    // ── ステータス 3タイル ──
+    const statusTiles = STATUS_DEF.map(s => {
       const cnt = trades.filter(t => t.status === s.key).length;
       const pct = total > 0 ? Math.round(cnt / total * 100) : 0;
-      return { ...s, cnt, pct };
-    }).filter(s => s.cnt > 0);
+      return `
+      <div class="flex-1 rounded-xl p-2.5 text-center" style="background:${s.color}15;border:1px solid ${s.color}30">
+        <div class="text-lg font-black mb-0.5" style="color:${s.color}">${cnt}</div>
+        <div class="text-[10px] font-semibold mb-0.5" style="color:${s.color}">${s.label}</div>
+        <div class="text-[10px]" style="color:#475569">${pct}%</div>
+      </div>`;
+    }).join('');
 
-    const statusBar = statusCounts.map(s =>
-      `<div class="h-full rounded-full" style="width:${s.pct}%;background:${s.color};min-width:${s.cnt>0?2:0}px"></div>`
-    ).join('');
+    // ステータス比率バー
+    const statusBar = STATUS_DEF.map(s => {
+      const pct = total > 0 ? Math.round(trades.filter(t => t.status === s.key).length / total * 100) : 0;
+      return pct > 0 ? `<div style="width:${pct}%;background:${s.color};min-width:3px"></div>` : '';
+    }).join('');
 
-    const statusBadges = statusCounts.map(s =>
-      `<div class="flex items-center gap-1">
-         <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:${s.color}"></span>
-         <span style="color:#94a3b8">${s.label}</span>
-         <span class="font-bold" style="color:#cbd5e1">${s.cnt}回</span>
-         <span style="color:#475569">(${s.pct}%)</span>
-       </div>`
-    ).join('');
+    // ── エントリー結果タイル ──
+    const resultTiles = entries.length > 0
+      ? RESULT_DEF.map(r => {
+          const cnt = entries.filter(t => t.result === r.key).length;
+          if (cnt === 0) return '';
+          const pct = Math.round(cnt / entries.length * 100);
+          return `
+          <div class="rounded-lg py-2 px-1 text-center" style="background:${r.color}15;border:1px solid ${r.color}30;min-width:0">
+            <div class="text-xs font-black" style="color:${r.color}">${cnt}</div>
+            <div class="text-[9px] font-bold mt-0.5" style="color:${r.color}">${r.label}</div>
+            <div class="text-[9px] mt-0.5" style="color:#475569">${pct}%</div>
+          </div>`;
+        }).filter(Boolean).join('')
+      : '';
 
-    // ── エントリー結果内訳 ──
-    const resultCounts = RESULT_DEF.map(r => {
-      const cnt = entries.filter(t => t.result === r.key).length;
-      return { ...r, cnt };
-    }).filter(r => r.cnt > 0);
-
-    const resultBadges = resultCounts.length > 0
-      ? resultCounts.map(r =>
-          `<div class="flex flex-col items-center gap-0.5 rounded-lg px-2 py-1.5" style="background:${r.color}18;border:1px solid ${r.color}30">
-             <span class="text-[10px] font-bold" style="color:${r.color}">${r.label}</span>
-             <span class="text-sm font-bold" style="color:#cbd5e1">${r.cnt}</span>
-           </div>`
-        ).join('')
-      : '<p style="color:#475569;font-size:11px">結果未入力</p>';
-
-    // ── グループ別集計（メイン/サブ/H1/M15） ──
+    // ── グループ別 ──
     const groups = [
-      { label: 'メイン通貨のみ', icon: '●', trades: trades.filter(t => !t.pairSub) },
-      { label: 'サブ通貨あり',   icon: '◎', trades: trades.filter(t => !!t.pairSub) },
-      { label: 'H1足',           icon: '⏱', trades: trades.filter(t => t.timeframe === 'H1') },
-      { label: 'M15足',          icon: '⏱', trades: trades.filter(t => t.timeframe === 'M15') },
+      { label: 'メイン通貨のみ', trades: trades.filter(t => !t.pairSub) },
+      { label: 'サブ通貨あり',   trades: trades.filter(t => !!t.pairSub) },
+      { label: 'H1足',           trades: trades.filter(t => t.timeframe === 'H1') },
+      { label: 'M15足',          trades: trades.filter(t => t.timeframe === 'M15') },
     ].filter(g => g.trades.length > 0);
 
-    const groupsHtml = groups.map(g => {
+    const groupRows = groups.map(g => {
       const gTotal   = g.trades.length;
       const gPct     = total > 0 ? Math.round(gTotal / total * 100) : 0;
       const gEntries = g.trades.filter(t => t.status === 'entry');
-      const gSkips   = g.trades.filter(t => isSkipStatus(t.status));
       const gWins    = gEntries.filter(t => t.pnl > 0).length;
       const gWinrate = gEntries.length > 0 ? Math.round(gWins / gEntries.length * 100) : null;
+      const winColor = gWinrate !== null ? (gWinrate >= 50 ? '#34d399' : '#f87171') : '#94a3b8';
 
-      const gStatusBadges = STATUS_DEF.map(s => {
+      const statusChips = STATUS_DEF.map(s => {
         const cnt = g.trades.filter(t => t.status === s.key).length;
         if (cnt === 0) return '';
-        return `<span style="color:${s.color};font-size:10px">${s.label} <strong>${cnt}</strong></span>`;
-      }).filter(Boolean).join('<span style="color:#334155;font-size:10px"> / </span>');
+        return `<span class="rounded px-1 py-0.5 text-[9px] font-bold" style="background:${s.color}20;color:${s.color}">${s.label} ${cnt}</span>`;
+      }).filter(Boolean).join('');
 
       return `
-      <div class="flex items-center gap-3 py-2" style="border-top:1px solid #1e293b">
-        <div class="min-w-0 flex-1">
-          <div class="flex items-center gap-1.5 mb-0.5">
-            <span class="text-[10px] font-bold" style="color:#94a3b8">${g.label}</span>
-            <span class="text-xs font-bold" style="color:#cbd5e1">${gTotal}回</span>
-            <span style="color:#334155;font-size:10px">(${gPct}%)</span>
+      <div class="flex items-center gap-2 py-2" style="border-top:1px solid #1e293b">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-1.5 mb-1">
+            <span class="text-[11px] font-bold" style="color:#94a3b8">${g.label}</span>
+            <span class="text-xs font-black" style="color:#cbd5e1">${gTotal}回</span>
+            <span class="text-[10px]" style="color:#475569">(${gPct}%)</span>
           </div>
-          <div class="text-[10px]">${gStatusBadges}</div>
+          <div class="flex gap-1 flex-wrap">${statusChips}</div>
         </div>
-        ${gWinrate !== null ? `<div class="text-right flex-shrink-0">
-          <div style="color:#475569;font-size:9px">勝率</div>
-          <div class="font-bold" style="color:${gWinrate >= 50 ? '#34d399' : '#f87171'};font-size:13px">${gWinrate}%</div>
-        </div>` : ''}
+        ${gWinrate !== null
+          ? `<div class="flex-shrink-0 rounded-xl px-3 py-1.5 text-center" style="background:${winColor}15;border:1px solid ${winColor}30">
+               <div class="text-[9px]" style="color:#94a3b8">勝率</div>
+               <div class="text-base font-black leading-none mt-0.5" style="color:${winColor}">${gWinrate}<span class="text-[10px]">%</span></div>
+               <div class="text-[9px] mt-0.5" style="color:#475569">${gEntries.length}回</div>
+             </div>`
+          : ''}
       </div>`;
     }).join('');
 
     el.innerHTML = `
-      <!-- トップ: 合計 + ステータス割合 -->
+      <!-- 合計 + 比率バー -->
       <div class="mb-3">
-        <div class="flex items-baseline justify-between mb-1.5">
-          <span style="color:#475569;font-size:11px">期間内 合計チャンス</span>
-          <span class="font-bold" style="color:#60a5fa;font-size:18px">${total}<span style="font-size:11px;color:#475569"> 回</span></span>
+        <div class="flex items-baseline gap-2 mb-2">
+          <span class="text-2xl font-black" style="color:#60a5fa">${total}</span>
+          <span style="color:#475569;font-size:12px">回のチャンス</span>
         </div>
-        <div class="flex rounded-full overflow-hidden h-2 mb-1.5" style="background:#1e293b">
-          ${statusBar}
-        </div>
-        <div class="flex flex-wrap gap-x-3 gap-y-1 text-[10px]">${statusBadges}</div>
+        <div class="flex rounded-full overflow-hidden h-2.5 mb-3" style="background:#1e293b">${statusBar}</div>
+        <div class="flex gap-2">${statusTiles}</div>
       </div>
 
-      <!-- エントリー結果内訳 -->
+      <!-- エントリー結果 -->
       ${entries.length > 0 ? `
-      <div class="mb-3 pt-2" style="border-top:1px solid #1e293b">
+      <div class="pt-3 mb-2" style="border-top:1px solid #1e293b">
         <div class="flex items-center justify-between mb-2">
-          <span style="color:#475569;font-size:10px;font-weight:600">エントリー結果 (${entries.length}回)</span>
-          ${entryStats.total > 0 ? `<span style="color:#94a3b8;font-size:10px">勝率 <strong style="color:${entryStats.winrate >= 50 ? '#34d399' : '#f87171'}">${entryStats.winrate}%</strong></span>` : ''}
+          <span class="text-[10px] font-bold uppercase tracking-wide" style="color:#94a3b8">エントリー結果</span>
+          ${entryStats.total > 0 ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:${entryStats.winrate >= 50 ? '#34d39920' : '#f8717120'};color:${entryStats.winrate >= 50 ? '#34d399' : '#f87171'}">勝率 ${entryStats.winrate}%</span>` : ''}
         </div>
-        <div class="flex gap-2 flex-wrap">${resultBadges}</div>
+        <div class="grid gap-1.5" style="grid-template-columns:repeat(6,1fr)">${resultTiles}</div>
       </div>` : ''}
 
       <!-- グループ別 -->
-      ${groupsHtml ? `<div>${groupsHtml}</div>` : ''}
+      ${groupRows ? `<div>${groupRows}</div>` : ''}
     `;
   }
 
@@ -4358,6 +4373,68 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
   }
 
   // ============================================================
+  // MA CONVERGENCE DURATION STATS
+  // ============================================================
+  function renderMaConvStats(trades) {
+    const el = document.getElementById('ma-conv-stats');
+    if (!el) return;
+    const vals = trades.map(t => t.maConvDuration).filter(v => v != null && v > 0);
+    if (vals.length === 0) {
+      el.innerHTML = '<p class="text-slate-300 text-sm text-center py-4">データがありません</p>';
+      return;
+    }
+    const avg  = vals.reduce((a, b) => a + b, 0) / vals.length;
+    const mn   = Math.min(...vals);
+    const mx   = Math.max(...vals);
+    const med  = [...vals].sort((a, b) => a - b)[Math.floor(vals.length / 2)];
+
+    // Distribution buckets: 1-10, 11-20, 21-30, 31-40, 41+
+    const buckets = [
+      { label: '〜6h',   min: 0,   max: 6   },
+      { label: '7–12h',  min: 7,   max: 12  },
+      { label: '13–24h', min: 13,  max: 24  },
+      { label: '25–48h', min: 25,  max: 48  },
+      { label: '49h+',   min: 49,  max: Infinity },
+    ];
+    const counts = buckets.map(b => vals.filter(v => v >= b.min && v <= b.max).length);
+    const maxCount = Math.max(...counts, 1);
+
+    const bars = buckets.map((b, i) => {
+      const pct = Math.round((counts[i] / maxCount) * 100);
+      const isAvgBucket = avg >= b.min && avg <= b.max;
+      return `
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] text-slate-400 w-14 text-right flex-shrink-0">${b.label}</span>
+        <div class="flex-1 h-4 rounded-sm overflow-hidden" style="background:#f1f5f9">
+          <div class="h-full rounded-sm transition-all" style="width:${pct}%;background:${isAvgBucket ? '#10b981' : '#cbd5e1'}"></div>
+        </div>
+        <span class="text-[10px] w-6 text-right flex-shrink-0" style="color:${isAvgBucket ? '#10b981' : '#94a3b8'}">${counts[i]}</span>
+      </div>`;
+    }).join('');
+
+    el.innerHTML = `
+      <div class="flex items-end gap-4 mb-4">
+        <div class="text-center flex-1">
+          <div class="text-3xl font-black" style="color:#10b981">${avg.toFixed(1)}<span class="text-lg font-bold ml-0.5" style="color:#6ee7b7">h</span></div>
+          <div class="text-[10px] text-slate-400 mt-0.5">平均</div>
+        </div>
+        <div class="text-center flex-1">
+          <div class="text-xl font-bold text-slate-600">${med}<span class="text-sm ml-0.5 text-slate-400">h</span></div>
+          <div class="text-[10px] text-slate-400 mt-0.5">中央値</div>
+        </div>
+        <div class="text-center flex-1">
+          <div class="text-sm font-bold text-slate-500">${mn}<span class="text-xs ml-0.5 text-slate-400">h</span></div>
+          <div class="text-[10px] text-slate-400 mt-0.5">最短</div>
+        </div>
+        <div class="text-center flex-1">
+          <div class="text-sm font-bold text-slate-500">${mx}<span class="text-xs ml-0.5 text-slate-400">h</span></div>
+          <div class="text-[10px] text-slate-400 mt-0.5">最長</div>
+        </div>
+      </div>
+      <div class="text-[10px] text-slate-400 mb-2 text-right">${vals.length}件のデータ　緑＝平均を含む範囲</div>
+      <div class="space-y-1">${bars}</div>`;
+  }
+
   // CAPITAL CHART (real trades)
   // ============================================================
   function renderCapitalChart() {
