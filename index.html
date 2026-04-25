@@ -681,26 +681,84 @@
         </div>
       </div>
 
-      <!-- Quick stats row -->
-      <div class="grid grid-cols-3 gap-3 mb-4">
-        <div class="bg-white rounded-2xl p-3 shadow-sm text-center">
-          <div class="text-xs text-slate-400 mb-1">勝率</div>
-          <div id="stat-winrate" class="text-xl font-bold text-blue-600">—</div>
-        </div>
-        <div class="bg-white rounded-2xl p-3 shadow-sm text-center">
-          <div class="text-xs text-slate-400 mb-1">合計損益</div>
-          <div id="stat-total" class="text-xl font-bold text-slate-700">—</div>
-        </div>
-        <div class="bg-white rounded-2xl p-3 shadow-sm text-center">
-          <div class="text-xs text-slate-400 mb-1">取引数</div>
-          <div id="stat-count" class="text-xl font-bold text-slate-700">—</div>
-        </div>
-      </div>
-
-      <!-- Status breakdown -->
+      <!-- Quick stats -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">ステータス別件数</h3>
-        <div id="status-breakdown"></div>
+        <!-- header + 仮想トグル -->
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-bold text-slate-600">期間成績</span>
+          <button onclick="toggleVirtualStats()" id="stat-virtual-btn"
+            class="flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full transition-all active:scale-95"
+            style="background:#faf5ff;color:#8b5cf6;border:1px solid #e9d5ff">
+            <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            <span id="stat-virtual-btn-label">仮想を表示</span>
+          </button>
+        </div>
+
+        <!-- 勝率 + 取引数 -->
+        <div class="grid grid-cols-2 gap-2 mb-2">
+
+          <!-- 勝率 tile -->
+          <div class="rounded-xl p-3" style="background:#eff6ff;border:1px solid #bfdbfe">
+            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide mb-2">勝率</div>
+            <div class="flex gap-1">
+              <div class="flex-1 text-center">
+                <div id="stat-winrate" class="text-xl font-black text-blue-600 leading-none">—</div>
+                <div class="text-[9px] text-blue-400 mt-0.5">エントリー</div>
+              </div>
+              <div class="flex-1 text-center">
+                <div id="stat-skip-winrate" class="text-xl font-black text-amber-500 leading-none">—</div>
+                <div class="text-[9px] text-amber-400 mt-0.5">スルー</div>
+              </div>
+            </div>
+            <div class="mt-2 pt-2 text-center" style="border-top:1px solid #dbeafe">
+              <div id="stat-combined-winrate" class="text-sm font-bold text-blue-500">—</div>
+              <div class="text-[9px] text-slate-400">合算</div>
+            </div>
+            <div class="stat-virtual-row hidden mt-2 pt-2 text-center" style="border-top:1px dashed #e9d5ff">
+              <div id="stat-virtual-winrate" class="text-sm font-black text-purple-600">—</div>
+              <div class="text-[9px] text-purple-400">仮想</div>
+            </div>
+          </div>
+
+          <!-- 取引数 tile -->
+          <div class="rounded-xl p-3" style="background:#f8fafc;border:1px solid #e2e8f0">
+            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide mb-2">取引数</div>
+            <div class="flex gap-1">
+              <div class="flex-1 text-center">
+                <div id="stat-count" class="text-xl font-black text-slate-700 leading-none">—</div>
+                <div class="text-[9px] text-slate-400 mt-0.5">エントリー</div>
+              </div>
+              <div class="flex-1 text-center">
+                <div id="stat-skip-count" class="text-xl font-black text-amber-600 leading-none">—</div>
+                <div class="text-[9px] text-amber-400 mt-0.5">スルー</div>
+              </div>
+            </div>
+            <div class="mt-2 pt-2 text-center" style="border-top:1px solid #e2e8f0">
+              <div id="stat-combined-count" class="text-sm font-bold text-slate-500">—</div>
+              <div class="text-[9px] text-slate-400">合算</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 合計損益 (full-width, horizontal) -->
+        <div class="rounded-xl p-3" style="background:#f0fdf4;border:1px solid #bbf7d0">
+          <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wide mb-2">合計損益</div>
+          <div class="flex gap-2">
+            <div class="flex-1">
+              <div id="stat-total" class="text-base font-black text-emerald-600 leading-none">—</div>
+              <div class="text-[9px] text-emerald-400 mt-0.5">エントリー</div>
+            </div>
+            <div class="stat-virtual-row hidden flex-1 pl-3" style="border-left:1px dashed #86efac">
+              <div id="stat-virtual-pnl" class="text-base font-black text-purple-600 leading-none">—</div>
+              <div class="text-[9px] text-purple-400 mt-0.5">仮想</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="stat-virtual-note" class="hidden text-[10px] text-purple-400 mt-2 text-center">リスク額を設定してシミュレーションで結果を入力すると仮想値が表示されます</div>
       </div>
 
       <!-- スルー分析 -->
@@ -738,51 +796,116 @@
             <button onclick="statsSetRisk('skip-sim-risk',1000000)" class="px-2 py-1 rounded-lg text-xs font-bold active:scale-95 transition-all" style="background:#1e293b;color:#94a3b8;border:1px solid #334155">100万</button>
           </div>
           <input type="number" id="skip-sim-risk" placeholder="直接入力も可" step="1000" min="0"
-            oninput="renderSkipAmountSim()"
+            oninput="renderSkipAnalysisFiltered()"
             class="w-full rounded-lg px-2.5 py-1.5 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-violet-500 select-text"
             style="background:#0f172a;color:#c4b5fd;border:1px solid #334155">
         </div>
         <div id="skip-amount-sim" class="mb-4"></div>
-        <div id="skip-opportunity-loss" class="mb-4"></div>
+
+        <!-- トレード仮想シミュレーション -->
+        <div id="skip-trade-sim-section" class="hidden mb-4 pt-3" style="border-top:1px solid #e2e8f0">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-xs font-bold text-slate-600">📋 トレード仮想シミュレーション</h4>
+            <div class="flex items-center gap-2">
+              <label class="text-[10px] text-slate-400">回数</label>
+              <select id="skip-sim-count" onchange="renderSkipTradeSim()"
+                class="text-xs border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-violet-400 bg-white text-slate-600">
+                <option value="1">1回</option>
+                <option value="2">2回</option>
+                <option value="3">3回</option>
+                <option value="4">4回</option>
+                <option value="5" selected>5回</option>
+                <option value="6">6回</option>
+                <option value="7">7回</option>
+                <option value="8">8回</option>
+                <option value="9">9回</option>
+                <option value="10">10回</option>
+                <option value="15">15回</option>
+                <option value="20">20回</option>
+              </select>
+            </div>
+          </div>
+          <!-- サマリー -->
+          <div id="skip-sim-summary" class="rounded-xl px-4 py-3 mb-3" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1px solid #ddd6fe">
+            <div class="flex justify-between items-center">
+              <div class="text-xs text-slate-500">仮想資金</div>
+              <div id="skip-sim-final" class="text-xl font-black text-violet-700">−</div>
+            </div>
+            <div id="skip-sim-growth" class="text-xs text-slate-400 mt-0.5"></div>
+          </div>
+          <!-- トレード行 -->
+          <div id="skip-sim-trade-rows" class="space-y-2"></div>
+        </div>
+
+        <!-- 仮想資金推移シミュレーション -->
+        <div class="mb-4 pt-3" style="border-top:1px solid #e2e8f0">
+          <h4 class="text-xs font-bold text-slate-600 mb-3">📈 仮想資金推移シミュレーション</h4>
+          <div class="mb-3">
+            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">初期資金（円）</label>
+            <div class="flex gap-1.5 mb-2 flex-wrap">
+              <button onclick="statsSetSkipCapital(100000)"  class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 bg-white hover:bg-purple-50 hover:border-purple-300 hover:text-purple-600 active:scale-95 transition-all">10万</button>
+              <button onclick="statsSetSkipCapital(300000)"  class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 bg-white hover:bg-purple-50 hover:border-purple-300 hover:text-purple-600 active:scale-95 transition-all">30万</button>
+              <button onclick="statsSetSkipCapital(500000)"  class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 bg-white hover:bg-purple-50 hover:border-purple-300 hover:text-purple-600 active:scale-95 transition-all">50万</button>
+              <button onclick="statsSetSkipCapital(1000000)" class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 bg-white hover:bg-purple-50 hover:border-purple-300 hover:text-purple-600 active:scale-95 transition-all">100万</button>
+              <button onclick="statsSetSkipCapital(3000000)" class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 bg-white hover:bg-purple-50 hover:border-purple-300 hover:text-purple-600 active:scale-95 transition-all">300万</button>
+              <button onclick="statsSetSkipCapital(5000000)" class="px-2.5 py-1 rounded-lg text-xs font-bold border border-slate-200 text-slate-500 bg-white hover:bg-purple-50 hover:border-purple-300 hover:text-purple-600 active:scale-95 transition-all">500万</button>
+            </div>
+            <input type="number" id="skip-cap-initial" placeholder="直接入力も可" step="10000" min="1"
+              oninput="renderSkipCapitalChart()"
+              class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 select-text">
+          </div>
+          <div id="skip-cap-stats" class="grid grid-cols-3 gap-2 mb-3 hidden">
+            <div class="bg-slate-50 rounded-xl p-2.5 text-center">
+              <div class="text-xs text-slate-400 mb-0.5">仮想資金</div>
+              <div id="skip-cap-current" class="text-sm font-bold text-slate-700">−</div>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-2.5 text-center">
+              <div class="text-xs text-slate-400 mb-0.5">増減額</div>
+              <div id="skip-cap-delta" class="text-sm font-bold">−</div>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-2.5 text-center">
+              <div class="text-xs text-slate-400 mb-0.5">増減率</div>
+              <div id="skip-cap-rate" class="text-sm font-bold">−</div>
+            </div>
+          </div>
+          <div id="skip-cap-empty" class="text-xs text-slate-300 text-center py-4">初期資金とリスク額を入力してください</div>
+          <div style="position:relative;height:160px" id="skip-cap-chart-wrap" class="hidden">
+            <canvas id="chart-skip-capital"></canvas>
+          </div>
+        </div>
+
         <h4 class="text-xs font-bold text-slate-500 mb-2 mt-4 uppercase tracking-wide">スルー理由別成績</h4>
         <div id="skip-by-reason"></div>
-        <h4 class="text-xs font-bold text-slate-500 mb-2 mt-5 uppercase tracking-wide">実エントリー vs スルー 比較</h4>
-        <div id="skip-vs-entry"></div>
       </div>
 
-      <!-- MA収束〜拡散期間 stats -->
+      <!-- Profit trend + Winrate tabbed card -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <div class="flex items-center gap-2 mb-3">
-          <h3 class="text-sm font-bold text-slate-600 flex-1">📐 MA収束〜拡散期間</h3>
-          <span class="text-[10px] text-slate-400">GC/DC後→拡散まで</span>
+        <div class="flex gap-1 mb-3 p-1 rounded-xl" style="background:#f1f5f9">
+          <button onclick="switchChartTab('profit')" id="chtab-profit"
+            class="chart-tab flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all active-tab">収益推移</button>
+          <button onclick="switchChartTab('winrate')" id="chtab-winrate"
+            class="chart-tab flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all inactive-tab">勝敗分布</button>
         </div>
-        <div id="ma-conv-stats"></div>
-      </div>
-
-      <!-- Profit trend -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">収益推移（累計）</h3>
-        <div style="position:relative;height:180px">
-          <canvas id="chart-profit"></canvas>
-        </div>
-      </div>
-
-      <!-- Winrate doughnut -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
-        <h3 class="text-sm font-bold text-slate-600 mb-3">勝敗分布</h3>
-        <div class="flex items-center gap-6">
-          <div style="position:relative;width:130px;height:130px;flex-shrink:0">
-            <canvas id="chart-winrate"></canvas>
+        <div id="chpane-profit">
+          <div style="position:relative;height:180px">
+            <canvas id="chart-profit"></canvas>
           </div>
-          <div id="winrate-legend" class="flex-1 space-y-2 text-sm"></div>
+        </div>
+        <div id="chpane-winrate" class="hidden">
+          <div class="flex items-center gap-6">
+            <div style="position:relative;width:130px;height:130px;flex-shrink:0">
+              <canvas id="chart-winrate"></canvas>
+            </div>
+            <div id="winrate-legend" class="flex-1 space-y-2 text-sm"></div>
+          </div>
         </div>
       </div>
 
-      <!-- Breakdown tabs (手法/時間足/メイン通貨/サブ通貨) -->
+      <!-- Breakdown tabs (手法/時間足/メイン通貨/サブ通貨/MA収束) -->
       <div class="bg-white rounded-2xl p-4 shadow-sm mb-4">
         <h3 class="text-sm font-bold text-slate-600 mb-3">成績内訳</h3>
         <!-- Tab buttons -->
-        <div class="flex gap-1 mb-3 p-1 rounded-xl" style="background:#f1f5f9">
+        <div class="flex gap-1 mb-3 p-1 rounded-xl flex-wrap" style="background:#f1f5f9">
           <button onclick="switchBreakdownTab('method')" id="bdtab-method"
             class="breakdown-tab flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all active-tab">手法別</button>
           <button onclick="switchBreakdownTab('timeframe')" id="bdtab-timeframe"
@@ -791,6 +914,8 @@
             class="breakdown-tab flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all inactive-tab">メイン通貨</button>
           <button onclick="switchBreakdownTab('sub')" id="bdtab-sub"
             class="breakdown-tab flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all inactive-tab">サブ通貨</button>
+          <button onclick="switchBreakdownTab('maconv')" id="bdtab-maconv"
+            class="breakdown-tab flex-1 py-1.5 rounded-lg text-xs font-semibold transition-all inactive-tab">MA収束</button>
         </div>
 
         <!-- Method pane -->
@@ -857,6 +982,14 @@
             </select>
           </div>
           <div id="subpair-breakdown"></div>
+        </div>
+
+        <!-- MA収束〜拡散期間 pane -->
+        <div id="bdpane-maconv" class="hidden">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs text-slate-400 flex-1">📐 MA収束〜拡散期間（GC/DC後→拡散まで）</span>
+          </div>
+          <div id="ma-conv-stats"></div>
         </div>
       </div>
 
@@ -1191,6 +1324,14 @@
                 <span id="tax-takehome" class="text-base font-black" style="color:#34d399">−</span>
               </div>
               <div class="text-[10px]" style="color:#475569" id="tax-takehome-note"></div>
+              <div id="tax-salary-takehome-row" class="hidden flex justify-between items-center mt-1.5 pt-1.5" style="border-top:1px solid #334155">
+                <span class="text-xs font-bold" style="color:#93c5fd">給与利益 手取り額</span>
+                <span id="tax-salary-takehome" class="text-base font-black" style="color:#60a5fa">−</span>
+              </div>
+              <div id="tax-combined-takehome-row" class="hidden flex justify-between items-center mt-1.5 pt-1.5" style="border-top:1px solid #334155">
+                <span class="text-xs font-bold" style="color:#c4b5fd">合計利益 手取り額</span>
+                <span id="tax-total-takehome" class="text-base font-black" style="color:#a78bfa">−</span>
+              </div>
             </div>
           </div>
         </div>
@@ -2370,17 +2511,43 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     const losses  = seg.losses;
     const draws   = seg.breakevens;
 
+    // 勝率 tile
     document.getElementById('stat-winrate').textContent = seg.total > 0 ? seg.winrate + '%' : '—';
+    // 合計損益 tile
     const statTotalEl = document.getElementById('stat-total');
-    statTotalEl.textContent = seg.total > 0 ? (seg.sumPnl >= 0 ? '+' : '') + Math.round(seg.sumPnl).toLocaleString() : '—';
-    statTotalEl.className = 'text-xl font-bold ' + (seg.sumPnl >= 0 ? 'text-emerald-600' : 'text-red-500');
-    document.getElementById('stat-count').textContent = trades.length;
+    statTotalEl.textContent = seg.total > 0 ? (seg.sumPnl >= 0 ? '+' : '') + Math.round(seg.sumPnl).toLocaleString() + '円' : '—';
+    statTotalEl.className = 'text-base font-black leading-none ' + (seg.sumPnl >= 0 ? 'text-emerald-600' : 'text-red-500');
+    // 取引数 tile
+    document.getElementById('stat-count').textContent = entries.length;
+    const skips = trades.filter(t => isSkipStatus(t.status));
+    const skipCountEl = document.getElementById('stat-skip-count');
+    if (skipCountEl) skipCountEl.textContent = skips.length;
+
+    // スルー勝率（SKIP_MULTで判定）
+    const skipWithResult = skips.filter(t => SKIP_MULT[t.result] !== undefined);
+    const skipWins = skipWithResult.filter(t => SKIP_MULT[t.result] > 0).length;
+    const skipWinrateVal = skipWithResult.length > 0 ? Math.round(skipWins / skipWithResult.length * 100) : null;
+    const skipWinrateEl = document.getElementById('stat-skip-winrate');
+    if (skipWinrateEl) skipWinrateEl.textContent = skipWinrateVal !== null ? skipWinrateVal + '%' : '—';
+
+    // 合算勝率
+    const combinedTotal = entries.length + skipWithResult.length;
+    const combinedWins = seg.wins + skipWins;
+    const combinedWinrate = combinedTotal > 0 ? Math.round(combinedWins / combinedTotal * 100) : null;
+    const combinedWinrateEl = document.getElementById('stat-combined-winrate');
+    if (combinedWinrateEl) combinedWinrateEl.textContent = combinedWinrate !== null ? combinedWinrate + '%' : '—';
+
+    // 合算取引数
+    const combinedCountEl = document.getElementById('stat-combined-count');
+    if (combinedCountEl) combinedCountEl.textContent = combinedTotal > 0 ? combinedTotal : '—';
+
+    // 仮想行を最新データで更新（表示状態は維持）
+    renderVirtualStatsTile(skips);
 
     renderProfitChart(entries);
     renderWinrateChart(wins, losses, draws, seg.total);
     renderBreakdowns(trades);
     renderOpportunityStats(trades);
-    renderStatusBreakdown(trades);
     renderSkipAnalysis(trades);
     renderMaConvStats(trades);
     renderCapitalChart();
@@ -2778,14 +2945,15 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     const trades = getSkipFilteredTrades();
     const skips  = trades.filter(t => isSkipStatus(t.status));
     renderSkipAmountSim(skips);
-    renderOpportunityLoss(skips);
     renderSkipByReason(skips);
     renderEntryVsSkip(trades);
+    renderSkipCapitalChart();
+    renderVirtualStatsTile(skips);
+    renderSkipTradeSim();
   }
 
   function renderSkipAnalysis(trades) {
     const skips = trades.filter(t => isSkipStatus(t.status));
-    // 期間フィルターが設定されていれば優先
     const fromVal = document.getElementById('skip-from')?.value;
     const toVal   = document.getElementById('skip-to')?.value;
     if (fromVal || toVal) {
@@ -2795,6 +2963,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       renderOpportunityLoss(skips);
       renderSkipByReason(skips);
       renderEntryVsSkip(trades);
+      renderSkipCapitalChart();
     }
   }
 
@@ -2864,7 +3033,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     el.innerHTML = `
       <div class="rounded-xl p-3" style="background:#2d1b4e;border:1px solid #4c1d95">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-semibold" style="color:#c4b5fd">💰 もし入っていたら（${riskInput.toLocaleString()}円/回）</span>
+          <span class="text-xs font-semibold" style="color:#c4b5fd">💡 仮想損益（スルーをエントリーしていた場合）</span>
           <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background:${color}20;color:${color};border:1px solid ${color}40">${hint}</span>
         </div>
         <div class="flex items-end justify-between mb-3">
@@ -2935,7 +3104,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     el.innerHTML = `
       <div class="rounded-xl p-4" style="background:#1e293b;border:1px solid #334155">
         <div class="flex items-baseline justify-between mb-2">
-          <span class="text-xs uppercase tracking-wide" style="color:#94a3b8">🔍 機会損失の累計（${risk.toLocaleString()}円/回 基準）</span>
+          <span class="text-xs uppercase tracking-wide" style="color:#94a3b8">📊 仮想損益の累計（${risk.toLocaleString()}円/回 基準）</span>
           <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full" style="background:${sumColor}20;color:${sumColor};border:1px solid ${sumColor}40">${sumHint}</span>
         </div>
         <div class="flex items-end justify-between mb-2">
@@ -3399,6 +3568,108 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
   let simTradeCount   = 5;
   let simTradeResults = Array(10).fill(null); // null = 未選択
 
+  // スルー分析用トレード仮想シミュレーション
+  let skipSimResults = {};  // { idx: resultKey }
+
+  function setSkipSimResult(idx, key) {
+    skipSimResults[idx] = skipSimResults[idx] === key ? null : key;
+    renderSkipTradeSim();
+  }
+
+  function renderSkipTradeSim() {
+    const risk = getSkipRisk();
+    const section = document.getElementById('skip-trade-sim-section');
+    if (!section) return;
+    if (risk <= 0) {
+      section.classList.add('hidden');
+      document.querySelectorAll('.stat-virtual-row').forEach(el => el.classList.add('hidden'));
+      return;
+    }
+    section.classList.remove('hidden');
+
+    const count   = parseInt(document.getElementById('skip-sim-count')?.value) || 5;
+    const initial = risk;
+    let capital   = initial;
+    let curRisk   = initial;
+    const rows    = [];
+
+    for (let i = 0; i < count; i++) {
+      const key    = skipSimResults[i] || null;
+      const cfg    = key ? SIM_RESULT[key] : null;
+      const rowRisk = curRisk;
+      let pnl = null, nextCapital = capital, nextRisk = curRisk;
+      if (cfg) {
+        pnl = curRisk * cfg.mult;
+        nextCapital = capital + pnl;
+        if (key === 'stoploss')   nextRisk = initial;
+        else if (key === 'breakeven') nextRisk = curRisk;
+        else                      nextRisk = Math.abs(pnl);
+      }
+      rows.push({ idx: i, key, cfg, risk: rowRisk, pnl, capital, nextCapital });
+      capital  = nextCapital;
+      curRisk  = nextRisk;
+    }
+
+    const lastRow  = rows[rows.length - 1];
+    const finalCap = lastRow.key ? lastRow.nextCapital : lastRow.capital;
+    const growth   = ((finalCap / initial - 1) * 100).toFixed(1);
+    const finalEl  = document.getElementById('skip-sim-final');
+    const growthEl = document.getElementById('skip-sim-growth');
+    if (finalEl)  finalEl.textContent  = fmt(finalCap) + '円';
+    if (growthEl) {
+      const diff = finalCap - initial;
+      growthEl.textContent = `初期 ${fmt(initial)}円 ${diff >= 0 ? '+' : ''}${fmt(diff)}円（${growth}%）`;
+    }
+
+    const container = document.getElementById('skip-sim-trade-rows');
+    if (!container) return;
+    container.innerHTML = rows.map(r => {
+      const chips = Object.entries(SIM_RESULT).map(([k, c]) => {
+        const active = r.key === k;
+        const base = 'px-2.5 py-1.5 rounded-lg text-xs font-bold border-2 transition-all active:scale-95 ';
+        const cls  = active ? base + c.color : base + 'border-slate-200 bg-white text-slate-500';
+        return `<button onclick="setSkipSimResult(${r.idx},'${k}')" class="${cls}">${c.label}</button>`;
+      }).join('');
+      const pnlText = r.pnl !== null
+        ? (r.pnl >= 0 ? `<span class="text-emerald-600">+${fmt(r.pnl)}円</span>` : `<span class="text-red-500">${fmt(r.pnl)}円</span>`)
+        : '<span class="text-slate-300">−</span>';
+      const capText = r.key
+        ? `<span class="${r.nextCapital >= initial ? 'text-slate-700' : 'text-red-600'}">${fmt(r.nextCapital)}円</span>`
+        : `<span class="text-slate-300">${fmt(r.capital)}円</span>`;
+      return `
+        <div class="border border-slate-100 rounded-2xl overflow-hidden">
+          <div class="flex items-center gap-2 px-3 py-2 bg-slate-50">
+            <span class="w-5 h-5 rounded-full bg-violet-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">${r.idx + 1}</span>
+            <span class="text-xs text-slate-400">リスク <span class="font-semibold text-slate-600">${fmt(r.risk)}円</span></span>
+            <span class="ml-auto text-xs">${pnlText}</span>
+            <span class="text-xs text-slate-300">→</span>
+            <span class="text-xs font-semibold">${capText}</span>
+          </div>
+          <div class="px-3 py-2 flex flex-wrap gap-1.5">${chips}</div>
+        </div>`;
+    }).join('');
+
+    // ── stats tile の仮想行: シミュレーション入力済み＆トグルONの場合のみ表示 ──
+    const setRows   = rows.filter(r => r.key !== null);
+    const hasResult = setRows.length > 0;
+    const showVirt  = hasResult && _virtualVisible;
+    document.querySelectorAll('.stat-virtual-row').forEach(el => el.classList.toggle('hidden', !showVirt));
+
+    const pnlEl  = document.getElementById('stat-virtual-pnl');
+    const wrEl   = document.getElementById('stat-virtual-winrate');
+    const noteEl = document.getElementById('stat-virtual-note');
+    if (!hasResult) {
+      if (noteEl) noteEl.classList.remove('hidden');
+    } else {
+      const delta   = finalCap - initial;
+      const simWins = setRows.filter(r => SIM_RESULT[r.key]?.mult > 0).length;
+      const simWr   = Math.round(simWins / setRows.length * 100);
+      if (pnlEl) { pnlEl.textContent = (delta >= 0 ? '+' : '') + fmt(delta) + '円'; pnlEl.className = 'text-base font-black leading-none ' + (delta >= 0 ? 'text-purple-600' : 'text-red-500'); }
+      if (wrEl)  { wrEl.textContent  = simWr + '%'; wrEl.className = 'text-sm font-black ' + (simWr >= 50 ? 'text-purple-600' : 'text-red-500'); }
+      if (noteEl) noteEl.classList.add('hidden');
+    }
+  }
+
   // ============================================================
   // エントリーチャンス メモ
   // ============================================================
@@ -3529,18 +3800,22 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     const el = document.getElementById(id);
     if (!el) return;
     el.value = val;
-    if (id === 'skip-sim-risk')   renderSkipAmountSim();
+    if (id === 'skip-sim-risk')   renderSkipAnalysisFiltered();
     if (id === 'chance-sim-risk') renderChanceSimulation();
   }
   function statsSetCapital(val) {
     const el = document.getElementById('cap-initial');
     if (el) { el.value = val; renderCapitalChart(); }
   }
+  function statsSetSkipCapital(val) {
+    const el = document.getElementById('skip-cap-initial');
+    if (el) { el.value = val; renderSkipCapitalChart(); }
+  }
 
   let _bdTab = 'method';
   function switchBreakdownTab(tab) {
     _bdTab = tab;
-    ['method','timeframe','main','sub'].forEach(t => {
+    ['method','timeframe','main','sub','maconv'].forEach(t => {
       const pane = document.getElementById('bdpane-' + t);
       const btn  = document.getElementById('bdtab-'  + t);
       if (!pane || !btn) return;
@@ -3550,6 +3825,20 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       btn.classList.toggle('inactive-tab', !active);
     });
     renderBreakdowns();
+  }
+
+  let _chartTab = 'profit';
+  function switchChartTab(tab) {
+    _chartTab = tab;
+    ['profit','winrate'].forEach(t => {
+      const pane = document.getElementById('chpane-' + t);
+      const btn  = document.getElementById('chtab-'  + t);
+      if (!pane || !btn) return;
+      const active = t === tab;
+      pane.classList.toggle('hidden', !active);
+      btn.classList.toggle('active-tab',   active);
+      btn.classList.toggle('inactive-tab', !active);
+    });
   }
 
   function toggleCollapse(bodyId, arrowId) {
@@ -3894,6 +4183,22 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     if (noteEl)     noteEl.textContent     = salaryIncome > 0
       ? `FX利益 ${fmt(fxProfit)}円 − FX税負担 ${fmt(fxTax)}円`
       : `FX利益 ${fmt(fxProfit)}円 − 合計税 ${fmt(totalTax)}円`;
+
+    const salaryTakehomeRow  = document.getElementById('tax-salary-takehome-row');
+    const salaryTakehomeEl   = document.getElementById('tax-salary-takehome');
+    const combinedTakehomeRow = document.getElementById('tax-combined-takehome-row');
+    const combinedTakehomeEl = document.getElementById('tax-total-takehome');
+    if (salaryIncome > 0) {
+      const salaryTakehome = salaryIncome - salaryTax;
+      const combinedTakehome = fxProfit + salaryIncome - totalTax;
+      if (salaryTakehomeRow)  salaryTakehomeRow.classList.remove('hidden');
+      if (salaryTakehomeEl)   salaryTakehomeEl.textContent = fmt(salaryTakehome) + '円';
+      if (combinedTakehomeRow) combinedTakehomeRow.classList.remove('hidden');
+      if (combinedTakehomeEl) combinedTakehomeEl.textContent = fmt(combinedTakehome) + '円';
+    } else {
+      if (salaryTakehomeRow)   salaryTakehomeRow.classList.add('hidden');
+      if (combinedTakehomeRow) combinedTakehomeRow.classList.add('hidden');
+    }
   }
 
   // ============================================================
@@ -4370,6 +4675,117 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
   function closeImgViewer() {
     document.getElementById('img-viewer').classList.add('hidden');
     viewerImgs = []; viewerIndex = 0;
+  }
+
+  // ============================================================
+  // VIRTUAL STATS TILE (top summary)
+  // ============================================================
+  let _virtualVisible = false;
+  function toggleVirtualStats() {
+    _virtualVisible = !_virtualVisible;
+    const btn   = document.getElementById('stat-virtual-btn');
+    const label = document.getElementById('stat-virtual-btn-label');
+    if (btn)   btn.style.background = _virtualVisible ? '#f3e8ff' : '#faf5ff';
+    if (label) label.textContent    = _virtualVisible ? '仮想を非表示' : '仮想を表示';
+    // 表示制御はrenderSkipTradeSimに委譲（未入力時は非表示を維持）
+    renderSkipTradeSim();
+  }
+
+  function renderVirtualStatsTile(skips) {
+    // PnL/勝率はトレード仮想シミュレーション側が更新するため、ここではノート表示のみ管理
+    const risk   = getSkipRisk();
+    const noteEl = document.getElementById('stat-virtual-note');
+    if (risk <= 0) {
+      if (noteEl) noteEl.classList.remove('hidden');
+    } else {
+      if (noteEl) noteEl.classList.add('hidden');
+    }
+    // シミュレーションに最新値を反映させる
+    renderSkipTradeSim();
+  }
+
+  // ============================================================
+  // SKIP CAPITAL SIMULATION CHART
+  // ============================================================
+  let chartSkipCapital = null;
+  function renderSkipCapitalChart() {
+    const wrapEl  = document.getElementById('skip-cap-chart-wrap');
+    const statsEl = document.getElementById('skip-cap-stats');
+    const emptyEl = document.getElementById('skip-cap-empty');
+    if (!wrapEl) return;
+
+    const rawCap = document.getElementById('skip-cap-initial')?.value;
+    const initial = parseInt(rawCap) || 0;
+    const risk = getSkipRisk();
+
+    if (!initial || risk <= 0) {
+      if (statsEl) statsEl.classList.add('hidden');
+      wrapEl.classList.add('hidden');
+      if (emptyEl) { emptyEl.classList.remove('hidden'); emptyEl.textContent = '初期資金とリスク額を入力してください'; }
+      return;
+    }
+
+    const skips = getSkipFilteredTrades().filter(t => isSkipStatus(t.status));
+    const sorted = [...skips]
+      .sort((a, b) => new Date(a.datetimeEntry || a.datetime) - new Date(b.datetimeEntry || b.datetime))
+      .filter(t => calcSkipSimPnl(t, risk) !== null);
+
+    if (sorted.length === 0) {
+      if (statsEl) statsEl.classList.add('hidden');
+      wrapEl.classList.add('hidden');
+      if (emptyEl) { emptyEl.classList.remove('hidden'); emptyEl.textContent = '結果入力済みのスルートレードがありません'; }
+      return;
+    }
+
+    if (emptyEl) emptyEl.classList.add('hidden');
+    wrapEl.classList.remove('hidden');
+
+    let cap = initial;
+    const labels = ['開始'];
+    const data   = [initial];
+    sorted.forEach((t, i) => {
+      cap += calcSkipSimPnl(t, risk);
+      labels.push('#' + (i + 1));
+      data.push(Math.round(cap));
+    });
+
+    const finalCap  = data[data.length - 1];
+    const delta     = finalCap - initial;
+    const deltaRate = ((delta / initial) * 100).toFixed(1);
+    const color     = delta >= 0 ? '#8b5cf6' : '#ef4444';
+
+    if (statsEl) {
+      statsEl.classList.remove('hidden');
+      document.getElementById('skip-cap-current').textContent = Math.round(finalCap).toLocaleString() + '円';
+      const dEl = document.getElementById('skip-cap-delta');
+      dEl.textContent = (delta >= 0 ? '+' : '') + Math.round(delta).toLocaleString() + '円';
+      dEl.className = 'text-sm font-bold ' + (delta >= 0 ? 'text-emerald-600' : 'text-red-500');
+      const rEl = document.getElementById('skip-cap-rate');
+      rEl.textContent = (delta >= 0 ? '+' : '') + deltaRate + '%';
+      rEl.className = 'text-sm font-bold ' + (delta >= 0 ? 'text-emerald-600' : 'text-red-500');
+    }
+
+    if (chartSkipCapital) { chartSkipCapital.destroy(); chartSkipCapital = null; }
+    const ctx = document.getElementById('chart-skip-capital').getContext('2d');
+    chartSkipCapital = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{ data, borderColor: color, backgroundColor: color + '18',
+          borderWidth: 2, tension: 0.4, fill: true,
+          pointRadius: data.length <= 20 ? 3 : 0, pointBackgroundColor: color }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { display: false },
+          y: { ticks: { color: '#94a3b8', font: { size: 10 },
+            callback: v => v >= 1000000 ? (v/1000000).toFixed(1)+'M' : v >= 1000 ? Math.round(v/1000)+'k' : v },
+            grid: { color: '#f1f5f9' } }
+        }
+      }
+    });
   }
 
   // ============================================================
