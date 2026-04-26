@@ -653,16 +653,16 @@
       <!-- Period selector -->
       <div class="bg-white rounded-2xl p-1.5 shadow-sm mb-4">
         <div class="grid grid-cols-5 gap-1">
-          <button onclick="setStatsPeriod('week')" data-period="week"
-            class="period-btn py-2 rounded-xl text-xs font-medium text-slate-500 transition-all">週</button>
-          <button onclick="setStatsPeriod('month')" data-period="month"
-            class="period-btn py-2 rounded-xl text-xs font-medium bg-blue-600 text-white transition-all">月</button>
-          <button onclick="setStatsPeriod('3month')" data-period="3month"
-            class="period-btn py-2 rounded-xl text-xs font-medium text-slate-500 transition-all">3ヶ月</button>
           <button onclick="setStatsPeriod('all')" data-period="all"
             class="period-btn py-2 rounded-xl text-xs font-medium text-slate-500 transition-all">全期間</button>
           <button onclick="setStatsPeriod('custom')" data-period="custom"
             class="period-btn py-2 rounded-xl text-xs font-medium text-slate-500 transition-all">指定</button>
+          <button onclick="setStatsPeriod('3month')" data-period="3month"
+            class="period-btn py-2 rounded-xl text-xs font-medium text-slate-500 transition-all">3ヶ月</button>
+          <button onclick="setStatsPeriod('month')" data-period="month"
+            class="period-btn py-2 rounded-xl text-xs font-medium bg-blue-600 text-white transition-all">月</button>
+          <button onclick="setStatsPeriod('week')" data-period="week"
+            class="period-btn py-2 rounded-xl text-xs font-medium text-slate-500 transition-all">週</button>
         </div>
         <!-- Custom date range (shown only when 'custom' selected) -->
         <div id="custom-period-block" class="hidden mt-2 grid grid-cols-2 gap-2">
@@ -783,6 +783,8 @@
               style="background:#0f172a;color:#cbd5e1;border:1px solid #334155">
           </div>
         </div>
+        <!-- スルー結果パネル -->
+        <div id="skip-trade-list" class="mb-3"></div>
         <!-- リスク額＋期待値シミュレーター -->
         <div class="mb-3 p-3 rounded-xl" style="background:#1e293b">
           <label class="block text-xs font-semibold mb-2" style="color:#94a3b8">1トレード リスク額（円）</label>
@@ -800,14 +802,17 @@
             class="w-full rounded-lg px-2.5 py-1.5 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-violet-500 select-text"
             style="background:#0f172a;color:#c4b5fd;border:1px solid #334155">
         </div>
-        <div id="skip-amount-sim" class="mb-4"></div>
 
-        <!-- トレード仮想シミュレーション -->
+        <!-- 仮想損益シミュレーション（スルーをエントリーしていた場合） -->
         <div id="skip-trade-sim-section" class="hidden mb-4 pt-3" style="border-top:1px solid #e2e8f0">
+          <!-- ヘッダー -->
           <div class="flex items-center justify-between mb-3">
-            <h4 class="text-xs font-bold text-slate-600">📋 トレード仮想シミュレーション</h4>
+            <div>
+              <h4 class="text-xs font-bold text-slate-600">💡 仮想損益シミュレーション</h4>
+              <p class="text-[10px] text-slate-400 mt-0.5">スルーをエントリーしていた場合の複利シミュレーション</p>
+            </div>
             <div class="flex items-center gap-2">
-              <label class="text-[10px] text-slate-400">回数</label>
+              <label class="text-[10px] text-slate-400">トレード回数</label>
               <select id="skip-sim-count" onchange="renderSkipTradeSim()"
                 class="text-xs border border-slate-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-violet-400 bg-white text-slate-600">
                 <option value="1">1回</option>
@@ -825,13 +830,23 @@
               </select>
             </div>
           </div>
-          <!-- サマリー -->
-          <div id="skip-sim-summary" class="rounded-xl px-4 py-3 mb-3" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1px solid #ddd6fe">
-            <div class="flex justify-between items-center">
-              <div class="text-xs text-slate-500">仮想資金</div>
-              <div id="skip-sim-final" class="text-xl font-black text-violet-700">−</div>
+          <!-- 結果サマリー -->
+          <div id="skip-sim-summary" class="rounded-xl p-3 mb-3" style="background:#1e293b">
+            <div class="grid grid-cols-3 gap-2 mb-2">
+              <div class="text-center">
+                <div class="text-[9px] text-slate-400 mb-1">初期リスク</div>
+                <div id="skip-sim-initial-disp" class="text-sm font-black text-slate-300">−</div>
+              </div>
+              <div class="text-center">
+                <div class="text-[9px] text-slate-400 mb-1">仮想損益</div>
+                <div id="skip-sim-delta-disp" class="text-sm font-black text-slate-300">−</div>
+              </div>
+              <div class="text-center">
+                <div class="text-[9px] text-slate-400 mb-1">仮想資金</div>
+                <div id="skip-sim-final" class="text-sm font-black text-violet-300">−</div>
+              </div>
             </div>
-            <div id="skip-sim-growth" class="text-xs text-slate-400 mt-0.5"></div>
+            <div id="skip-sim-growth" class="text-[10px] text-center text-slate-500"></div>
           </div>
           <!-- トレード行 -->
           <div id="skip-sim-trade-rows" class="space-y-2"></div>
@@ -2944,12 +2959,58 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
   function renderSkipAnalysisFiltered() {
     const trades = getSkipFilteredTrades();
     const skips  = trades.filter(t => isSkipStatus(t.status));
-    renderSkipAmountSim(skips);
+    renderSkipTradeList(skips);
     renderSkipByReason(skips);
     renderEntryVsSkip(trades);
     renderSkipCapitalChart();
     renderVirtualStatsTile(skips);
     renderSkipTradeSim();
+  }
+
+  function renderSkipTradeList(skips) {
+    const el = document.getElementById('skip-trade-list');
+    if (!el) return;
+    if (skips.length === 0) { el.innerHTML = ''; return; }
+
+    const RESULT_MAP = {
+      max:       { label: 'MAX',  color: '#8b5cf6' },
+      big:       { label: 'BIG',  color: '#3b82f6' },
+      reg:       { label: 'REG',  color: '#10b981' },
+      small:     { label: '微益', color: '#14b8a6' },
+      breakeven: { label: '建値', color: '#64748b' },
+      stoploss:  { label: '損切', color: '#ef4444' },
+    };
+
+    // 新しい順
+    const sorted = [...skips].sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+
+    const panels = sorted.map(t => {
+      const rd = RESULT_MAP[t.result] || { label: '−', color: '#94a3b8' };
+      return `
+      <div class="rounded-lg py-2 px-1 text-center" style="background:${rd.color}18;border:1px solid ${rd.color}40">
+        <div class="text-xs font-black leading-none" style="color:${rd.color}">${rd.label}</div>
+      </div>`;
+    }).join('');
+
+    // 集計行（勝率など）
+    const withResult = sorted.filter(t => RESULT_MAP[t.result]);
+    const wins       = withResult.filter(t => RESULT_MAP[t.result]?.color !== '#64748b' && RESULT_MAP[t.result]?.color !== '#ef4444' && t.result !== 'breakeven' && t.result !== 'stoploss').length;
+    const winrate    = withResult.length > 0 ? Math.round(wins / withResult.length * 100) : null;
+    const wrBadge    = winrate !== null
+      ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:${winrate >= 50 ? '#34d39920' : '#f8717120'};color:${winrate >= 50 ? '#34d399' : '#f87171'}">勝率 ${winrate}%</span>`
+      : '';
+
+    el.innerHTML = `
+      <div class="rounded-xl p-2.5" style="background:#0f172a;border:1px solid #1e293b">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[10px] font-bold uppercase tracking-wide" style="color:#7dd3fc">スルー結果一覧</span>
+          <div class="flex items-center gap-2">
+            ${wrBadge}
+            <span class="text-[10px]" style="color:#475569">${sorted.length}件</span>
+          </div>
+        </div>
+        <div class="grid gap-1.5" style="grid-template-columns:repeat(auto-fill,minmax(40px,1fr))">${panels}</div>
+      </div>`;
   }
 
   function renderSkipAnalysis(trades) {
@@ -2959,8 +3020,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     if (fromVal || toVal) {
       renderSkipAnalysisFiltered();
     } else {
-      renderSkipAmountSim(skips);
-      renderOpportunityLoss(skips);
+      renderSkipTradeList(skips);
       renderSkipByReason(skips);
       renderEntryVsSkip(trades);
       renderSkipCapitalChart();
@@ -2968,88 +3028,6 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
   }
 
   // リスク額ベースの期待値シミュレーター（結果別内訳付き）
-  function renderSkipAmountSim(skips) {
-    const el = document.getElementById('skip-amount-sim');
-    if (!el) return;
-    const riskInput = parseFloat(document.getElementById('skip-sim-risk')?.value) || 0;
-    if (riskInput <= 0) { el.innerHTML = ''; return; }
-    if (!skips) {
-      skips = getSkipFilteredTrades().filter(t => isSkipStatus(t.status));
-    }
-    if (skips.length === 0) { el.innerHTML = ''; return; }
-
-    const MULT = { max: 3, big: 2, reg: 1, small: 0.5, breakeven: 0, stoploss: -1 };
-    const RESULT_DEF = [
-      { key: 'max',       label: 'MAX',  color: '#8b5cf6', mult: 3 },
-      { key: 'big',       label: 'BIG',  color: '#3b82f6', mult: 2 },
-      { key: 'reg',       label: 'REG',  color: '#10b981', mult: 1 },
-      { key: 'small',     label: '微益', color: '#14b8a6', mult: 0.5 },
-      { key: 'breakeven', label: '建値', color: '#64748b', mult: 0 },
-      { key: 'stoploss',  label: '損切', color: '#ef4444', mult: -1 },
-    ];
-
-    let simTotal = 0, simWins = 0, simLosses = 0;
-    const resultBreakdown = {};
-    RESULT_DEF.forEach(r => { resultBreakdown[r.key] = { count: 0, pnl: 0 }; });
-
-    skips.forEach(t => {
-      const mult = MULT[t.result];
-      if (mult === undefined) return;
-      const pnl = riskInput * mult;
-      simTotal += pnl;
-      if (pnl > 0) simWins++;
-      else if (pnl < 0) simLosses++;
-      if (resultBreakdown[t.result]) {
-        resultBreakdown[t.result].count++;
-        resultBreakdown[t.result].pnl += pnl;
-      }
-    });
-    const validCount = skips.filter(t => MULT[t.result] !== undefined).length;
-    if (validCount === 0) { el.innerHTML = ''; return; }
-
-    const color   = simTotal >= 0 ? '#10b981' : '#ef4444';
-    const hint    = simTotal >= 0 ? '機会損失' : 'スキップ正解';
-    const sign    = simTotal >= 0 ? '+' : '';
-    const winrate = Math.round(simWins / validCount * 100);
-    const ev      = simTotal / validCount;
-
-    // 結果別内訳カード
-    const breakdownHtml = RESULT_DEF
-      .filter(r => resultBreakdown[r.key].count > 0)
-      .map(r => {
-        const b   = resultBreakdown[r.key];
-        const pnl = b.pnl;
-        const pnlStr = (pnl >= 0 ? '+' : '') + Math.round(pnl).toLocaleString();
-        return `
-        <div class="flex items-center justify-between py-1" style="border-top:1px solid #1e293b">
-          <div class="flex items-center gap-2">
-            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="background:${r.color}25;color:${r.color}">${r.label}</span>
-            <span style="color:#94a3b8;font-size:10px">${b.count}回 × ${riskInput.toLocaleString()}円 × ${r.mult >= 0 ? '+' : ''}${r.mult}</span>
-          </div>
-          <span class="text-xs font-bold" style="color:${pnl >= 0 ? '#34d399' : '#f87171'}">${pnlStr}円</span>
-        </div>`;
-      }).join('');
-
-    el.innerHTML = `
-      <div class="rounded-xl p-3" style="background:#2d1b4e;border:1px solid #4c1d95">
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-semibold" style="color:#c4b5fd">💡 仮想損益（スルーをエントリーしていた場合）</span>
-          <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold" style="background:${color}20;color:${color};border:1px solid ${color}40">${hint}</span>
-        </div>
-        <div class="flex items-end justify-between mb-3">
-          <div>
-            <div style="color:#94a3b8;font-size:10px">合計損益</div>
-            <span class="text-2xl font-black" style="color:${color}">${sign}${Math.round(simTotal).toLocaleString()}円</span>
-          </div>
-          <div class="text-right">
-            <div class="text-sm font-bold" style="color:#e2e8f0">勝率 ${winrate}%</div>
-            <div class="text-[10px]" style="color:#94a3b8">${simWins}勝${simLosses}敗 / ${validCount}回</div>
-            <div class="text-[10px] mt-0.5" style="color:#a78bfa">期待値 ${ev >= 0 ? '+' : ''}${Math.round(ev).toLocaleString()}円/回</div>
-          </div>
-        </div>
-        ${breakdownHtml}
-      </div>`;
-  }
 
   // スルートレードの「もし入っていたら」損益を計算するヘルパー
   const SKIP_MULT = { max: 3, big: 2, reg: 1, small: 0.5, breakeven: 0, stoploss: -1 };
@@ -3610,15 +3588,30 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       curRisk  = nextRisk;
     }
 
-    const lastRow  = rows[rows.length - 1];
-    const finalCap = lastRow.key ? lastRow.nextCapital : lastRow.capital;
-    const growth   = ((finalCap / initial - 1) * 100).toFixed(1);
-    const finalEl  = document.getElementById('skip-sim-final');
-    const growthEl = document.getElementById('skip-sim-growth');
-    if (finalEl)  finalEl.textContent  = fmt(finalCap) + '円';
+    const lastRow   = rows[rows.length - 1];
+    const finalCap  = lastRow.key ? lastRow.nextCapital : lastRow.capital;
+    const delta     = finalCap - initial;
+    const growthPct = ((finalCap / initial - 1) * 100).toFixed(1);
+
+    const finalEl   = document.getElementById('skip-sim-final');
+    const deltaEl   = document.getElementById('skip-sim-delta-disp');
+    const initEl    = document.getElementById('skip-sim-initial-disp');
+    const growthEl  = document.getElementById('skip-sim-growth');
+    const setCount  = rows.filter(r => r.key).length;
+
+    if (initEl)  initEl.textContent  = fmt(initial) + '円';
+    if (finalEl) {
+      finalEl.textContent = fmt(finalCap) + '円';
+      finalEl.style.color = finalCap >= initial ? '#a78bfa' : '#f87171';
+    }
+    if (deltaEl) {
+      deltaEl.textContent = (delta >= 0 ? '+' : '') + fmt(delta) + '円';
+      deltaEl.style.color = delta >= 0 ? '#34d399' : '#f87171';
+    }
     if (growthEl) {
-      const diff = finalCap - initial;
-      growthEl.textContent = `初期 ${fmt(initial)}円 ${diff >= 0 ? '+' : ''}${fmt(diff)}円（${growth}%）`;
+      growthEl.textContent = setCount > 0
+        ? `${setCount}/${rows.length}回 入力済み　増減率 ${delta >= 0 ? '+' : ''}${growthPct}%`
+        : '結果を入力すると仮想損益が計算されます';
     }
 
     const container = document.getElementById('skip-sim-trade-rows');
