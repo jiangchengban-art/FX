@@ -222,9 +222,63 @@
 
     /* Stat breakdown rows */
     .border-slate-100 { border-color: var(--border-sub) !important; }
+
+    /* Onboarding overlay */
+    #onboarding-modal .ob-card { background: #14142a; border: 1px solid #2a2a3e; }
+
+    /* Last-entry banner */
+    #last-entry-banner { background: #1c1a10; border-bottom: 1px solid #3d3510; }
+
+    /* Deposit mode: hide trade-only fields */
+    form.is-deposit .deposit-hide { display: none !important; }
+    .edit-deposit .deposit-hide { display: none !important; }
   </style>
 </head>
 <body class="font-sans select-none" style="background:#080810;color:#e2e8f0">
+
+  <!-- ===================== ONBOARDING MODAL ===================== -->
+  <div id="onboarding-modal" style="display:none;position:fixed;inset:0;z-index:110;align-items:center;justify-content:center;padding:1.25rem;background:rgba(0,0,0,0.93)">
+    <div class="ob-card w-full max-w-sm rounded-3xl p-6 shadow-2xl">
+      <!-- logo -->
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-md">
+          <span class="text-white text-lg font-black tracking-tight">FX</span>
+        </div>
+        <div>
+          <div class="text-base font-black" style="color:#e2e8f0">FX トレード記録</div>
+          <div class="text-xs" style="color:#64748b">ようこそ！</div>
+        </div>
+      </div>
+      <p class="text-sm leading-relaxed mb-5" style="color:#94a3b8">
+        トレード記録・スルー分析・資金シミュレーションを一つにまとめたツールです。<br>
+        まずデモデータで動作を確認するか、すぐに記録を始めることができます。
+      </p>
+      <!-- features -->
+      <div class="space-y-2 mb-6">
+        <div class="flex items-center gap-2 text-xs" style="color:#64748b">
+          <span class="text-base">📊</span> エントリー・スルー・ミスを記録して統計分析
+        </div>
+        <div class="flex items-center gap-2 text-xs" style="color:#64748b">
+          <span class="text-base">🔍</span> スルーしたトレードの機会損失を可視化
+        </div>
+        <div class="flex items-center gap-2 text-xs" style="color:#64748b">
+          <span class="text-base">💹</span> 複利シミュレーションで資金推移を確認
+        </div>
+      </div>
+      <div class="space-y-2">
+        <button onclick="startWithDemo()"
+          class="w-full py-3.5 rounded-2xl text-sm font-bold transition-all active:scale-95"
+          style="background:#2563eb;color:#fff">
+          デモデータで試してみる
+        </button>
+        <button onclick="startBlank()"
+          class="w-full py-3 rounded-2xl text-sm font-semibold transition-all active:scale-95"
+          style="background:#1e1e30;color:#94a3b8;border:1px solid #2a2a3e">
+          空白からはじめる
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- ===================== HEADER ===================== -->
   <header class="header-safe fixed top-0 left-0 right-0 z-40" style="background:#0d0d18;border-bottom:1px solid #1e1e30;box-shadow:0 1px 8px rgba(0,0,0,0.6)">
@@ -241,6 +295,15 @@
 
   <!-- ===================== MAIN ===================== -->
   <main class="pt-14 pb-20 min-h-screen">
+
+    <!-- Last-entry banner -->
+    <div id="last-entry-banner" class="hidden px-4 py-2.5 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-base">📅</span>
+        <span id="last-entry-banner-text" class="text-xs font-semibold" style="color:#fbbf24"></span>
+      </div>
+      <button onclick="dismissLastEntryBanner()" class="text-xs px-2 py-0.5 rounded-lg transition-all active:scale-95" style="color:#6b7280;background:#2a2a1a">×</button>
+    </div>
 
     <!-- ========== TAB: 新規登録 ========== -->
     <div id="panel-register" class="tab-panel active p-4 space-y-4">
@@ -263,7 +326,7 @@
         </div>
 
         <!-- 手法 / 通貨ペア / 時間足 -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+        <div class="bg-white rounded-2xl p-4 shadow-sm space-y-3 deposit-hide">
 
           <!-- 手法 -->
           <div>
@@ -347,25 +410,29 @@
           <!-- ステータス -->
           <div>
             <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#38bdf8">ステータス</label>
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-4 gap-2">
               <button type="button" data-group="status" data-value="entry" onclick="selectToggle('status','entry')"
-                class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                class="toggle-btn py-3 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
                 エントリー
               </button>
               <button type="button" data-group="status" data-value="through" onclick="selectToggle('status','through')"
-                class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                class="toggle-btn py-3 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
                 スルー
               </button>
               <button type="button" data-group="status" data-value="miss" onclick="selectToggle('status','miss')"
-                class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                class="toggle-btn py-3 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
                 ミス
+              </button>
+              <button type="button" data-group="status" data-value="deposit" onclick="selectToggle('status','deposit')"
+                class="toggle-btn py-3 rounded-xl text-xs font-semibold border-2 border-slate-200 text-slate-500 transition-all active:scale-95">
+                💰 入金
               </button>
             </div>
             <input type="hidden" id="f-status" value="">
           </div>
 
           <!-- 結果 -->
-          <div>
+          <div class="deposit-hide">
             <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#6ee7b7">結果</label>
             <div class="grid grid-cols-3 gap-2">
               <button type="button" data-group="result" data-value="reg" onclick="selectToggle('result','reg')"
@@ -396,9 +463,9 @@
             <input type="hidden" id="f-result" value="">
           </div>
 
-          <!-- 損益（スルー時は非表示） -->
+          <!-- 損益（スルー時は非表示・入金時はラベル変更） -->
           <div id="f-pnl-block">
-            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#fb7185">損益（円）</label>
+            <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#fb7185" id="f-pnl-label">損益（円）</label>
             <div class="flex gap-2">
               <div class="relative flex-1">
                 <input type="number" id="f-pnl" placeholder="0" step="1"
@@ -412,7 +479,7 @@
           </div>
 
           <!-- 見送り理由 (through/miss のときのみ表示) -->
-          <div id="f-skip-block" class="hidden">
+          <div id="f-skip-block" class="hidden deposit-hide">
             <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#a78bfa">見送り理由</label>
             <div class="grid grid-cols-2 gap-2">
               <button type="button" data-group="skipreason" data-prefix="f" data-value="m15"
@@ -432,7 +499,7 @@
           </div>
 
           <!-- 建値タッチ (entry のときのみ表示) -->
-          <div id="f-be-block">
+          <div id="f-be-block" class="deposit-hide">
             <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#fbbf24">建値タッチ</label>
             <div class="grid grid-cols-3 gap-2">
               <button type="button" data-group="breakeventouch" data-prefix="f" data-value="none"
@@ -449,7 +516,7 @@
           </div>
 
           <!-- MA収束・拡散の形状 -->
-          <div>
+          <div class="deposit-hide">
             <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#60a5fa">MA収束・拡散の形状</label>
             <div class="grid grid-cols-2 gap-2">
               <button type="button" data-group="mashape" data-prefix="f" data-value="straight"
@@ -463,7 +530,7 @@
           </div>
 
           <!-- MA収束〜拡散期間 -->
-          <div>
+          <div class="deposit-hide">
             <label class="block text-xs font-semibold uppercase tracking-wide mb-1" style="color:#34d399">MA収束〜拡散期間 <span class="font-normal normal-case tracking-normal" style="color:#94a3b8">GC/DC後→拡散まで（時間）</span></label>
             <div class="flex items-center gap-2">
               <input type="number" id="f-ma-conv" placeholder="例: 12" min="0.5" step="0.5"
@@ -475,14 +542,14 @@
 
         <!-- 理由 -->
         <div class="bg-white rounded-2xl p-4 shadow-sm">
-          <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#a78bfa">理由・メモ</label>
+          <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#a78bfa" id="f-reason-label">理由・メモ</label>
           <textarea id="f-reason" rows="3"
             placeholder="エントリー/スルー/ミスの理由、チャートの状況などを記録..."
             class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none select-text"></textarea>
         </div>
 
         <!-- タグ -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm">
+        <div class="bg-white rounded-2xl p-4 shadow-sm deposit-hide">
           <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#f472b6">タグ <span class="font-normal normal-case tracking-normal" style="color:#94a3b8">（複数可）</span></label>
           <div id="f-tag-chips" class="flex gap-1.5 flex-wrap mb-2"></div>
           <div class="flex gap-2">
@@ -496,7 +563,7 @@
         </div>
 
         <!-- チャート画像 -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm">
+        <div class="bg-white rounded-2xl p-4 shadow-sm deposit-hide">
           <label class="block text-xs font-semibold uppercase tracking-wide mb-3" style="color:#7dd3fc">チャート画像</label>
           <div class="grid grid-cols-2 gap-3 mb-3">
             <div id="f-slot-m15" class="img-slot" data-prefix="f" data-slot="m15">
@@ -589,6 +656,7 @@
             <option value="entry">エントリー</option>
             <option value="through">スルー</option>
             <option value="miss">ミス</option>
+            <option value="deposit">入金</option>
           </select>
           <select id="fd-result" onchange="selectFilter('result',this.value)"
             class="text-xs border border-slate-200 rounded-lg px-1.5 py-1.5 bg-white text-slate-600 focus:outline-none focus:ring-1 focus:ring-blue-400">
@@ -1378,12 +1446,25 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
         <h3 class="text-sm font-bold text-slate-600 mb-3">データ管理</h3>
         <div class="space-y-2">
 
+          <!-- backup reminder -->
+          <div id="backup-reminder" class="hidden text-xs px-3 py-2 rounded-xl mb-1" style="background:#2a1a10;color:#fbbf24;border:1px solid #7c4a1a">
+            最終エクスポートから <span id="backup-days"></span> 日が経過しています。定期的なバックアップをおすすめします。
+          </div>
+
           <button onclick="exportData()"
             class="w-full flex items-center gap-3 p-3.5 bg-blue-50 text-blue-700 border border-blue-100 rounded-xl hover:bg-blue-100 active:scale-[0.98] transition-all text-sm font-semibold">
             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
             </svg>
             JSONでエクスポート（書き出し）
+          </button>
+
+          <button onclick="exportCSV()"
+            class="w-full flex items-center gap-3 p-3.5 bg-blue-50 text-blue-700 border border-blue-100 rounded-xl hover:bg-blue-100 active:scale-[0.98] transition-all text-sm font-semibold">
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            CSVでエクスポート（Excel対応）
           </button>
 
           <label class="w-full flex items-center gap-3 p-3.5 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-xl hover:bg-emerald-100 active:scale-[0.98] transition-all text-sm font-semibold cursor-pointer">
@@ -1507,12 +1588,14 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
   // ============================================================
   // STORAGE
   // ============================================================
-  const STORAGE_KEY = 'fx_trades_v1';
+  const STORAGE_KEY        = 'fx_trades_v1';
+  const BACKUP_KEY         = STORAGE_KEY + '_bk';
+  const TAB_KEY            = 'fx_active_tab';
+  const ONBOARDING_KEY     = 'fx_onboarding_done';
+  const LAST_EXPORT_KEY    = 'fx_last_export_date';
+  const BANNER_DISMISS_KEY = 'fx_banner_dismissed';
 
-  const BACKUP_KEY = STORAGE_KEY + '_bk';
-  const TAB_KEY    = 'fx_active_tab';
-
-  function dbLoad() {
+  function dbLoadRaw() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -1536,6 +1619,8 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       return [];
     } catch { return []; }
   }
+  // Active trades: tombstones (deleted=true) は除外
+  function dbLoad() { return dbLoadRaw().filter(t => !t.deleted); }
   function dbSave(trades) {
     const json = JSON.stringify(trades);
     localStorage.setItem(STORAGE_KEY, json);
@@ -1624,6 +1709,11 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     // Restore last active tab (falls back to 'register')
     const savedTab = localStorage.getItem(TAB_KEY) || 'register';
     switchTab(savedTab);
+
+    // Onboarding check
+    checkOnboarding();
+    // Last-entry banner
+    checkLastEntryBanner();
   });
 
   function setDefaultDatetime() {
@@ -1653,7 +1743,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     localStorage.setItem(TAB_KEY, tab);
     if (tab === 'history') renderHistory();
     if (tab === 'stats')   { renderStats(); renderCalendar(); renderChanceRate(); }
-    if (tab === 'summary') { renderSummary(); renderSimulation(); initChanceMemos(); updateSyncUI(); renderTaxSim(); }
+    if (tab === 'summary') { renderSummary(); renderSimulation(); initChanceMemos(); updateSyncUI(); renderTaxSim(); updateBackupReminder(); }
   }
 
   // ============================================================
@@ -1672,6 +1762,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       entry:   'border-blue-500 bg-blue-50 text-blue-700',
       through: 'border-yellow-500 bg-yellow-50 text-yellow-700',
       miss:    'border-orange-500 bg-orange-50 text-orange-700',
+      deposit: 'border-emerald-500 bg-emerald-50 text-emerald-700',
     },
     skipreason: {
       m15:       'border-violet-500 bg-violet-50 text-violet-700',
@@ -1731,6 +1822,22 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
             if (pnlEl) pnlEl.value = '';
           }
         }
+        // pnl-label / reason-label: deposit のときラベルを変更
+        const pnlLabel = document.getElementById('f-pnl-label');
+        if (pnlLabel) pnlLabel.textContent = isDepositStatus(value) ? '入金額（円）' : '損益（円）';
+        const reasonLabel = document.getElementById('f-reason-label');
+        if (reasonLabel) reasonLabel.textContent = isDepositStatus(value) ? 'メモ（任意）' : '理由・メモ';
+      }
+      // deposit mode: form/edit-modal にクラスを付け外し
+      if (prefix === 'e') {
+        const wrap = document.getElementById('edit-form-wrap');
+        if (wrap) wrap.classList.toggle('edit-deposit', isDepositStatus(value));
+        // edit pnl/reason ラベルもあれば変更
+        const epLabel = document.getElementById('e-pnl-label');
+        if (epLabel) epLabel.textContent = isDepositStatus(value) ? '入金額（円）' : '損益（円）';
+      } else {
+        const form = document.getElementById('trade-form');
+        if (form) form.classList.toggle('is-deposit', isDepositStatus(value));
       }
     }
   }
@@ -1754,51 +1861,85 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
   // ============================================================
   function handleRegister(e) {
     e.preventDefault();
-    const method        = document.getElementById('f-method').value;
-    const result        = document.getElementById('f-result').value;
     const status        = document.getElementById('f-status').value;
     const datetimeEntry = document.getElementById('f-datetime-entry').value;
     const datetimeExit  = document.getElementById('f-datetime-exit').value;
+    const pnl           = parseFloat(document.getElementById('f-pnl').value) || 0;
 
-    if (!method)  { showToast('⚠ 手法を選択してください'); return; }
-    if (!result)  { showToast('⚠ 結果を選択してください'); return; }
     if (!status)  { showToast('⚠ ステータスを選択してください'); return; }
 
-    const trade = {
-      id:            uid(),
-      datetime:      datetimeEntry || new Date().toISOString(),
-      datetimeEntry: datetimeEntry || new Date().toISOString(),
-      datetimeExit:  datetimeExit || '',
-      method,
-      pairMain:  document.getElementById('f-pair-main').value,
-      pairSub:   document.getElementById('f-pair-sub').value,
-      pair:      document.getElementById('f-pair-main').value, // backward compat
-      timeframe: document.getElementById('f-timeframe').value,
-      pnl:       parseFloat(document.getElementById('f-pnl').value) || 0,
-      result,
-      status,
-      reason:    document.getElementById('f-reason').value.trim(),
-      images:    { m15: fImgs.m15, h1: fImgs.h1, h4: fImgs.h4, d1: fImgs.d1, others: [...fImgs.others] },
-      tags:      [...fTags],
-      skipReason: isSkipStatus(status) ? (document.getElementById('f-skipreason').value || null) : null,
-      breakevenTouch: document.getElementById('f-breakeventouch').value || null,
-      maShape: document.getElementById('f-mashape').value || null,
-      maConvDuration: parseInt(document.getElementById('f-ma-conv').value) || null,
-      createdAt: new Date().toISOString(),
-    };
+    let trade;
+    if (isDepositStatus(status)) {
+      if (!pnl || pnl === 0) { showToast('⚠ 入金額を入力してください'); return; }
+      trade = {
+        id:            uid(),
+        datetime:      datetimeEntry || new Date().toISOString(),
+        datetimeEntry: datetimeEntry || new Date().toISOString(),
+        datetimeExit:  '',
+        method:    '',
+        pairMain:  '',
+        pairSub:   '',
+        pair:      '',
+        timeframe: '',
+        pnl,
+        result:    '',
+        status,
+        reason:    document.getElementById('f-reason').value.trim(),
+        images:    { m15: null, h1: null, h4: null, d1: null, others: [] },
+        tags:      [],
+        skipReason: null,
+        breakevenTouch: null,
+        maShape: null,
+        maConvDuration: null,
+        createdAt: new Date().toISOString(),
+      };
+    } else {
+      const method = document.getElementById('f-method').value;
+      const result = document.getElementById('f-result').value;
+      if (!method)  { showToast('⚠ 手法を選択してください'); return; }
+      if (!result)  { showToast('⚠ 結果を選択してください'); return; }
+      trade = {
+        id:            uid(),
+        datetime:      datetimeEntry || new Date().toISOString(),
+        datetimeEntry: datetimeEntry || new Date().toISOString(),
+        datetimeExit:  datetimeExit || '',
+        method,
+        pairMain:  document.getElementById('f-pair-main').value,
+        pairSub:   document.getElementById('f-pair-sub').value,
+        pair:      document.getElementById('f-pair-main').value,
+        timeframe: document.getElementById('f-timeframe').value,
+        pnl,
+        result,
+        status,
+        reason:    document.getElementById('f-reason').value.trim(),
+        images:    { m15: fImgs.m15, h1: fImgs.h1, h4: fImgs.h4, d1: fImgs.d1, others: [...fImgs.others] },
+        tags:      [...fTags],
+        skipReason: isSkipStatus(status) ? (document.getElementById('f-skipreason').value || null) : null,
+        breakevenTouch: document.getElementById('f-breakeventouch').value || null,
+        maShape: document.getElementById('f-mashape').value || null,
+        maConvDuration: parseInt(document.getElementById('f-ma-conv').value) || null,
+        createdAt: new Date().toISOString(),
+      };
+    }
 
-    const trades = dbLoad();
+    const trades = dbLoadRaw();
     trades.unshift(trade);
     dbSave(trades);
     resetRegisterForm();
-    showToast('✓ 保存しました！');
+    showToast(isDepositStatus(status) ? '💰 入金を記録しました！' : '✓ 保存しました！');
   }
 
   function resetRegisterForm() {
-    document.getElementById('trade-form').reset();
+    const form = document.getElementById('trade-form');
+    form.reset();
+    form.classList.remove('is-deposit');
     setDefaultDatetime();
     document.getElementById('f-result').value = '';
     document.getElementById('f-status').value = '';
+    const pnlLabel = document.getElementById('f-pnl-label');
+    if (pnlLabel) pnlLabel.textContent = '損益（円）';
+    const reasonLabel = document.getElementById('f-reason-label');
+    if (reasonLabel) reasonLabel.textContent = '理由・メモ';
     document.querySelectorAll('[data-group]:not([data-prefix])').forEach(btn => {
       const base = 'toggle-btn py-3 rounded-xl text-sm font-semibold border-2 transition-all active:scale-95';
       btn.className = base + ' ' + INACTIVE_STYLE;
@@ -1891,6 +2032,29 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     const mainPair = t.pairMain || t.pair || '';
     const subPair  = t.pairSub  || '';
 
+    // Deposit cards: simple layout
+    if (isDepositStatus(t.status)) {
+      const dateStr = fmtDate(t.datetimeEntry || t.datetime);
+      return `<div class="bg-white rounded-2xl p-3.5 shadow-sm mb-1" style="border-left:3px solid #10b981">
+        <div class="flex items-start justify-between mb-1">
+          <div class="flex flex-wrap gap-1.5 flex-1 min-w-0 pr-1">
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${statusBadge(t.status)}">${statusLabel(t.status)}</span>
+          </div>
+          <div class="flex items-center gap-0.5 flex-shrink-0">
+            <span class="text-base font-black mr-1 ${t.pnl >= 0 ? 'text-emerald-600' : 'text-red-500'}">${pnlStr}</span>
+            <button onclick="event.stopPropagation();openEdit('${t.id}')" class="w-7 h-7 flex items-center justify-center rounded-xl text-slate-400 active:bg-blue-50 active:text-blue-600 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </button>
+            <button onclick="event.stopPropagation();deleteTrade('${t.id}')" class="w-7 h-7 flex items-center justify-center rounded-xl text-slate-400 active:bg-red-50 active:text-red-600 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </div>
+        </div>
+        ${t.reason ? `<div class="text-xs text-slate-500 mb-0.5">${esc(t.reason)}</div>` : ''}
+        <div class="text-[10px] text-slate-400">${dateStr}</div>
+      </div>`;
+    }
+
     // Elapsed time
     let timeStr = fmtDate(t.datetimeEntry || t.datetime);
     if (t.datetimeExit) {
@@ -1904,94 +2068,49 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     // Chart images (new slot format or backward-compat array)
     const flatImgList = flattenImgs(t.images || []);
 
-    // Tags
-    const tags = t.tags || [];
-    const tagsHtml = tags.length > 0
-      ? `<div class="flex gap-1 mt-1.5 flex-wrap">${tags.map(tg =>
-          `<span class="text-[10px] px-2 py-0.5 rounded-full" style="background:#1e3a5f;color:#93c5fd">#${esc(tg)}</span>`
-        ).join('')}</div>`
+    const skipBadge = isSkipStatus(t.status) && t.skipReason
+      ? `<span class="text-xs px-2 py-0.5 rounded-full" style="background:${SKIP_REASONS[t.skipReason]?.color}20;color:${SKIP_REASONS[t.skipReason]?.color};border:1px solid ${SKIP_REASONS[t.skipReason]?.color}40">${skipReasonLabel(t.skipReason)}</span>`
       : '';
 
-
-    // Images row — displayed below text+buttons when present
-    const imgRowHtml = flatImgList.length > 0
-      ? `<div class="flex gap-2 mt-2 overflow-x-auto pb-1" style="scrollbar-width:none">
-          ${flatImgList.map((item, i) =>
-            `<div class="flex flex-col items-center gap-0.5 flex-shrink-0">
-               <img src="${item.src}" onclick="openImgViewer('${t.id}',${i})"
-                 class="object-cover rounded-lg cursor-pointer active:scale-95 transition-all"
-                 style="width:72px;height:54px;border:1px solid #2a2a3e">
-               <span class="text-[9px] leading-none" style="color:#60a5fa">${item.label}</span>
-             </div>`
-          ).join('')}
-         </div>`
+    const imgThumb = flatImgList.length > 0
+      ? `<div class="flex gap-1.5 mt-2 flex-wrap">${flatImgList.map((img, i) => `<img src="${img.src}" onclick="event.stopPropagation();openImgViewer('${t.id}',${i})" class="w-12 h-12 object-cover rounded-xl cursor-pointer border border-slate-200 active:opacity-70" title="${img.label}">`).join('')}</div>`
       : '';
 
-    // Card accent color (left border + tint) based on result/status
-    const cardAccent = t.status === 'through' ? '#f59e0b'
-      : t.status === 'miss'                   ? '#fb923c'
-      : t.pnl > 0                             ? '#10b981'
-      : t.pnl < 0                             ? '#ef4444'
-      :                                         '#94a3b8';
-    const cardBg = t.status === 'through' ? '#fffbeb'
-      : t.status === 'miss'               ? '#fff7ed'
-      : t.pnl > 0                         ? '#f0fdf4'
-      : t.pnl < 0                         ? '#fef2f2'
-      :                                     '#f8fafc';
+    const tagHtml = (t.tags || []).length > 0
+      ? `<div class="flex gap-1 flex-wrap mt-1">${(t.tags||[]).map(tg => `<span class="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500">#${esc(tg)}</span>`).join('')}</div>`
+      : '';
 
-    return `
-    <div class="rounded-2xl p-4 shadow-sm" style="background:${cardBg};border-left:4px solid ${cardAccent}">
-      <!-- Top row: badges + pnl -->
+    const pnlVisible = (t.status === 'entry' || t.status === 'miss') && t.pnl != null && t.pnl !== 0;
+
+    return `<div class="bg-white rounded-2xl p-3.5 shadow-sm mb-1">
       <div class="flex items-start justify-between mb-1.5">
-        <div class="flex flex-wrap gap-1.5 items-center">
-          <span class="text-xs font-bold px-2.5 py-0.5 rounded-full ${resultBadge(t.result)}">${resultLabel(t.result)}</span>
-          <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full ${statusBadge(t.status)}">${statusLabel(t.status)}</span>
-          ${mainPair ? `<span class="text-xs font-bold px-2 py-0.5 rounded-full" style="background:#1e3a5f;color:#93c5fd">${esc(mainPair)}</span>` : ''}
-          ${subPair  ? `<span class="text-xs font-semibold px-2 py-0.5 rounded-full" style="background:#2d1b4e;color:#c4b5fd">${esc(subPair)}</span>` : ''}
-          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded" style="background:#1e293b;color:#94a3b8">${esc(t.timeframe)}</span>
-          ${isSkipStatus(t.status) && t.skipReason && SKIP_REASONS[t.skipReason]
-            ? `<span class="text-xs px-2 py-0.5 rounded-full" style="background:${SKIP_REASONS[t.skipReason].color}20;color:${SKIP_REASONS[t.skipReason].color};border:1px solid ${SKIP_REASONS[t.skipReason].color}40">${SKIP_REASONS[t.skipReason].label}</span>`
-            : ''}
-          ${t.breakevenTouch
-            ? (() => {
-                const BT = { none: { label: '無し', color: '#94a3b8' }, touch: { label: 'タッチ有', color: '#f59e0b' }, stoploss: { label: '損切', color: '#ef4444' } };
-                const bt = BT[t.breakevenTouch];
-                return bt ? `<span class="text-xs px-2 py-0.5 rounded-full" style="background:${bt.color}20;color:${bt.color};border:1px solid ${bt.color}40">${bt.label}</span>` : '';
-              })()
-            : ''}
-          ${t.maShape === 'straight' ? '<span class="text-xs px-2 py-0.5 rounded-full" style="background:#3b82f620;color:#60a5fa;border:1px solid #3b82f640">ストレート</span>' : ''}
-          ${t.maShape === 'fake'     ? '<span class="text-xs px-2 py-0.5 rounded-full" style="background:#ec489920;color:#f472b6;border:1px solid #ec489940">フェイク</span>' : ''}
-          ${t.maConvDuration ? `<span class="text-xs px-2 py-0.5 rounded-full" style="background:#05966920;color:#34d399;border:1px solid #05966940">収束〜拡散 ${t.maConvDuration}h</span>` : ''}
+        <div class="flex flex-wrap gap-1.5 flex-1 min-w-0 pr-1">
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${statusBadge(t.status)}">${statusLabel(t.status)}</span>
+          ${t.result ? `<span class="text-xs font-semibold px-2 py-0.5 rounded-full ${resultBadge(t.result)}">${resultLabel(t.result)}</span>` : ''}
+          ${skipBadge}
+          ${mainPair ? `<span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium">${esc(mainPair)}</span>` : ''}
+          ${subPair  ? `<span class="text-xs px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500">${esc(subPair)}</span>` : ''}
+          ${t.timeframe ? `<span class="text-xs text-slate-400">${esc(t.timeframe)}</span>` : ''}
         </div>
-        <span class="text-sm font-black ml-2 whitespace-nowrap" style="color:${cardAccent}">${pnlStr}</span>
+        <div class="flex items-center gap-0.5 flex-shrink-0">
+          ${pnlVisible ? `<span class="text-sm font-bold mr-1 ${t.pnl > 0 ? 'text-emerald-500' : 'text-red-500'}">${pnlStr}</span>` : ''}
+          <button onclick="event.stopPropagation();openEdit('${t.id}')" class="w-7 h-7 flex items-center justify-center rounded-xl text-slate-400 active:bg-blue-50 active:text-blue-600 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          </button>
+          <button onclick="event.stopPropagation();deleteTrade('${t.id}')" class="w-7 h-7 flex items-center justify-center rounded-xl text-slate-400 active:bg-red-50 active:text-red-600 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
+        </div>
       </div>
-      <!-- Content row: text + buttons -->
-      <div class="flex items-center gap-0">
-        <!-- Text -->
+      <div class="flex items-end justify-between gap-2">
         <div class="min-w-0 flex-1">
-          <div class="text-sm font-bold truncate" style="color:#1e293b">${methodLabel(t.method)}</div>
-          ${t.reason ? `<div class="text-xs mt-0.5 line-clamp-1" style="color:#64748b">${esc(t.reason)}</div>` : ''}
-          <div class="text-xs mt-0.5" style="color:#94a3b8">${timeStr}</div>
-          ${tagsHtml}
-        </div>
-        <!-- Action buttons -->
-        <div class="flex gap-1 ml-2 flex-shrink-0">
-          <button onclick="openEdit('${t.id}')"
-            class="w-8 h-8 flex items-center justify-center rounded-xl transition-colors" style="color:#94a3b8">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-            </svg>
-          </button>
-          <button onclick="deleteTrade('${t.id}')"
-            class="w-8 h-8 flex items-center justify-center rounded-xl transition-colors" style="color:#94a3b8">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-            </svg>
-          </button>
+          <div class="text-xs font-semibold" style="color:#94a3b8">${methodLabel(t.method)}</div>
+          ${t.reason ? `<div class="text-xs text-slate-400 mt-0.5 line-clamp-1">${esc(t.reason)}</div>` : ''}
+          <div class="text-[10px] text-slate-400 mt-1">${timeStr}</div>
+          ${tagHtml}
         </div>
       </div>
-      <!-- Images row — below text+buttons, only when images exist -->
-      ${imgRowHtml}
+      ${imgThumb}
     </div>`;
   }
 
@@ -2089,7 +2208,18 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
 
   function deleteTrade(id) {
     showConfirm('このトレードを削除しますか？', () => {
-      dbSave(dbLoad().filter(t => t.id !== id));
+      const trades = dbLoadRaw();
+      const idx = trades.findIndex(t => t.id === id);
+      if (idx !== -1) {
+        // Soft delete: mark as deleted so cloud sync propagates the deletion
+        trades[idx] = {
+          ...trades[idx],
+          deleted: true,
+          deletedAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        dbSave(trades);
+      }
       renderHistory();
       showToast('削除しました');
     });
@@ -2121,10 +2251,10 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       </button>`
     ).join('');
 
-    const statusBtns = ['entry','through','miss'].map(s =>
+    const statusBtns = ['entry','through','miss','deposit'].map(s =>
       `<button type="button" data-group="status" data-prefix="e" data-value="${s}"
         onclick="selectToggle('status','${s}','e')"
-        class="toggle-btn py-3 rounded-xl text-sm font-semibold border-2 transition-all
+        class="toggle-btn py-3 rounded-xl text-xs font-semibold border-2 transition-all
           ${t.status === s ? TOGGLE_STYLES.status[s] : INACTIVE_STYLE}">
         ${statusLabel(s)}
       </button>`
@@ -2179,7 +2309,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
               class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
           </div>
         </div>
-        <div>
+        <div class="deposit-hide">
           <div class="flex items-baseline gap-2 mb-2">
             <label class="text-xs font-semibold text-slate-500 uppercase tracking-wide">手法</label>
             <span class="text-xs text-slate-400">①乖離埋め　②３波狙い　③その他</span>
@@ -2191,7 +2321,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
             <option value="3" ${t.method === '3' ? 'selected' : ''}>③ その他</option>
           </select>
         </div>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-3 deposit-hide">
           <div>
             <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">メイン通貨</label>
             <select id="e-pair-main" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
@@ -2205,43 +2335,43 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
             </select>
           </div>
         </div>
-        <div>
+        <div class="deposit-hide">
           <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">時間足</label>
           <select id="e-timeframe" class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
             ${tfOptions}
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">損益（円）</label>
+          <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2" id="e-pnl-label">${isDepositStatus(t.status) ? '入金額（円）' : '損益（円）'}</label>
           <input type="number" id="e-pnl" value="${t.pnl}" step="1"
             class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 select-text">
         </div>
-        <div>
+        <div class="deposit-hide">
           <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">結果</label>
           <div class="grid grid-cols-3 gap-2">${resultBtns}</div>
           <input type="hidden" id="e-result" value="${t.result}">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">ステータス</label>
-          <div class="grid grid-cols-3 gap-2">${statusBtns}</div>
+          <div class="grid grid-cols-4 gap-2">${statusBtns}</div>
           <input type="hidden" id="e-status" value="${t.status}">
         </div>
-        <div id="e-skip-block" class="${skipBlockHidden}">
+        <div id="e-skip-block" class="${skipBlockHidden} deposit-hide">
           <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#a78bfa">見送り理由</label>
           <div class="grid grid-cols-2 gap-2">${skipBtns}</div>
           <input type="hidden" id="e-skipreason" value="${t.skipReason || ''}">
         </div>
-        <div id="e-be-block" class="${beBlockHidden}">
+        <div id="e-be-block" class="${beBlockHidden} deposit-hide">
           <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#fbbf24">建値タッチ</label>
           <div class="grid grid-cols-3 gap-2">${beBtns}</div>
           <input type="hidden" id="e-breakeventouch" value="${t.breakevenTouch || ''}">
         </div>
-        <div>
+        <div class="deposit-hide">
           <label class="block text-xs font-semibold uppercase tracking-wide mb-2" style="color:#60a5fa">MA収束・拡散の形状</label>
           <div class="grid grid-cols-2 gap-2">${maShapeBtns}</div>
           <input type="hidden" id="e-mashape" value="${t.maShape || ''}">
         </div>
-        <div>
+        <div class="deposit-hide">
           <label class="block text-xs font-semibold uppercase tracking-wide mb-1" style="color:#34d399">MA収束〜拡散期間 <span class="font-normal normal-case tracking-normal text-slate-400">GC/DC後→拡散まで（時間）</span></label>
           <div class="flex items-center gap-2">
             <input type="number" id="e-ma-conv" placeholder="例: 12" min="0.5" step="0.5" value="${t.maConvDuration || ''}"
@@ -2254,7 +2384,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
           <textarea id="e-reason" rows="3"
             class="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none select-text">${esc(t.reason || '')}</textarea>
         </div>
-        <div>
+        <div class="deposit-hide">
           <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">タグ</label>
           <div id="e-tag-chips" class="flex gap-1.5 flex-wrap mb-2"></div>
           <div class="flex gap-2">
@@ -2266,7 +2396,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
           </div>
           <div id="e-tag-suggest" class="flex gap-1.5 flex-wrap mt-2"></div>
         </div>
-        <div>
+        <div class="deposit-hide">
           <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">チャート画像</label>
           <div class="grid grid-cols-2 gap-3 mb-3">
             <div>
@@ -2323,6 +2453,9 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       </div>`;
 
     document.getElementById('edit-modal').classList.remove('hidden');
+    // Apply deposit class on edit form wrap
+    const wrap = document.getElementById('edit-form-wrap');
+    if (wrap) wrap.classList.toggle('edit-deposit', isDepositStatus(t.status));
     // Load existing images into edit state
     if (t.images && !Array.isArray(t.images)) {
       eImgs = { m15: t.images.m15||null, h1: t.images.h1||null, h4: t.images.h4||null, d1: t.images.d1||null, others: [...(t.images.others||[])] };
@@ -2339,35 +2472,60 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
   }
 
   function saveEdit() {
-    const trades = dbLoad();
+    const trades = dbLoadRaw();
     const idx = trades.findIndex(t => t.id === editingId);
     if (idx === -1) return;
     const entryDt = document.getElementById('e-datetime-entry').value;
     const exitDt  = document.getElementById('e-datetime-exit').value;
-    trades[idx] = {
-      ...trades[idx],
-      datetime:      entryDt || trades[idx].datetime,
-      datetimeEntry: entryDt,
-      datetimeExit:  exitDt,
-      method:    document.getElementById('e-method').value,
-      pairMain:  document.getElementById('e-pair-main').value,
-      pairSub:   document.getElementById('e-pair-sub').value,
-      pair:      document.getElementById('e-pair-main').value,
-      timeframe: document.getElementById('e-timeframe').value,
-      pnl:       parseFloat(document.getElementById('e-pnl').value) || 0,
-      result:    document.getElementById('e-result').value,
-      status:    document.getElementById('e-status').value,
-      skipReason: isSkipStatus(document.getElementById('e-status').value)
-        ? (document.getElementById('e-skipreason').value || null)
-        : null,
-      breakevenTouch: document.getElementById('e-breakeventouch').value || null,
-      maShape: document.getElementById('e-mashape').value || null,
-      maConvDuration: parseInt(document.getElementById('e-ma-conv').value) || null,
-      reason:    document.getElementById('e-reason').value.trim(),
-      images:    { m15: eImgs.m15, h1: eImgs.h1, h4: eImgs.h4, d1: eImgs.d1, others: [...eImgs.others] },
-      tags:      [...eTags],
-      updatedAt: new Date().toISOString(),
-    };
+    const newStatus = document.getElementById('e-status').value;
+    if (isDepositStatus(newStatus)) {
+      trades[idx] = {
+        ...trades[idx],
+        datetime:      entryDt || trades[idx].datetime,
+        datetimeEntry: entryDt,
+        datetimeExit:  '',
+        method:    '',
+        pairMain:  '',
+        pairSub:   '',
+        pair:      '',
+        timeframe: '',
+        pnl:       parseFloat(document.getElementById('e-pnl').value) || 0,
+        result:    '',
+        status:    newStatus,
+        skipReason: null,
+        breakevenTouch: null,
+        maShape: null,
+        maConvDuration: null,
+        reason:    document.getElementById('e-reason').value.trim(),
+        tags:      [],
+        updatedAt: new Date().toISOString(),
+      };
+    } else {
+      trades[idx] = {
+        ...trades[idx],
+        datetime:      entryDt || trades[idx].datetime,
+        datetimeEntry: entryDt,
+        datetimeExit:  exitDt,
+        method:    document.getElementById('e-method').value,
+        pairMain:  document.getElementById('e-pair-main').value,
+        pairSub:   document.getElementById('e-pair-sub').value,
+        pair:      document.getElementById('e-pair-main').value,
+        timeframe: document.getElementById('e-timeframe').value,
+        pnl:       parseFloat(document.getElementById('e-pnl').value) || 0,
+        result:    document.getElementById('e-result').value,
+        status:    newStatus,
+        skipReason: isSkipStatus(newStatus)
+          ? (document.getElementById('e-skipreason').value || null)
+          : null,
+        breakevenTouch: document.getElementById('e-breakeventouch').value || null,
+        maShape: document.getElementById('e-mashape').value || null,
+        maConvDuration: parseInt(document.getElementById('e-ma-conv').value) || null,
+        reason:    document.getElementById('e-reason').value.trim(),
+        images:    { m15: eImgs.m15, h1: eImgs.h1, h4: eImgs.h4, d1: eImgs.d1, others: [...eImgs.others] },
+        tags:      [...eTags],
+        updatedAt: new Date().toISOString(),
+      };
+    }
     dbSave(trades);
     closeEditModal();
     renderHistory();
@@ -4157,6 +4315,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     a.download   = 'fx_trades_' + new Date().toISOString().slice(0, 10) + '.json';
     a.click();
     URL.revokeObjectURL(url);
+    localStorage.setItem(LAST_EXPORT_KEY, new Date().toISOString().slice(0, 10));
     showToast('✓ エクスポートしました');
   }
 
@@ -4175,7 +4334,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
         showConfirm(
           imported.length + '件のデータをインポートしますか？\n（重複しないものが追加されます）',
           () => {
-            const existing = dbLoad();
+            const existing = dbLoadRaw();
             const existIds = new Set(existing.map(t => t.id));
             const newOnes  = imported.filter(t => t.id && !existIds.has(t.id));
             const merged   = [...existing, ...newOnes]
@@ -4192,6 +4351,138 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     };
     reader.readAsText(file);
     event.target.value = '';
+  }
+
+  // ============================================================
+  // ONBOARDING
+  // ============================================================
+  function checkOnboarding() {
+    if (localStorage.getItem(ONBOARDING_KEY)) return;
+    const trades = dbLoad();
+    if (trades.length === 0) {
+      const m = document.getElementById('onboarding-modal');
+      if (m) m.style.display = 'flex';
+    } else {
+      localStorage.setItem(ONBOARDING_KEY, '1');
+    }
+  }
+
+  function startBlank() {
+    localStorage.setItem(ONBOARDING_KEY, '1');
+    const m = document.getElementById('onboarding-modal');
+    if (m) m.style.display = 'none';
+  }
+
+  function startWithDemo() {
+    const now = new Date();
+    function daysAgo(n) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - n);
+      return d.toISOString().slice(0, 16);
+    }
+    const demo = [
+      { id: uid(), datetime: daysAgo(2),  datetimeExit: daysAgo(2),  status: 'entry',   method: '1', pairMain: 'USD/JPY', pairSub: '',        timeframe: 'H1',  result: 'big',       pnl: 45000,  skipReason: null,        tags: ['お手本'],   reason: 'ストレートなMAで乖離がきれいに出ていた', breakevenTouch: 'none',    mashape: 'straight', maConv: 8  },
+      { id: uid(), datetime: daysAgo(5),  datetimeExit: daysAgo(5),  status: 'entry',   method: '2', pairMain: 'EUR/JPY', pairSub: 'EUR/GBP', timeframe: 'H1',  result: 'stoploss',  pnl: -30000, skipReason: null,        tags: ['反省'],     reason: '3波と思ったが結局2波だった。根拠が弱かった', breakevenTouch: 'none', mashape: 'fake',     maConv: 15 },
+      { id: uid(), datetime: daysAgo(8),  datetimeExit: daysAgo(8),  status: 'entry',   method: '1', pairMain: 'GBP/JPY', pairSub: '',        timeframe: 'H1',  result: 'reg',       pnl: 22000,  skipReason: null,        tags: [],           reason: '教科書通りのエントリー',                   breakevenTouch: 'touch',   mashape: 'straight', maConv: 6  },
+      { id: uid(), datetime: daysAgo(12), datetimeExit: null,        status: 'through', method: '1', pairMain: 'USD/JPY', pairSub: 'EUR/GBP', timeframe: 'M15', result: 'big',       pnl: null,   skipReason: 'm15',       tags: [],           reason: 'M15セットアップだったので見送り',            breakevenTouch: null,      mashape: 'straight', maConv: 10 },
+      { id: uid(), datetime: daysAgo(18), datetimeExit: null,        status: 'through', method: '2', pairMain: 'EUR/JPY', pairSub: '',        timeframe: 'H1',  result: 'max',       pnl: null,   skipReason: 'low_setup', tags: [],           reason: 'チャート形状の優位性が低かった',              breakevenTouch: null,      mashape: 'fake',     maConv: 20 },
+      { id: uid(), datetime: daysAgo(22), datetimeExit: daysAgo(22), status: 'miss',    method: '1', pairMain: 'GBP/USD', pairSub: '',        timeframe: 'H1',  result: 'stoploss',  pnl: -28000, skipReason: null,        tags: ['反省'],     reason: 'ルール外のエントリー。サイズが大きすぎた',    breakevenTouch: 'stoploss', mashape: 'fake',    maConv: 5  },
+    ];
+    dbSave(demo);
+    localStorage.setItem(ONBOARDING_KEY, '1');
+    const m = document.getElementById('onboarding-modal');
+    if (m) m.style.display = 'none';
+    renderHistory();
+    showToast('デモデータを読み込みました！');
+  }
+
+  // ============================================================
+  // LAST-ENTRY BANNER
+  // ============================================================
+  function checkLastEntryBanner() {
+    const dismissed = localStorage.getItem(BANNER_DISMISS_KEY);
+    const today = new Date().toISOString().slice(0, 10);
+    if (dismissed === today) return;
+
+    const trades = dbLoad();
+    if (trades.length === 0) return;
+
+    const sorted = [...trades].sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+    const lastDate = new Date(sorted[0].datetime);
+    const diffDays = Math.floor((new Date() - lastDate) / 86400000);
+
+    if (diffDays >= 3) {
+      const el = document.getElementById('last-entry-banner');
+      const txt = document.getElementById('last-entry-banner-text');
+      if (el && txt) {
+        txt.textContent = `前回の記録から ${diffDays} 日が経過しています`;
+        el.classList.remove('hidden');
+      }
+    }
+  }
+
+  function dismissLastEntryBanner() {
+    localStorage.setItem(BANNER_DISMISS_KEY, new Date().toISOString().slice(0, 10));
+    document.getElementById('last-entry-banner').classList.add('hidden');
+  }
+
+  function updateBackupReminder() {
+    const el   = document.getElementById('backup-reminder');
+    const days = document.getElementById('backup-days');
+    if (!el || !days) return;
+    const last = localStorage.getItem(LAST_EXPORT_KEY);
+    if (!last) {
+      const trades = dbLoad();
+      if (trades.length === 0) { el.classList.add('hidden'); return; }
+      days.textContent = '未';
+      el.classList.remove('hidden');
+      return;
+    }
+    const diff = Math.floor((new Date() - new Date(last)) / 86400000);
+    if (diff >= 14) {
+      days.textContent = diff;
+      el.classList.remove('hidden');
+    } else {
+      el.classList.add('hidden');
+    }
+  }
+
+  // ============================================================
+  // CSV EXPORT
+  // ============================================================
+  function exportCSV() {
+    const trades = dbLoad();
+    const headers = ['日時','エグジット日時','ステータス','手法','メイン通貨','サブ通貨','時間足','結果','損益(円)','見送り理由','建値タッチ','MAシェイプ','MA収束期間(h)','タグ','メモ'];
+    const methodLabel = { '1':'乖離埋め', '2':'3波狙い', '3':'その他' };
+    const rows = trades.map(t => [
+      t.datetime        || '',
+      t.datetimeExit    || '',
+      t.status          || '',
+      methodLabel[t.method] || t.method || '',
+      t.pairMain        || '',
+      t.pairSub         || '',
+      t.timeframe       || '',
+      t.result          || '',
+      t.pnl ?? '',
+      t.skipReason      || '',
+      t.breakevenTouch  || '',
+      t.mashape         || '',
+      t.maConv          ?? '',
+      (t.tags || []).join('|'),
+      (t.reason || '').replace(/\n/g, ' '),
+    ]);
+    const csv = [headers, ...rows]
+      .map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'fx_trades_' + new Date().toISOString().slice(0, 10) + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+    localStorage.setItem(LAST_EXPORT_KEY, new Date().toISOString().slice(0, 10));
+    showToast('✓ CSVエクスポートしました');
   }
 
   // ============================================================
@@ -4267,18 +4558,35 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     return res.json();
   }
 
+  // Pick the "winning" trade between two versions of the same id
+  // Tombstone (deleted=true) always wins; otherwise newest updatedAt wins.
+  function pickWinning(a, b) {
+    if (a.deleted && !b.deleted) return a;
+    if (b.deleted && !a.deleted) return b;
+    const ta = new Date(a.updatedAt || a.deletedAt || a.createdAt || a.datetime || 0).getTime();
+    const tb = new Date(b.updatedAt || b.deletedAt || b.createdAt || b.datetime || 0).getTime();
+    return tb > ta ? b : a;
+  }
+  function mergeTrades(localArr, remoteArr) {
+    const map = {};
+    for (const t of [...localArr, ...remoteArr]) {
+      if (!t || !t.id) continue;
+      map[t.id] = map[t.id] ? pickWinning(map[t.id], t) : t;
+    }
+    return Object.values(map).sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+  }
+
   async function syncWithSupabase() {
     const cfg = getSBConfig();
     if (!cfg) { showToast('⚠ Supabase未接続です'); return; }
     const btn = document.getElementById('sync-btn');
     if (btn) { btn.textContent = '同期中...'; btn.disabled = true; }
     try {
-      const local = dbLoad();
+      const local = dbLoadRaw();  // tombstones を含む全件
 
-      // 1. Push local → Supabase (upsert by id)
+      // 1. Push local → Supabase (upsert by id) ※削除マークも送信される
       if (local.length > 0) {
         const rows = local.map(t => ({ id: t.id, data: t, synced_at: new Date().toISOString() }));
-        // Batch upsert in chunks of 500
         for (let i = 0; i < rows.length; i += 500) {
           await sbFetch(cfg, 'fx_trades?on_conflict=id', 'POST', rows.slice(i, i + 500));
         }
@@ -4288,20 +4596,16 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       const remote = await sbFetch(cfg, 'fx_trades?select=data&order=synced_at.desc');
       const remoteTrades = (remote || []).map(r => r.data).filter(Boolean);
 
-      // 3. Merge (deduplicate by id)
-      const merged = Object.values(
-        [...local, ...remoteTrades].reduce((acc, t) => {
-          if (!acc[t.id]) acc[t.id] = t;
-          return acc;
-        }, {})
-      ).sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+      // 3. Merge — tombstone優先・新しい updatedAt 優先
+      const merged = mergeTrades(local, remoteTrades);
 
       dbSave(merged);
       const ts = new Date().toISOString();
       localStorage.setItem(SB_SYNC_TS_KEY, ts);
       updateSyncUI();
       if (currentTab === 'history') renderHistory();
-      showToast('☁ 同期完了 ' + merged.length + '件');
+      const activeCount = merged.filter(t => !t.deleted).length;
+      showToast('☁ 同期完了 ' + activeCount + '件');
     } catch (err) {
       showToast('⚠ 同期エラー: ' + err.message);
       console.error(err);
@@ -4316,16 +4620,15 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       const remote = await sbFetch(cfg, 'fx_trades?select=data&order=synced_at.desc');
       const remoteTrades = (remote || []).map(r => r.data).filter(Boolean);
       if (!remoteTrades.length) { showToast('クラウドにデータがありません'); return; }
+      const remoteActive = remoteTrades.filter(t => !t.deleted).length;
       showConfirm(
-        'クラウドから ' + remoteTrades.length + '件を取得して\nローカルと統合しますか？',
+        'クラウドから ' + remoteActive + '件を取得して\nローカルと統合しますか？',
         () => {
-          const local = dbLoad();
-          const merged = Object.values(
-            [...local, ...remoteTrades].reduce((acc, t) => { if (!acc[t.id]) acc[t.id] = t; return acc; }, {})
-          ).sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+          const local = dbLoadRaw();
+          const merged = mergeTrades(local, remoteTrades);
           dbSave(merged);
           if (currentTab === 'history') renderHistory();
-          showToast('☁ ' + remoteTrades.length + '件を取得しました');
+          showToast('☁ ' + remoteActive + '件を取得しました');
         }
       );
     } catch (err) {
@@ -4372,7 +4675,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
   function resultLabel(r) {
     return { reg: 'REG', big: 'BIG', max: 'MAX', small: '微益', breakeven: '建値決済', stoploss: '損切' }[r] || r;
   }
-  function statusLabel(s) { return { entry: 'エントリー', through: 'スルー', miss: 'ミス' }[s] || s; }
+  function statusLabel(s) { return { entry: 'エントリー', through: 'スルー', miss: 'ミス', deposit: '💰 入金' }[s] || s; }
 
   // Skip reason definitions
   const SKIP_REASONS = {
@@ -4383,6 +4686,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
   };
   function skipReasonLabel(r) { return SKIP_REASONS[r]?.label || '未分類'; }
   function isSkipStatus(s) { return s === 'through' || s === 'miss'; }
+  function isDepositStatus(s) { return s === 'deposit'; }
 
   function resultBadge(r) {
     return {
@@ -4401,7 +4705,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     catch { return str; }
   }
   function statusBadge(s) {
-    return { entry: 'bg-blue-100 text-blue-700', through: 'bg-yellow-100 text-yellow-700', miss: 'bg-orange-100 text-orange-700' }[s] || 'bg-slate-100 text-slate-600';
+    return { entry: 'bg-blue-100 text-blue-700', through: 'bg-yellow-100 text-yellow-700', miss: 'bg-orange-100 text-orange-700', deposit: 'bg-emerald-100 text-emerald-700' }[s] || 'bg-slate-100 text-slate-600';
   }
 
   // ============================================================
@@ -4805,15 +5109,15 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       return;
     }
     const allTrades = tradesForPeriod(statsPeriod);
-    const entries  = allTrades
-      .filter(t => t.status === 'entry')
+    const events = allTrades
+      .filter(t => t.status === 'entry' || isDepositStatus(t.status))
       .sort((a, b) => new Date(a.datetimeEntry || a.datetime) - new Date(b.datetimeEntry || b.datetime));
 
     const emptyEl = document.getElementById('cap-empty');
     const wrapEl  = document.getElementById('cap-chart-wrap');
     const statsEl = document.getElementById('cap-stats');
 
-    if (entries.length === 0) {
+    if (events.length === 0) {
       emptyEl?.classList.remove('hidden');
       wrapEl?.classList.add('hidden');
       statsEl?.classList.add('hidden');
@@ -4824,11 +5128,17 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     statsEl?.classList.remove('hidden');
 
     let capital = initial;
+    let entryIdx = 0;
     const labels = ['開始'];
     const data   = [initial];
-    entries.forEach((t, i) => {
+    events.forEach(t => {
       capital += t.pnl;
-      labels.push('#' + (i + 1));
+      if (isDepositStatus(t.status)) {
+        labels.push('💰');
+      } else {
+        entryIdx++;
+        labels.push('#' + entryIdx);
+      }
       data.push(capital);
     });
 
