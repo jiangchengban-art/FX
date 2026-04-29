@@ -3678,6 +3678,7 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
     const initial = risk;
     let capital   = initial;
     let curRisk   = initial;
+    const riskStack = []; // 勝ちトレードごとの直前リスクを履歴として積む。損切時はpopして1段戻る。
     const rows    = [];
 
     for (let i = 0; i < count; i++) {
@@ -3688,9 +3689,16 @@ CREATE POLICY "all" ON fx_trades FOR ALL USING (true);</pre>
       if (cfg) {
         pnl = curRisk * cfg.mult;
         nextCapital = capital + pnl;
-        if (key === 'stoploss')   nextRisk = initial;
-        else if (key === 'breakeven') nextRisk = curRisk;
-        else                      nextRisk = Math.abs(pnl);
+        if (key === 'stoploss') {
+          // 1段戻る：直前の勝ちトレード前のリスクを復元（履歴がなければ initial）
+          nextRisk = riskStack.length > 0 ? riskStack.pop() : initial;
+        } else if (key === 'breakeven') {
+          nextRisk = curRisk;  // 履歴は変更しない
+        } else {
+          // 勝ち：直前リスクを履歴に積み、利益を次のリスクに昇格
+          riskStack.push(curRisk);
+          nextRisk = Math.abs(pnl);
+        }
       }
       rows.push({ idx: i, key, cfg, risk: rowRisk, pnl, capital, nextCapital });
       capital  = nextCapital;
